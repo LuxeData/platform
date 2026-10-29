@@ -55,9 +55,16 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected, onSelec
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
             <span style={{ color: 'var(--text-muted)' }}>Asking Avg: ${watch.currentAskingAvg.toLocaleString()}</span>
             <span style={{ color: 'var(--text-gold)', fontWeight: 600 }}>
-              Spread: +${watch.aiAnalysis.spreadDollars} ({watch.aiAnalysis.currentSpread}%)
+              Spread: +${watch.aiAnalysis.spreadDollars.toLocaleString()} ({watch.aiAnalysis.currentSpread}%)
             </span>
           </div>
+
+          {watch.dealerMetrics && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }}>
+              <span style={{ color: 'var(--text-secondary)' }}>Dealer Buy-In (-20%):</span>
+              <strong style={{ color: 'var(--emerald-gain)' }}>${watch.dealerMetrics.dealerBuyInPrice.toLocaleString()}</strong>
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,9 @@
-import { WatchModel } from '../types/watch';
+import { WatchModel, DealerMarketMetrics } from '../types/watch';
+import chrono24Raw from './chrono24MarketData.json';
 
-export const WATCH_MODELS: WatchModel[] = [
+const c24References = (chrono24Raw as any)?.references || {};
+
+const BASE_WATCH_MODELS: WatchModel[] = [
   {
     id: 'rolex-submariner-126610ln',
     brand: 'Rolex',
@@ -324,3 +327,55 @@ export const WATCH_MODELS: WatchModel[] = [
     ]
   }
 ];
+
+export const WATCH_MODELS: WatchModel[] = BASE_WATCH_MODELS.map((w) => {
+  // Match reference key e.g. 126610LN, 116500LN, 5711/1A
+  const cleanRef = w.reference.replace(/[^a-zA-Z0-9\/]/g, '').toUpperCase();
+  let c24Item = c24References[cleanRef] || c24References[w.reference];
+  
+  if (!c24Item) {
+    // Try matching prefix for 5711
+    for (const key of Object.keys(c24References)) {
+      if (cleanRef.startsWith(key) || key.startsWith(cleanRef)) {
+        c24Item = c24References[key];
+        break;
+      }
+    }
+  }
+
+  if (c24Item && c24Item.consensus) {
+    const c = c24Item.consensus;
+    const stats = c.price_stats || {};
+    const cmv = stats.consensus_market_value || w.aiAnalysis.fairMarketValue;
+    const dealerBuyIn = stats.dealer_buy_in_price_20pct || (cmv * 0.80);
+
+    return {
+      ...w,
+      currentAskingAvg: Math.round(cmv),
+      recentSoldAvg: Math.round(dealerBuyIn),
+      aiAnalysis: {
+        ...w.aiAnalysis,
+        fairMarketValue: Math.round(cmv),
+        spreadDollars: Math.round(cmv - dealerBuyIn),
+        currentSpread: 20.0
+      },
+      dealerMetrics: {
+        consensusMarketValue: Math.round(cmv),
+        dealerBuyInPrice: Math.round(dealerBuyIn),
+        retailMSRP: c.retail_msrp || w.aiAnalysis.retailMSRP,
+        marketPremiumPct: stats.market_premium_over_msrp_pct || 0,
+        totalActiveListings: c.total_active_listings || 0,
+        dealerListingsCount: c.dealer_listings_count || 0,
+        privateListingsCount: c.private_listings_count || 0,
+        arbitrageCount: c.arbitrage_count || 0,
+        methodology: "10% Trimmed Mean of Professional Dealer Listings",
+        spreadRule: "20% Dealer Buy-In Discount from Consensus Retail Price",
+        arbitrageDeals: c.arbitrage_opportunities || [],
+        scrapedAt: c.updated_at
+      }
+    };
+  }
+
+  return w;
+});
+

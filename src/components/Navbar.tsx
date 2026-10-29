@@ -1,6 +1,7 @@
 'use strict';
 import React from 'react';
 import { Search, ShieldCheck, Zap, Activity, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface NavbarProps {
   searchQuery: string;
@@ -60,21 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'var(--gold-gradient)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#07090E',
-            fontWeight: 800,
-            fontSize: '1.2rem',
-            boxShadow: '0 0 20px rgba(212, 175, 55, 0.3)'
-          }}>
-            L
-          </div>
+          <Logo size={42} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.08em', color: '#FFF' }}>

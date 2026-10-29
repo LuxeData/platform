@@ -2,8 +2,11 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'LuxeData — Luxury Asset Intelligence & Valuation Platform',
-  description: 'Institutional-grade pricing intelligence, cross-market historical data, and AI-powered valuation for secondary luxury watches and alternative assets.',
+  title: 'LuxeData — Luxury Asset & Watch Intelligence Terminal',
+  description: 'Institutional-grade pricing intelligence, consensus market valuation, and real-time dealer buy-in spread analysis for luxury timepieces.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

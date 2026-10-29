@@ -33,6 +33,43 @@ export interface AIAnalysis {
   riskFactors: string[];
 }
 
+export interface ArbitrageListing {
+  id: string;
+  reference: string;
+  brand: string;
+  model: string;
+  price: number;
+  currency: string;
+  seller_type: string;
+  is_dealer: boolean;
+  is_private: boolean;
+  condition: string;
+  year?: number | null;
+  has_box: boolean;
+  has_papers: boolean;
+  is_full_set: boolean;
+  location: string;
+  url: string;
+  snippet: string;
+  discount_from_cmv_pct?: number;
+  estimated_profit_dollars?: number;
+}
+
+export interface DealerMarketMetrics {
+  consensusMarketValue: number;
+  dealerBuyInPrice: number; // 20% discount from consensus market value
+  retailMSRP: number;
+  marketPremiumPct: number;
+  totalActiveListings: number;
+  dealerListingsCount: number;
+  privateListingsCount: number;
+  arbitrageCount: number;
+  methodology: string;
+  spreadRule: string;
+  arbitrageDeals?: ArbitrageListing[];
+  scrapedAt?: string;
+}
+
 export interface WatchModel {
   id: string;
   brand: string;
@@ -49,5 +86,7 @@ export interface WatchModel {
   priceHistory: PricePoint[];
   recentSales: SoldListing[];
   aiAnalysis: AIAnalysis;
+  dealerMetrics?: DealerMarketMetrics;
   imageUrl?: string;
 }
+

@@ -21,7 +21,12 @@ import {
   CheckCircle2, 
   ExternalLink,
   Sliders,
-  Scale
+  Scale,
+  Building2,
+  Store,
+  Users,
+  Target,
+  ArrowUpRight
 } from 'lucide-react';
 
 interface WatchDetailViewProps {
@@ -249,6 +254,128 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
               </div>
             </div>
           </div>
+
+          {/* Chrono24 Dealer Consensus & Spread Radar (Dealer Interview Intelligence) */}
+          {watch.dealerMetrics && (
+            <div className="glass-card" style={{ padding: '24px', border: '1px solid rgba(212, 175, 55, 0.35)', background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, rgba(15, 20, 31, 0.95) 100%)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}>
+                    <Building2 size={20} style={{ color: 'var(--gold-primary)' }} />
+                    Chrono24 Consensus & Dealer Buy-In Spread Radar
+                  </h3>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Formulated from Leo&apos;s dealer interviews: 10% trimmed mean of professional company listings &amp; 20% buy-in spread
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <span className="badge badge-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Store size={12} /> {watch.dealerMetrics.totalActiveListings} Active Chrono24 Lots
+                  </span>
+                  <span className="badge badge-emerald">
+                    {watch.dealerMetrics.arbitrageCount} Arbitrage Deals Found
+                  </span>
+                </div>
+              </div>
+
+              {/* 4-Stat Dealer Intelligence Strip */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px', marginBottom: '18px' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Consensus Market Value (CMV)</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold-light)', marginTop: '2px' }}>
+                    ${watch.dealerMetrics.consensusMarketValue.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Trimmed Mean of Company Lots</div>
+                </div>
+
+                <div style={{ background: 'rgba(212, 175, 55, 0.08)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-gold)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-gold)', fontWeight: 600, textTransform: 'uppercase' }}>Dealer Buy-In Price (-20%)</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
+                    ${watch.dealerMetrics.dealerBuyInPrice.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-gold)' }}>Wholesale Acquisition Target</div>
+                </div>
+
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Seller Composition</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
+                    {watch.dealerMetrics.dealerListingsCount} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Dealers</span> / {watch.dealerMetrics.privateListingsCount} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Private</span>
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)' }}>
+                    {Math.round((watch.dealerMetrics.dealerListingsCount / (watch.dealerMetrics.totalActiveListings || 1)) * 100)}% Institutional Clustering
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Market Premium Over MSRP</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: watch.dealerMetrics.marketPremiumPct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)', marginTop: '2px' }}>
+                    {watch.dealerMetrics.marketPremiumPct >= 0 ? `+${watch.dealerMetrics.marketPremiumPct.toFixed(1)}%` : `${watch.dealerMetrics.marketPremiumPct.toFixed(1)}%`}
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+                    MSRP: ${watch.dealerMetrics.retailMSRP.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Arbitrage Opportunities Feed (Real Chrono24 Listings) */}
+              {watch.dealerMetrics.arbitrageDeals && watch.dealerMetrics.arbitrageDeals.length > 0 && (
+                <div style={{ marginTop: '14px', borderTop: '1px solid var(--border-subtle)', paddingTop: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Target size={14} /> LIVE CHRONO24 ARBITRAGE RADAR ({watch.dealerMetrics.arbitrageDeals.length} LOTS PRICED &lt; DEALER BUY-IN + 5%)
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Updated via Playwright Engine</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {watch.dealerMetrics.arbitrageDeals.slice(0, 4).map((deal) => (
+                      <div 
+                        key={deal.id}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '10px 14px',
+                          background: 'rgba(16, 185, 129, 0.05)',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(16, 185, 129, 0.2)',
+                          fontSize: '0.82rem'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span className={deal.is_private ? "badge badge-subtle" : "badge badge-gold"} style={{ fontSize: '0.68rem' }}>
+                            {deal.seller_type}
+                          </span>
+                          <span style={{ color: '#FFF', fontWeight: 600 }}>
+                            ${deal.price.toLocaleString()}
+                          </span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                            • {deal.condition} • {deal.location}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ color: 'var(--emerald-gain)', fontWeight: 700, fontSize: '0.78rem' }}>
+                            Save ${deal.estimated_profit_dollars?.toLocaleString()} ({deal.discount_from_cmv_pct}% off CMV)
+                          </span>
+                          {deal.url && (
+                            <a 
+                              href={deal.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--gold-light)', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}
+                            >
+                              Inspect <ArrowUpRight size={13} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Cross-Market Realized Sales Table */}
           <div className="glass-card" style={{ padding: '24px' }}>
