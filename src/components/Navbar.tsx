@@ -8,13 +8,17 @@ interface NavbarProps {
   setSearchQuery: (query: string) => void;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
+  activeTab: 'terminal' | 'appraisal' | 'arbitrage';
+  setActiveTab: (tab: 'terminal' | 'appraisal' | 'arbitrage') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   searchQuery,
   setSearchQuery,
   activeFilter,
-  setActiveFilter
+  setActiveFilter,
+  activeTab,
+  setActiveTab
 }) => {
   return (
     <header style={{ borderBottom: '1px solid var(--border-subtle)', background: 'rgba(7, 9, 14, 0.95)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 50 }}>
@@ -97,15 +101,37 @@ export const Navbar: React.FC<NavbarProps> = ({
           />
         </div>
 
+        {/* Navigation Mode Tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.04)', borderRadius: '10px', padding: '4px', border: '1px solid var(--border-subtle)', gap: '4px' }}>
+          <button
+            onClick={() => setActiveTab('terminal')}
+            className={`btn-ghost ${activeTab === 'terminal' ? 'active' : ''}`}
+            style={{ fontSize: '0.78rem', padding: '6px 14px', border: 'none', fontWeight: activeTab === 'terminal' ? 700 : 500 }}
+          >
+            Market Terminal
+          </button>
+          <button
+            onClick={() => setActiveTab('appraisal')}
+            className={`btn-ghost ${activeTab === 'appraisal' ? 'active' : ''}`}
+            style={{ fontSize: '0.78rem', padding: '6px 14px', border: 'none', fontWeight: activeTab === 'appraisal' ? 700 : 500 }}
+          >
+            Dealer Appraisal
+          </button>
+          <button
+            onClick={() => setActiveTab('arbitrage')}
+            className={`btn-ghost ${activeTab === 'arbitrage' ? 'active' : ''}`}
+            style={{ fontSize: '0.78rem', padding: '6px 14px', border: 'none', fontWeight: activeTab === 'arbitrage' ? 700 : 500, display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            Arbitrage Radar
+            <span style={{ background: 'var(--emerald-gain)', color: '#07090E', padding: '1px 6px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 800 }}>31</span>
+          </button>
+        </div>
+
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button className="btn-ghost" style={{ fontSize: '0.8rem' }}>
-            <Activity size={14} style={{ color: 'var(--emerald-gain)' }} />
-            Market Pulse
-          </button>
           <button className="btn-primary" style={{ fontSize: '0.82rem' }}>
             <Zap size={14} />
-            Upgrade to Pro ($89/mo)
+            Institutional Access
           </button>
         </div>
       </div>

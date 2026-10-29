@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import { Navbar } from '../components/Navbar';
 import { WatchCard } from '../components/WatchCard';
 import { WatchDetailView } from '../components/WatchDetailView';
+import { DealerAppraisalTerminal } from '../components/DealerAppraisalTerminal';
+import { ArbitrageScanner } from '../components/ArbitrageScanner';
+import { Logo } from '../components/Logo';
 import { WATCH_MODELS } from '../data/mockWatches';
 import { WatchModel } from '../types/watch';
 import { 
@@ -18,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'terminal' | 'appraisal' | 'arbitrage'>('terminal');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBrandFilter, setActiveBrandFilter] = useState('ALL');
   const [selectedWatch, setSelectedWatch] = useState<WatchModel>(WATCH_MODELS[0]);
@@ -45,13 +49,28 @@ export default function Home() {
         setSearchQuery={setSearchQuery}
         activeFilter={activeBrandFilter}
         setActiveFilter={setActiveBrandFilter}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
 
       {/* Main Content Area */}
       <main style={{ maxWidth: '1440px', width: '100%', margin: '0 auto', padding: '24px 24px 60px 24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '32px' }}>
         
-        {/* Macro Intelligence Strip */}
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+        {/* VIEW 1: DEALER APPRAISAL TERMINAL */}
+        {activeTab === 'appraisal' && (
+          <DealerAppraisalTerminal watches={WATCH_MODELS} onSelectWatch={setSelectedWatch} />
+        )}
+
+        {/* VIEW 2: ARBITRAGE RADAR */}
+        {activeTab === 'arbitrage' && (
+          <ArbitrageScanner watches={WATCH_MODELS} onSelectWatch={(w) => { setSelectedWatch(w); setActiveTab('terminal'); }} />
+        )}
+
+        {/* VIEW 3: MARKET TERMINAL */}
+        {activeTab === 'terminal' && (
+          <>
+            {/* Macro Intelligence Strip */}
+            <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
           
           <div className="glass-card" style={{ padding: '18px 22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -208,27 +227,38 @@ export default function Home() {
             </button>
           </div>
         </section>
+        </>
+        )}
 
       </main>
 
       {/* Institutional Legal Footer */}
-      <footer style={{ borderTop: '1px solid var(--border-subtle)', background: '#05070B', padding: '32px 24px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-        <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-          <div>
-            <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '0.95rem', color: '#FFF', marginBottom: '4px' }}>
-              LUXE<span className="gold-text">DATA</span> INTELLIGENCE PLATFORM
-            </div>
+      <footer style={{ borderTop: '1px solid var(--border-subtle)', background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, #05070B 80%)', padding: '40px 24px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+        <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <Logo size={42} />
             <div>
-              Institutional Market Data • Cross-Market Realized Auctions • Algorithmic Spread Tracking
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '1.05rem', color: '#FFF', letterSpacing: '0.06em' }}>
+                  LUXE<span className="gold-text">DATA</span> TERMINAL
+                </span>
+                <span className="badge badge-gold" style={{ fontSize: '0.65rem' }}>OFFICIAL</span>
+              </div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.72rem', marginTop: '2px' }}>
+                Institutional Luxury Timepiece Intelligence • Chrono24 Consensus Engine • Algorithmic Spread Tracking
+              </div>
             </div>
           </div>
 
-          <div style={{ maxWidth: '600px', textAlign: 'right' }}>
-            <p>
-              Note: AI opportunity ratings, fair-market valuation scores, and market outlooks are strictly informational research toolsets and do not constitute financial advice. All brand trademarks (Rolex, Patek Philippe, Omega) belong to their respective copyright holders.
+          <div style={{ maxWidth: '540px', textAlign: 'right', fontSize: '0.72rem' }}>
+            <p style={{ color: 'var(--text-muted)' }}>
+              Data provenance: Chrono24 active market listings, Sotheby&apos;s, Christie&apos;s, Antiquorum, and WatchCharts index feeds. All valuation algorithms utilize 10% trimmed mean consensus and verified 20% dealer buy-in formulas.
             </p>
-            <div style={{ marginTop: '6px', color: 'var(--text-secondary)' }}>
-              © 2026 LuxeData Systems. Built for secondary luxury asset liquidity.
+            <div style={{ marginTop: '8px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+              <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span className="pulse-indicator"></span> SYSTEMS NORMAL • LATENCY 24MS
+              </span>
+              <span>© 2026 LuxeData Systems.</span>
             </div>
           </div>
         </div>
