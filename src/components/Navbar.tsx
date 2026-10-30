@@ -1,7 +1,8 @@
-'use strict';
+'use client';
 import React from 'react';
-import { Search, ShieldCheck, Zap, Activity, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Search, ArrowUpRight, TrendingUp, SlidersHorizontal, Shield, Sparkles } from 'lucide-react';
 import { Logo } from './Logo';
+import { WATCH_MODELS } from '../lib/marketEngine';
 
 interface NavbarProps {
   searchQuery: string;
@@ -21,119 +22,243 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab
 }) => {
   return (
-    <header style={{ borderBottom: '1px solid var(--border-subtle)', background: 'rgba(7, 9, 14, 0.95)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 50 }}>
-      {/* Real-time Ticker Bar */}
+    <header style={{
+      borderBottom: '1px solid var(--border-subtle)',
+      background: 'rgba(6, 8, 13, 0.94)',
+      backdropFilter: 'blur(18px)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100
+    }}>
+      {/* Institutional Real-Time Ticker Bar */}
       <div style={{
-        background: 'linear-gradient(90deg, #0A0E17 0%, #0F1626 50%, #0A0E17 100%)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+        background: 'linear-gradient(90deg, #070A10 0%, #0C121D 50%, #070A10 100%)',
+        borderBottom: '1px solid var(--border-hairline)',
         padding: '6px 24px',
-        fontSize: '0.75rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        color: 'var(--text-muted)'
+        fontSize: '0.72rem',
+        overflow: 'hidden',
+        position: 'relative'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-gold)', fontWeight: 600 }}>
-            <span className="pulse-indicator"></span> LIVE AUCTION FEED
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)' }}>
-            Rolex Submariner 126610LN: <strong style={{ color: 'var(--text-main)' }}>$13,400</strong> 
-            <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center' }}><ArrowUpRight size={12} />+2.1%</span>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)' }}>
-            Daytona Panda 116500LN: <strong style={{ color: 'var(--text-main)' }}>$28,100</strong> 
-            <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center' }}><ArrowUpRight size={12} />+3.4%</span>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)' }}>
-            Patek 5711/1A: <strong style={{ color: 'var(--text-main)' }}>$98,000</strong> 
-            <span style={{ color: 'var(--crimson-drop)' }}>-1.2%</span>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)' }}>
-            Omega Moonwatch 310.30: <strong style={{ color: 'var(--text-main)' }}>$6,250</strong> 
-            <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center' }}><ArrowUpRight size={12} />+1.5%</span>
-          </span>
-        </div>
+        <div style={{
+          maxWidth: '1440px',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '20px'
+        }}>
+          {/* Provenance Tag */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <span className="pulse-indicator"></span>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--text-gold)',
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase'
+            }}>
+              LIVE CHRONO24 FEED
+            </span>
+            <span style={{ color: 'var(--text-faint)' }}>•</span>
+            <span style={{ color: 'var(--text-muted)' }}>281 Monitored Dealer & Private Lots</span>
+          </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.72rem' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Aggregating: Sotheby's • Christie's • eBay • Chrono24</span>
+          {/* Scrolling Watch Feeds */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '28px', overflowX: 'auto', whiteSpace: 'nowrap', scrollbarWidth: 'none' }}>
+            {WATCH_MODELS.map((w) => (
+              <div key={w.reference} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>{w.brand} {w.reference}:</span>
+                <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
+                  ${w.currentAskingAvg.toLocaleString()}
+                </span>
+                <span className="tabular-nums" style={{
+                  color: w.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '2px',
+                  fontWeight: 600
+                }}>
+                  <ArrowUpRight size={11} />
+                  +{w.thirtyDayChangePct}%
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Engine Latency Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, color: 'var(--text-muted)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              METHODOLOGY: 10% TRIMMED MEAN
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Main Navigation */}
-      <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
-        
-        {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <Logo size={42} />
+      {/* Main Navigation Bar */}
+      <div style={{
+        maxWidth: '1440px',
+        margin: '0 auto',
+        padding: '12px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '24px'
+      }}>
+        {/* Brand Emblem */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }} onClick={() => setActiveTab('terminal')}>
+          <Logo size={40} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.08em', color: '#FFF' }}>
-                LUXE<span className="gold-text">DATA</span>
+              <span className="serif-heading" style={{
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                color: '#FFF'
+              }}>
+                LUXE<span className="gold-gradient-text">DATA</span>
               </span>
-              <span className="badge badge-gold" style={{ fontSize: '0.65rem' }}>PRO INTELLIGENCE</span>
+              <span className="badge badge-gold" style={{ fontSize: '0.62rem', padding: '2px 7px' }}>
+                INSTITUTIONAL
+              </span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
-              ALTERNATIVE ASSET PRICING & ARBITRAGE TERMINAL
+            <div style={{
+              fontSize: '0.66rem',
+              color: 'var(--text-muted)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              fontFamily: 'var(--font-mono)'
+            }}>
+              Secondary Luxury Asset Pricing Terminal
             </div>
           </div>
         </div>
 
-        {/* Global Search Input */}
-        <div style={{ flex: 1, maxWidth: '520px', position: 'relative' }}>
-          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+        {/* Global Reference Search Bar */}
+        <div style={{ flex: 1, maxWidth: '440px', position: 'relative' }}>
+          <Search size={15} style={{
+            position: 'absolute',
+            left: '14px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--text-muted)'
+          }} />
           <input
             type="text"
-            placeholder="Search reference (e.g. 126610LN, 116500LN), model, or brand..."
+            placeholder="Search reference (e.g. 126610LN, 116500LN, 5711) or model..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              background: 'rgba(19, 26, 41, 0.8)',
+              background: 'rgba(14, 19, 29, 0.75)',
               border: '1px solid var(--border-subtle)',
-              borderRadius: '10px',
-              padding: '10px 16px 10px 42px',
+              borderRadius: '9px',
+              padding: '9px 40px 9px 38px',
               color: 'var(--text-main)',
-              fontSize: '0.88rem',
+              fontSize: '0.82rem',
               outline: 'none',
-              transition: 'all 0.2s ease'
+              transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-gold)';
+              e.currentTarget.style.boxShadow = '0 0 16px rgba(212, 175, 55, 0.15)';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-subtle)';
+              e.currentTarget.style.boxShadow = 'none';
             }}
           />
+          <kbd style={{
+            position: 'absolute',
+            right: '10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: '0.65rem',
+            fontFamily: 'var(--font-mono)',
+            padding: '2px 6px',
+            borderRadius: '4px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid var(--border-hairline)',
+            color: 'var(--text-muted)'
+          }}>
+            ⌘K
+          </kbd>
         </div>
 
-        {/* Navigation Mode Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.04)', borderRadius: '10px', padding: '4px', border: '1px solid var(--border-subtle)', gap: '4px' }}>
+        {/* Segmented Tab Switcher */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          background: 'rgba(14, 19, 29, 0.8)',
+          borderRadius: '10px',
+          padding: '3px',
+          border: '1px solid var(--border-subtle)',
+          gap: '3px'
+        }}>
           <button
             onClick={() => setActiveTab('terminal')}
             className={`btn-ghost ${activeTab === 'terminal' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '6px 14px', border: 'none', fontWeight: activeTab === 'terminal' ? 700 : 500 }}
+            style={{
+              fontSize: '0.76rem',
+              padding: '7px 15px',
+              border: 'none',
+              borderRadius: '7px',
+              fontWeight: activeTab === 'terminal' ? 600 : 500
+            }}
           >
             Market Terminal
           </button>
+          
           <button
             onClick={() => setActiveTab('appraisal')}
             className={`btn-ghost ${activeTab === 'appraisal' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '6px 14px', border: 'none', fontWeight: activeTab === 'appraisal' ? 700 : 500 }}
+            style={{
+              fontSize: '0.76rem',
+              padding: '7px 15px',
+              border: 'none',
+              borderRadius: '7px',
+              fontWeight: activeTab === 'appraisal' ? 600 : 500
+            }}
           >
             Dealer Appraisal
           </button>
+
           <button
             onClick={() => setActiveTab('arbitrage')}
             className={`btn-ghost ${activeTab === 'arbitrage' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '6px 14px', border: 'none', fontWeight: activeTab === 'arbitrage' ? 700 : 500, display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{
+              fontSize: '0.76rem',
+              padding: '7px 15px',
+              border: 'none',
+              borderRadius: '7px',
+              fontWeight: activeTab === 'arbitrage' ? 600 : 500,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
           >
-            Arbitrage Radar
-            <span style={{ background: 'var(--emerald-gain)', color: '#07090E', padding: '1px 6px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 800 }}>31</span>
+            <span>Arbitrage Radar</span>
+            <span style={{
+              background: 'var(--emerald-gain)',
+              color: '#000',
+              fontWeight: 800,
+              fontSize: '0.62rem',
+              padding: '1px 6px',
+              borderRadius: '9999px'
+            }}>
+              31
+            </span>
           </button>
         </div>
 
-        {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button className="btn-primary" style={{ fontSize: '0.82rem' }}>
-            <Zap size={14} />
-            Institutional Access
-          </button>
-        </div>
+        {/* Institutional Inquiries CTA */}
+        <button
+          onClick={() => setActiveTab('appraisal')}
+          className="btn-primary"
+          style={{ fontSize: '0.78rem', padding: '8px 16px', borderRadius: '8px' }}
+        >
+          <Shield size={14} />
+          <span>Dealer Portal</span>
+        </button>
       </div>
     </header>
   );

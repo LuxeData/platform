@@ -7,11 +7,11 @@ export interface PricePoint {
 
 export interface SoldListing {
   id: string;
-  source: 'eBay' | 'Sotheby\'s' | 'Christie\'s' | 'Antiquorum' | 'Chrono24 Direct' | 'WatchExchange';
+  source: string;
   date: string;
   soldPrice: number;
   askingPrice?: number;
-  condition: 'Unworn / Mint' | 'Very Good' | 'Good';
+  condition: string;
   boxAndPapers: boolean;
   year: number;
   verified: boolean;
@@ -20,10 +20,10 @@ export interface SoldListing {
 
 export interface AIAnalysis {
   opportunityScore: number; // 0.0 - 10.0
-  recommendation: 'STRONG BUY / ARBITRAGE' | 'FAIR VALUE' | 'PREMIUM / HOLD' | 'OVERVALUED';
+  recommendation: string;
   confidence: number; // percentage e.g. 94%
   liquidityScore: number; // 0 - 100
-  stabilityRating: 'Ultra High' | 'High' | 'Moderate' | 'Volatile';
+  stabilityRating: string;
   retailMSRP: number;
   fairMarketValue: number;
   currentSpread: number; // percentage difference
@@ -75,7 +75,7 @@ export interface WatchModel {
   brand: string;
   model: string;
   reference: string;
-  category: 'Sports / Steel' | 'Chronograph' | 'Dress / Haute' | 'Complication';
+  category: string;
   caseSize: string;
   dialColor: string;
   material: string;
@@ -89,4 +89,3 @@ export interface WatchModel {
   dealerMetrics?: DealerMarketMetrics;
   imageUrl?: string;
 }
-

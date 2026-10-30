@@ -7,7 +7,8 @@ import {
   Area, 
   XAxis, 
   YAxis, 
-  Tooltip 
+  Tooltip,
+  CartesianGrid
 } from 'recharts';
 import { 
   TrendingUp, 
@@ -16,7 +17,6 @@ import {
   AlertCircle, 
   Sparkles, 
   DollarSign, 
-  Layers, 
   Clock, 
   CheckCircle2, 
   ExternalLink,
@@ -26,7 +26,8 @@ import {
   Store,
   Users,
   Target,
-  ArrowUpRight
+  ArrowUpRight,
+  Info
 } from 'lucide-react';
 
 interface WatchDetailViewProps {
@@ -37,103 +38,200 @@ interface WatchDetailViewProps {
 export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
   const [timeframe, setTimeframe] = useState<'30D' | '90D' | '1Y' | 'ALL'>('1Y');
   
-  // Interactive valuation calculator toggles
+  // Interactive valuation condition and provenance toggles
   const [hasBoxPapers, setHasBoxPapers] = useState<boolean>(true);
   const [conditionGrade, setConditionGrade] = useState<'Unworn' | 'Mint' | 'Pre-owned'>('Mint');
-  const [selectedYear, setSelectedYear] = useState<number>(2023);
+  const [dealerTargetMargin, setDealerTargetMargin] = useState<number>(20); // standard 20% dealer buy-in rule
+
+  // Base values from real Chrono24 scrape
+  const baseCMV = watch.dealerMetrics?.consensusMarketValue || watch.currentAskingAvg;
+  const retailMSRP = watch.aiAnalysis.retailMSRP;
 
   // Dynamic Valuation adjustment
-  const calculateAdjustedValue = () => {
+  const calculateAdjustedValuation = () => {
     let multiplier = 1.0;
-    if (hasBoxPapers) multiplier += 0.12;
-    else multiplier -= 0.08;
+    if (hasBoxPapers) multiplier += 0.08; // Full Set premium
+    else multiplier -= 0.10; // Naked penalty
 
     if (conditionGrade === 'Unworn') multiplier += 0.08;
     else if (conditionGrade === 'Pre-owned') multiplier -= 0.08;
 
-    return Math.round(watch.aiAnalysis.fairMarketValue * (multiplier / 1.12)); // normalize against baseline
+    const adjustedCMV = Math.round(baseCMV * (multiplier / 1.08)); // normalized to full set mint
+    const dealerCashOffer = Math.round(adjustedCMV * (1 - (dealerTargetMargin / 100)));
+    const grossSpread = adjustedCMV - dealerCashOffer;
+    const premiumOverRetail = Math.round(((adjustedCMV - retailMSRP) / retailMSRP) * 100);
+
+    return {
+      adjustedCMV,
+      dealerCashOffer,
+      grossSpread,
+      premiumOverRetail
+    };
   };
 
-  const adjustedValue = calculateAdjustedValue();
-  const adjustedSpread = Math.round(watch.currentAskingAvg - adjustedValue);
+  const valuation = calculateAdjustedValuation();
+
+  // Filter price history by timeframe
+  const filteredHistory = React.useMemo(() => {
+    const hist = watch.priceHistory || [];
+    if (timeframe === '30D') return hist.slice(-3);
+    if (timeframe === '90D') return hist.slice(-6);
+    return hist;
+  }, [watch.priceHistory, timeframe]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
-      {/* Top Header Card */}
-      <div className="glass-card" style={{ padding: '24px 32px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+      {/* 1. Main Header Reference Hero Card */}
+      <div className="glass-card" style={{ padding: '24px 28px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '20px'
+        }}>
+          {/* Reference Meta */}
+          <div style={{ maxWidth: '600px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+              <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
+                REF: {watch.reference}
+              </span>
               <span className="badge badge-subtle">{watch.brand}</span>
-              <span className="badge badge-gold">REF: {watch.reference}</span>
               <span className="badge badge-subtle">{watch.category}</span>
+              <span className="badge badge-emerald">
+                <ShieldCheck size={12} /> VERIFIED CHRONO24 CONSENSUS
+              </span>
             </div>
-            <h1 style={{ fontSize: '1.9rem', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '6px' }}>
+
+            <h1 className="serif-heading" style={{
+              fontSize: '1.85rem',
+              fontWeight: 700,
+              color: '#FFF',
+              letterSpacing: '-0.01em',
+              marginBottom: '6px'
+            }}>
               {watch.brand} {watch.model}
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              Case: <strong style={{ color: 'var(--text-main)' }}>{watch.caseSize}</strong> • Material: <strong style={{ color: 'var(--text-main)' }}>{watch.material}</strong> • Dial: <strong style={{ color: 'var(--text-main)' }}>{watch.dialColor}</strong>
+
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.84rem' }}>
+              Case: <strong style={{ color: 'var(--text-main)' }}>{watch.caseSize}</strong> • Material: <strong style={{ color: 'var(--text-main)' }}>{watch.material}</strong> • Dial: <strong style={{ color: 'var(--text-main)' }}>{watch.dialColor}</strong> • Boutique Retail MSRP: <strong style={{ color: 'var(--text-gold)', fontFamily: 'var(--font-mono)' }}>${retailMSRP.toLocaleString()}</strong>
             </p>
           </div>
 
-          {/* Quick Metrics */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Fair Market Value
+          {/* Pricing Metrics Strip */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '24px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            border: '1px solid var(--border-hairline)'
+          }}>
+            {/* Consensus Market Value (CMV) */}
+            <div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Consensus Market Value (CMV)
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--gold-light)' }}>
-                ${adjustedValue.toLocaleString()}
+              <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                ${valuation.adjustedCMV.toLocaleString()}
               </div>
-              <div style={{ fontSize: '0.78rem', color: watch.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
-                {watch.thirtyDayChangePct >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                {watch.thirtyDayChangePct >= 0 ? `+${watch.thirtyDayChangePct}%` : `${watch.thirtyDayChangePct}%`} (30D)
+              <div style={{
+                fontSize: '0.74rem',
+                color: watch.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <TrendingUp size={13} />
+                +{watch.thirtyDayChangePct}% (30D)
               </div>
             </div>
 
-            <div style={{ borderLeft: '1px solid var(--border-subtle)', paddingLeft: '24px', textAlign: 'right' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Dealer Avg Asking
+            {/* Dealer Cash Buy-In Floor (-20%) */}
+            <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '20px' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Dealer Buy-In Offer (-20%)
               </div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                ${watch.currentAskingAvg.toLocaleString()}
+              <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+                ${valuation.dealerCashOffer.toLocaleString()}
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                Spread: <strong style={{ color: 'var(--text-gold)' }}>+${adjustedSpread.toLocaleString()}</strong> ({((adjustedSpread / adjustedValue) * 100).toFixed(1)}%)
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                Wholesale acquisition target
+              </div>
+            </div>
+
+            {/* Gross Dealer Margin Spread */}
+            <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '20px' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Gross Dealer Spread
+              </div>
+              <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-gold)' }}>
+                +${valuation.grossSpread.toLocaleString()}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                20.0% standard margin
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Grid: Left Chart + Right AI Valuation */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1.25fr)', gap: '24px' }}>
+      {/* 2. Main Terminal Grid: 2-Column Responsive Layout */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1.15fr)',
+        gap: '20px'
+      }}>
         
-        {/* Left Column: Price History Chart & Calculator */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* LEFT COLUMN: Price History, Provenance Matrix, Real Scraped Lots */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          {/* Interactive Chart Container */}
-          <div className="glass-card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          {/* Price History Area Chart */}
+          <div className="glass-card" style={{ padding: '22px 24px' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '16px'
+            }}>
               <div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <TrendingUp size={18} style={{ color: 'var(--gold-primary)' }} />
-                  Historical Sales Timeline vs Market Baseline
+                <h3 style={{
+                  fontSize: '0.98rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#FFF'
+                }}>
+                  <TrendingUp size={16} style={{ color: 'var(--gold-primary)' }} />
+                  Secondary Market Price Trajectory (12-Month Baseline)
                 </h3>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  Aggregated completed sales across auctions, verified dealers, and private trades
+                <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  Calibrated to Chrono24 10% trimmed mean consensus and realized auction hammers
                 </p>
               </div>
 
-              {/* Timeframe selector */}
-              <div style={{ display: 'flex', gap: '6px', background: 'rgba(255, 255, 255, 0.04)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+              {/* Timeframe Controls */}
+              <div style={{
+                display: 'flex',
+                gap: '4px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                padding: '3px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-hairline)'
+              }}>
                 {(['30D', '90D', '1Y', 'ALL'] as const).map((tf) => (
                   <button
                     key={tf}
                     onClick={() => setTimeframe(tf)}
                     className={`btn-ghost ${timeframe === tf ? 'active' : ''}`}
-                    style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                    style={{
+                      padding: '3px 9px',
+                      fontSize: '0.72rem',
+                      fontFamily: 'var(--font-mono)'
+                    }}
                   >
                     {tf}
                   </button>
@@ -142,44 +240,48 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
             </div>
 
             {/* Recharts Area Chart */}
-            <div style={{ height: '320px', width: '100%', marginTop: '10px' }}>
+            <div style={{ height: '280px', width: '100%', marginTop: '8px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={watch.priceHistory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <AreaChart data={filteredHistory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.35} />
+                      <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.32} />
                       <stop offset="95%" stopColor="#D4AF37" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.04)" vertical={false} />
                   <XAxis 
                     dataKey="date" 
                     stroke="#475569" 
-                    tick={{ fill: '#64748B', fontSize: 12 }} 
-                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.08)' }} 
+                    tick={{ fill: '#64748B', fontSize: 11, fontFamily: 'var(--font-mono)' }} 
+                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.06)' }} 
+                    tickLine={false}
                   />
                   <YAxis 
-                    domain={['dataMin - 1000', 'dataMax + 1000']} 
+                    domain={['dataMin - 1500', 'dataMax + 1500']} 
                     stroke="#475569" 
-                    tick={{ fill: '#64748B', fontSize: 12 }} 
+                    tick={{ fill: '#64748B', fontSize: 11, fontFamily: 'var(--font-mono)' }} 
                     tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} 
-                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.08)' }} 
+                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.06)' }} 
+                    tickLine={false}
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#0F141F', 
+                      backgroundColor: '#0A0E17', 
                       borderColor: 'rgba(212, 175, 55, 0.4)', 
-                      borderRadius: '10px', 
+                      borderRadius: '8px', 
                       color: '#FFF',
-                      fontSize: '0.85rem'
+                      fontSize: '0.80rem',
+                      fontFamily: 'var(--font-mono)'
                     }}
-                    formatter={(val: number) => [`$${val.toLocaleString()}`, 'Realized Price']}
-                    labelFormatter={(label) => `Month: ${label}`}
+                    formatter={(val: number) => [`$${val.toLocaleString()}`, 'Consensus Value']}
+                    labelFormatter={(label) => `Date: ${label}`}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="price" 
                     stroke="#D4AF37" 
-                    strokeWidth={2.5} 
+                    strokeWidth={2} 
                     fillOpacity={1} 
                     fill="url(#goldGradient)" 
                   />
@@ -188,51 +290,72 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
             </div>
           </div>
 
-          {/* Provenance & Condition Matrix Calculator */}
-          <div className="glass-card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <Sliders size={18} style={{ color: 'var(--gold-primary)' }} />
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600 }}>
-                Dynamic Provenance & Condition Multipliers
-              </h3>
+          {/* Dynamic Condition & Provenance Multiplier */}
+          <div className="glass-card" style={{ padding: '22px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sliders size={17} style={{ color: 'var(--gold-primary)' }} />
+                <h3 style={{ fontSize: '0.98rem', fontWeight: 600, color: '#FFF' }}>
+                  Interactive Appraisal & Condition Multipliers
+                </h3>
+              </div>
+              <span className="badge badge-subtle">DEALER PRICING ENGINE</span>
             </div>
-            
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '18px' }}>
-              Dealers price watches using strict condition and provenance variables. Adjust the toggles below to see instant fair-value impact:
+
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+              Dealers apply strict condition adjustments when calculating client cash buy-in offers. Toggle below to view instantaneous valuation impact:
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-              {/* Box & Papers Toggle */}
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '8px' }}>BOX & PAPERS PROVENANCE</div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '14px'
+            }}>
+              {/* Provenance Box/Papers */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                padding: '12px',
+                borderRadius: '10px',
+                border: '1px solid var(--border-hairline)'
+              }}>
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  BOX & PAPERS PROVENANCE
+                </div>
+                <div style={{ display: 'flex', gap: '6px' }}>
                   <button 
                     onClick={() => setHasBoxPapers(true)}
                     className={`btn-ghost ${hasBoxPapers ? 'active' : ''}`}
-                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem' }}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '6px 4px' }}
                   >
-                    Full Set (+12%)
+                    Full Set (+8%)
                   </button>
                   <button 
                     onClick={() => setHasBoxPapers(false)}
                     className={`btn-ghost ${!hasBoxPapers ? 'active' : ''}`}
-                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem' }}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '6px 4px' }}
                   >
-                    Naked Watch (-8%)
+                    Naked (-10%)
                   </button>
                 </div>
               </div>
 
               {/* Condition Grade */}
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '8px' }}>CONDITION GRADE</div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                padding: '12px',
+                borderRadius: '10px',
+                border: '1px solid var(--border-hairline)'
+              }}>
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  CONDITION GRADE
+                </div>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   {(['Unworn', 'Mint', 'Pre-owned'] as const).map((grade) => (
                     <button
                       key={grade}
                       onClick={() => setConditionGrade(grade)}
                       className={`btn-ghost ${conditionGrade === grade ? 'active' : ''}`}
-                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '6px 4px' }}
+                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.72rem', padding: '6px 2px' }}
                     >
                       {grade}
                     </button>
@@ -240,190 +363,99 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 </div>
               </div>
 
-              {/* Realized Adjusted Impact */}
-              <div style={{ background: 'rgba(212, 175, 55, 0.06)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-gold)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-gold)', fontWeight: 600, marginBottom: '4px' }}>
-                  CALCULATED FAIR VALUE
+              {/* Dynamic Recalculated Impact */}
+              <div style={{
+                background: 'rgba(212, 175, 55, 0.05)',
+                padding: '12px 16px',
+                borderRadius: '10px',
+                border: '1px solid var(--border-gold-subtle)'
+              }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-gold)', fontWeight: 600, textTransform: 'uppercase' }}>
+                  ADJUSTED DEALER BUY OFFER
                 </div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF' }}>
-                  ${adjustedValue.toLocaleString()}
+                <div className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+                  ${valuation.dealerCashOffer.toLocaleString()}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                  {hasBoxPapers ? 'Includes Original Warranty & Box' : 'Watch only (unverified papers)'}
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+                  Target Profit: <strong style={{ color: '#FFF' }}>${valuation.grossSpread.toLocaleString()}</strong> ({dealerTargetMargin}%)
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Chrono24 Dealer Consensus & Spread Radar (Dealer Interview Intelligence) */}
-          {watch.dealerMetrics && (
-            <div className="glass-card" style={{ padding: '24px', border: '1px solid rgba(212, 175, 55, 0.35)', background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, rgba(15, 20, 31, 0.95) 100%)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}>
-                    <Building2 size={20} style={{ color: 'var(--gold-primary)' }} />
-                    Chrono24 Consensus & Dealer Buy-In Spread Radar
-                  </h3>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Formulated from Leo&apos;s dealer interviews: 10% trimmed mean of professional company listings &amp; 20% buy-in spread
-                  </p>
-                </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <span className="badge badge-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <Store size={12} /> {watch.dealerMetrics.totalActiveListings} Active Chrono24 Lots
-                  </span>
-                  <span className="badge badge-emerald">
-                    {watch.dealerMetrics.arbitrageCount} Arbitrage Deals Found
-                  </span>
-                </div>
-              </div>
-
-              {/* 4-Stat Dealer Intelligence Strip */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px', marginBottom: '18px' }}>
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Consensus Market Value (CMV)</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold-light)', marginTop: '2px' }}>
-                    ${watch.dealerMetrics.consensusMarketValue.toLocaleString()}
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Trimmed Mean of Company Lots</div>
-                </div>
-
-                <div style={{ background: 'rgba(212, 175, 55, 0.08)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-gold)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-gold)', fontWeight: 600, textTransform: 'uppercase' }}>Dealer Buy-In Price (-20%)</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
-                    ${watch.dealerMetrics.dealerBuyInPrice.toLocaleString()}
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-gold)' }}>Wholesale Acquisition Target</div>
-                </div>
-
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Seller Composition</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
-                    {watch.dealerMetrics.dealerListingsCount} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Dealers</span> / {watch.dealerMetrics.privateListingsCount} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Private</span>
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)' }}>
-                    {Math.round((watch.dealerMetrics.dealerListingsCount / (watch.dealerMetrics.totalActiveListings || 1)) * 100)}% Institutional Clustering
-                  </div>
-                </div>
-
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Market Premium Over MSRP</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: watch.dealerMetrics.marketPremiumPct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)', marginTop: '2px' }}>
-                    {watch.dealerMetrics.marketPremiumPct >= 0 ? `+${watch.dealerMetrics.marketPremiumPct.toFixed(1)}%` : `${watch.dealerMetrics.marketPremiumPct.toFixed(1)}%`}
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
-                    MSRP: ${watch.dealerMetrics.retailMSRP.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Arbitrage Opportunities Feed (Real Chrono24 Listings) */}
-              {watch.dealerMetrics.arbitrageDeals && watch.dealerMetrics.arbitrageDeals.length > 0 && (
-                <div style={{ marginTop: '14px', borderTop: '1px solid var(--border-subtle)', paddingTop: '14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Target size={14} /> LIVE CHRONO24 ARBITRAGE RADAR ({watch.dealerMetrics.arbitrageDeals.length} LOTS PRICED &lt; DEALER BUY-IN + 5%)
-                    </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Updated via Playwright Engine</span>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {watch.dealerMetrics.arbitrageDeals.slice(0, 4).map((deal) => (
-                      <div 
-                        key={deal.id}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          padding: '10px 14px',
-                          background: 'rgba(16, 185, 129, 0.05)',
-                          borderRadius: '8px',
-                          border: '1px solid rgba(16, 185, 129, 0.2)',
-                          fontSize: '0.82rem'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <span className={deal.is_private ? "badge badge-subtle" : "badge badge-gold"} style={{ fontSize: '0.68rem' }}>
-                            {deal.seller_type}
-                          </span>
-                          <span style={{ color: '#FFF', fontWeight: 600 }}>
-                            ${deal.price.toLocaleString()}
-                          </span>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                            • {deal.condition} • {deal.location}
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ color: 'var(--emerald-gain)', fontWeight: 700, fontSize: '0.78rem' }}>
-                            Save ${deal.estimated_profit_dollars?.toLocaleString()} ({deal.discount_from_cmv_pct}% off CMV)
-                          </span>
-                          {deal.url && (
-                            <a 
-                              href={deal.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--gold-light)', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}
-                            >
-                              Inspect <ArrowUpRight size={13} />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Cross-Market Realized Sales Table */}
-          <div className="glass-card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          {/* Real Verified Chrono24 Active Listings Feed */}
+          <div className="glass-card" style={{ padding: '22px 24px' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '14px',
+              flexWrap: 'wrap',
+              gap: '10px'
+            }}>
               <div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Scale size={18} style={{ color: 'var(--gold-primary)' }} />
-                  Cross-Market Realized Sales History
+                <h3 style={{
+                  fontSize: '0.98rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#FFF'
+                }}>
+                  <Scale size={16} style={{ color: 'var(--gold-primary)' }} />
+                  Live Chrono24 Market Feed (Real Ingested Lots)
                 </h3>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  Public auction hammer prices and verified dealer transaction feeds
+                <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  Active listings scraped via headless browser with seller classification
                 </p>
               </div>
-              <span className="badge badge-emerald">VERIFIED LOTS ONLY</span>
+              <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
+                {watch.dealerMetrics?.totalActiveListings || 60} ACTIVE LOTS TRACKED
+              </span>
             </div>
 
+            {/* Table */}
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.80rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', textAlign: 'left', color: 'var(--text-muted)' }}>
-                    <th style={{ padding: '10px 12px' }}>VENUE / SOURCE</th>
-                    <th style={{ padding: '10px 12px' }}>SOLD DATE</th>
-                    <th style={{ padding: '10px 12px' }}>CONDITION</th>
-                    <th style={{ padding: '10px 12px' }}>PROVENANCE</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right' }}>HAMMER / SOLD</th>
+                  <tr style={{
+                    borderBottom: '1px solid var(--border-hairline)',
+                    textAlign: 'left',
+                    color: 'var(--text-muted)',
+                    fontSize: '0.68rem',
+                    textTransform: 'uppercase'
+                  }}>
+                    <th style={{ padding: '8px 10px' }}>LOT / ID</th>
+                    <th style={{ padding: '8px 10px' }}>SELLER TYPE</th>
+                    <th style={{ padding: '8px 10px' }}>CONDITION</th>
+                    <th style={{ padding: '8px 10px' }}>PROVENANCE</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>ASKING PRICE</th>
                   </tr>
                 </thead>
                 <tbody>
                   {watch.recentSales.map((sale) => (
-                    <tr key={sale.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                      <td style={{ padding: '14px 12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--gold-primary)' }}></span>
-                        {sale.source}
+                    <tr key={sale.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.03)' }}>
+                      <td style={{ padding: '10px 10px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                        #{sale.id}
                       </td>
-                      <td style={{ padding: '14px 12px', color: 'var(--text-secondary)' }}>{sale.date}</td>
-                      <td style={{ padding: '14px 12px' }}>
-                        <span className="badge badge-subtle" style={{ fontSize: '0.7rem' }}>{sale.condition}</span>
+                      <td style={{ padding: '10px 10px' }}>
+                        <span className={sale.source.includes('Dealer') ? 'badge badge-gold' : 'badge badge-subtle'} style={{ fontSize: '0.65rem' }}>
+                          {sale.source}
+                        </span>
                       </td>
-                      <td style={{ padding: '14px 12px' }}>
+                      <td style={{ padding: '10px 10px', color: '#FFF' }}>
+                        {sale.condition}
+                      </td>
+                      <td style={{ padding: '10px 10px' }}>
                         {sale.boxAndPapers ? (
-                          <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem' }}>
-                            <CheckCircle2 size={13} /> Box & Papers
+                          <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem' }}>
+                            <CheckCircle2 size={12} /> Full Set
                           </span>
                         ) : (
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>Watch Only</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem' }}>Watch Only</span>
                         )}
                       </td>
-                      <td style={{ padding: '14px 12px', textAlign: 'right', fontWeight: 700, color: 'var(--gold-light)' }}>
+                      <td className="tabular-nums" style={{ padding: '10px 10px', textAlign: 'right', fontWeight: 700, color: 'var(--gold-light)' }}>
                         ${sale.soldPrice.toLocaleString()}
                       </td>
                     </tr>
@@ -432,123 +464,222 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
               </table>
             </div>
           </div>
+
         </div>
 
-        {/* Right Column: AI Investment Intelligence Engine */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* RIGHT COLUMN: AI Intelligence, Dealer Clustering, Live Arbitrage Radar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          {/* Main AI Score Card */}
-          <div className="glass-card" style={{ padding: '26px', border: '1px solid var(--border-gold)', background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.08) 0%, rgba(15, 20, 31, 0.9) 100%)' }}>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          {/* AI Investment & Liquidity Analysis */}
+          <div className="glass-card" style={{
+            padding: '24px',
+            border: '1px solid var(--border-gold-subtle)',
+            background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.06) 0%, rgba(14, 19, 29, 0.95) 100%)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={20} style={{ color: 'var(--gold-primary)' }} />
-                <span style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: '0.85rem' }}>AI INVESTMENT ENGINE</span>
+                <Sparkles size={18} style={{ color: 'var(--gold-primary)' }} />
+                <span className="serif-heading" style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: '0.85rem', color: '#FFF' }}>
+                  AI VALUATION ENGINE
+                </span>
               </div>
-              <span className="badge badge-gold">{watch.aiAnalysis.confidence}% CONFIDENCE</span>
+              <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
+                {watch.aiAnalysis.confidence}% CONFIDENCE
+              </span>
             </div>
 
-            {/* Circular Opportunity Rating Display */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '20px 0' }}>
+            {/* Score & Rating Pill */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '14px 0' }}>
               <div style={{
-                width: '84px',
-                height: '84px',
+                width: '74px',
+                height: '74px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, rgba(7, 9, 14, 0.95) 75%)',
-                border: '3px solid var(--gold-primary)',
-                boxShadow: '0 0 25px rgba(212, 175, 55, 0.3)',
+                background: 'radial-gradient(circle, rgba(212, 175, 55, 0.18) 0%, rgba(6, 8, 13, 0.95) 75%)',
+                border: '2px solid var(--gold-primary)',
+                boxShadow: '0 0 20px rgba(212, 175, 55, 0.2)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                flexShrink: 0
               }}>
-                <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFF', lineHeight: 1 }}>
+                <span className="tabular-nums" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFF', lineHeight: 1 }}>
                   {watch.aiAnalysis.opportunityScore}
                 </span>
-                <span style={{ fontSize: '0.65rem', color: 'var(--gold-light)', letterSpacing: '0.05em' }}>/ 10</span>
+                <span style={{ fontSize: '0.60rem', color: 'var(--gold-light)', letterSpacing: '0.05em' }}>/ 10</span>
               </div>
 
               <div>
                 <span className="badge badge-emerald" style={{ marginBottom: '6px' }}>
                   {watch.aiAnalysis.recommendation}
                 </span>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                  Liquidity Score: <strong style={{ color: 'var(--text-main)' }}>{watch.aiAnalysis.liquidityScore}/100</strong>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                  Liquidity Score: <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{watch.aiAnalysis.liquidityScore}/100</strong>
                 </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
                   Price Stability: <strong style={{ color: 'var(--text-gold)' }}>{watch.aiAnalysis.stabilityRating}</strong>
                 </div>
               </div>
             </div>
 
-            {/* AI Summary Breakdown */}
-            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px', marginTop: '16px' }}>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.05em' }}>
+            {/* Synthesis */}
+            <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '12px', marginTop: '12px' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.06em' }}>
                 EXECUTIVE INTELLIGENCE SYNTHESIS
               </div>
-              <p style={{ fontSize: '0.88rem', lineHeight: '1.55', color: 'var(--text-main)' }}>
+              <p style={{ fontSize: '0.80rem', lineHeight: '1.5', color: 'var(--text-main)' }}>
                 {watch.aiAnalysis.summary}
               </p>
             </div>
 
-            {/* Catalysts */}
-            <div style={{ marginTop: '20px' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--emerald-gain)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <TrendingUp size={14} /> VALUE DRIVERS & CATALYSTS
+            {/* Value Drivers */}
+            <div style={{ marginTop: '14px' }}>
+              <div style={{ fontSize: '0.70rem', color: 'var(--emerald-gain)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <TrendingUp size={12} /> KEY VALUE CATALYSTS
               </div>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {watch.aiAnalysis.catalysts.map((cat, idx) => (
-                  <li key={idx} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                    <span style={{ color: 'var(--gold-primary)', marginTop: '2px' }}>▸</span>
-                    {cat}
+                  <li key={idx} style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                    <span style={{ color: 'var(--gold-primary)' }}>▸</span>
+                    <span>{cat}</span>
                   </li>
                 ))}
               </ul>
             </div>
+          </div>
 
-            {/* Risk Factors */}
-            <div style={{ marginTop: '18px' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--crimson-drop)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <AlertCircle size={14} /> RISK & VOLATILITY FACTORS
+          {/* Chrono24 Dealer Clustering & Consensus Radar */}
+          {watch.dealerMetrics && (
+            <div className="glass-card" style={{ padding: '22px 24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Building2 size={16} style={{ color: 'var(--gold-primary)' }} />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 600, color: '#FFF' }}>
+                    Dealer Clustering & Provenance Radar
+                  </h4>
+                </div>
+                <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>CHRONO24 CONSENSUS</span>
               </div>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {watch.aiAnalysis.riskFactors.map((risk, idx) => (
-                  <li key={idx} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                    <span style={{ color: 'var(--crimson-drop)', marginTop: '2px' }}>▸</span>
-                    {risk}
-                  </li>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '10px',
+                marginBottom: '14px'
+              }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-hairline)' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Professional Dealers</div>
+                  <div className="tabular-nums" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                    {watch.dealerMetrics.dealerListingsCount} lots
+                  </div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
+                    {Math.round((watch.dealerMetrics.dealerListingsCount / (watch.dealerMetrics.totalActiveListings || 1)) * 100)}% Institutional
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-hairline)' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Private Sellers</div>
+                  <div className="tabular-nums" style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF' }}>
+                    {watch.dealerMetrics.privateListingsCount} lots
+                  </div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--emerald-gain)' }}>
+                    Arbitrage Source
+                  </div>
+                </div>
+              </div>
+
+              {/* Retail MSRP comparison */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-hairline)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Premium Over Boutiques (MSRP):</span>
+                <span className="tabular-nums" style={{
+                  color: valuation.premiumOverRetail >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
+                  fontWeight: 700,
+                  fontSize: '0.82rem'
+                }}>
+                  +{valuation.premiumOverRetail}% (${retailMSRP.toLocaleString()} retail)
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Arbitrage Feed for this Specific Reference */}
+          {watch.dealerMetrics?.arbitrageDeals && watch.dealerMetrics.arbitrageDeals.length > 0 && (
+            <div className="glass-card" style={{
+              padding: '22px 24px',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, rgba(14, 19, 29, 0.95) 100%)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <span style={{ fontSize: '0.74rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Target size={14} /> LIVE ARBITRAGE OPPORTUNITIES ({watch.dealerMetrics.arbitrageDeals.length})
+                </span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Priced &lt; Buy-In</span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {watch.dealerMetrics.arbitrageDeals.slice(0, 3).map((deal) => (
+                  <div 
+                    key={deal.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '8px 12px',
+                      background: 'rgba(16, 185, 129, 0.05)',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(16, 185, 129, 0.18)',
+                      fontSize: '0.78rem'
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 700 }}>
+                          ${deal.price.toLocaleString()}
+                        </span>
+                        <span className="badge badge-subtle" style={{ fontSize: '0.60rem', padding: '1px 5px' }}>
+                          {deal.location}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 600 }}>
+                        Save ${deal.estimated_profit_dollars?.toLocaleString()} ({deal.discount_from_cmv_pct}% off CMV)
+                      </div>
+                    </div>
+
+                    {deal.url && (
+                      <a 
+                        href={deal.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          color: 'var(--gold-light)',
+                          textDecoration: 'none',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          background: 'rgba(212, 175, 55, 0.1)'
+                        }}
+                      >
+                        Inspect Lot <ArrowUpRight size={12} />
+                      </a>
+                    )}
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
+          )}
 
-            {/* Pro Action Button */}
-            <div style={{ marginTop: '24px' }}>
-              <button className="btn-primary" style={{ width: '100%', padding: '12px', fontSize: '0.9rem' }}>
-                Set Arbitrage Price Alert (&lt; ${Math.round(watch.recentSoldAvg * 0.96).toLocaleString()})
-              </button>
-            </div>
-          </div>
-
-          {/* MSRP vs Secondary Premium Card */}
-          <div className="glass-card" style={{ padding: '20px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px', letterSpacing: '0.05em' }}>
-              MSRP Retail Benchmark vs Secondary Spread
-            </h4>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Official Boutiques (MSRP):</span>
-              <strong style={{ color: 'var(--text-main)' }}>${watch.aiAnalysis.retailMSRP.toLocaleString()}</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Fair Market Secondary:</span>
-              <strong style={{ color: 'var(--gold-light)' }}>${adjustedValue.toLocaleString()}</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '10px' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-gold)', fontWeight: 600 }}>Market Premium Over MSRP:</span>
-              <span className="badge badge-gold">
-                +{(((adjustedValue - watch.aiAnalysis.retailMSRP) / watch.aiAnalysis.retailMSRP) * 100).toFixed(0)}%
-              </span>
-            </div>
-          </div>
         </div>
 
       </div>

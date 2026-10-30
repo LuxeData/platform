@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
 import { Navbar } from '../components/Navbar';
-import { WatchCard } from '../components/WatchCard';
+import { ReferenceSelector } from '../components/ReferenceSelector';
 import { WatchDetailView } from '../components/WatchDetailView';
 import { DealerAppraisalTerminal } from '../components/DealerAppraisalTerminal';
 import { ArbitrageScanner } from '../components/ArbitrageScanner';
 import { Logo } from '../components/Logo';
-import { WATCH_MODELS } from '../data/mockWatches';
+import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
 import { WatchModel } from '../types/watch';
 import { 
   TrendingUp, 
@@ -17,7 +17,12 @@ import {
   Filter, 
   ArrowRight,
   Database,
-  Cpu
+  Cpu,
+  ShieldCheck,
+  Target,
+  ArrowUpRight,
+  Clock,
+  Sparkles
 } from 'lucide-react';
 
 export default function Home() {
@@ -26,7 +31,7 @@ export default function Home() {
   const [activeBrandFilter, setActiveBrandFilter] = useState('ALL');
   const [selectedWatch, setSelectedWatch] = useState<WatchModel>(WATCH_MODELS[0]);
 
-  // Filter watches
+  // Filter watches based on search query
   const filteredWatches = WATCH_MODELS.filter((watch) => {
     const matchesSearch = 
       watch.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -35,7 +40,7 @@ export default function Home() {
 
     if (activeBrandFilter === 'ALL') return matchesSearch;
     if (activeBrandFilter === 'ARBITRAGE') {
-      return matchesSearch && watch.aiAnalysis.currentSpread >= 6.0;
+      return matchesSearch && (watch.dealerMetrics?.arbitrageCount || 0) > 0;
     }
     return matchesSearch && watch.brand.toUpperCase() === activeBrandFilter;
   });
@@ -54,7 +59,16 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main style={{ maxWidth: '1440px', width: '100%', margin: '0 auto', padding: '24px 24px 60px 24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <main style={{
+        maxWidth: '1440px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px 24px',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '24px'
+      }}>
         
         {/* VIEW 1: DEALER APPRAISAL TERMINAL */}
         {activeTab === 'appraisal' && (
@@ -63,202 +77,203 @@ export default function Home() {
 
         {/* VIEW 2: ARBITRAGE RADAR */}
         {activeTab === 'arbitrage' && (
-          <ArbitrageScanner watches={WATCH_MODELS} onSelectWatch={(w) => { setSelectedWatch(w); setActiveTab('terminal'); }} />
+          <ArbitrageScanner 
+            watches={WATCH_MODELS} 
+            onSelectWatch={(w) => { 
+              setSelectedWatch(w); 
+              setActiveTab('terminal'); 
+            }} 
+          />
         )}
 
         {/* VIEW 3: MARKET TERMINAL */}
         {activeTab === 'terminal' && (
           <>
-            {/* Macro Intelligence Strip */}
-            <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-          
-          <div className="glass-card" style={{ padding: '18px 22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                LUXE 50 WATCH INDEX
-              </span>
-              <span className="badge badge-emerald">+1.8% 30D</span>
-            </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              $134,850
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Secondary market basket across Rolex, Patek, AP
-            </div>
-          </div>
-
-          <div className="glass-card" style={{ padding: '18px 22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                AGGREGATED 24H VOLUME
-              </span>
-              <span className="badge badge-gold">LIVE FEED</span>
-            </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--gold-light)' }}>
-              $4.82M
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              418 confirmed sales across eBay, Sotheby's, Chrono24
-            </div>
-          </div>
-
-          <div className="glass-card" style={{ padding: '18px 22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                AVG DEALER-AUCTION SPREAD
-              </span>
-              <span className="badge badge-subtle">PRO SPREAD</span>
-            </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              7.4%
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Asking price vs. realized hammer pricing
-            </div>
-          </div>
-
-          <div className="glass-card" style={{ padding: '18px 22px', border: '1px solid var(--border-gold)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-gold)', textTransform: 'uppercase', fontWeight: 600 }}>
-                TOP ARBITRAGE SIGNAL
-              </span>
-              <span className="badge badge-emerald">SCORE 8.9</span>
-            </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF' }}>
-              Rolex Daytona 116500LN
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              $1,700 pricing spread between private & auction
-            </div>
-          </div>
-        </section>
-
-        {/* Selected Watch Terminal Intelligence Engine */}
-        <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Cpu size={20} style={{ color: 'var(--gold-primary)' }} />
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-                Asset Intelligence Terminal
-              </h2>
-            </div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              Viewing Reference: <strong style={{ color: 'var(--gold-light)' }}>{selectedWatch.brand} {selectedWatch.reference}</strong>
-            </span>
-          </div>
-
-          <WatchDetailView watch={selectedWatch} />
-        </section>
-
-        {/* Reference Models Explorer Section */}
-        <section style={{ marginTop: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
-            <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Database size={20} style={{ color: 'var(--gold-primary)' }} />
-                Reference Models Explorer
-              </h2>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                Select any reference model to load comprehensive valuation curves and AI opportunity analysis
-              </p>
-            </div>
-
-            {/* Filter Buttons */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {[
-                { label: 'All References', val: 'ALL' },
-                { label: 'Rolex', val: 'ROLEX' },
-                { label: 'Patek Philippe', val: 'PATEK PHILIPPE' },
-                { label: 'Omega', val: 'OMEGA' },
-                { label: '⚡ Top Arbitrage Spreads', val: 'ARBITRAGE' }
-              ].map((item) => (
-                <button
-                  key={item.val}
-                  onClick={() => setActiveBrandFilter(item.val)}
-                  className={`btn-ghost ${activeBrandFilter === item.val ? 'active' : ''}`}
-                  style={{ fontSize: '0.8rem' }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Cards Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-            {filteredWatches.map((watch) => (
-              <WatchCard
-                key={watch.id}
-                watch={watch}
-                isSelected={selectedWatch.id === watch.id}
-                onSelect={(w) => {
-                  setSelectedWatch(w);
-                  window.scrollTo({ top: 180, behavior: 'smooth' });
-                }}
-              />
-            ))}
-          </div>
-
-          {filteredWatches.length === 0 && (
-            <div className="glass-card" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              No reference models match "{searchQuery}". Try searching for 126610LN, Daytona, or Rolex.
-            </div>
-          )}
-        </section>
-
-        {/* Phase 2 Marketplace Preview Banner */}
-        <section className="glass-card" style={{ padding: '28px 36px', background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(15, 20, 31, 0.8) 100%)', border: '1px solid rgba(212, 175, 55, 0.25)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-            <div style={{ maxWidth: '720px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <span className="badge badge-gold">PHASE 2 ROADMAP</span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ZERO-INVENTORY MIDDLEMAN MARKETPLACE</span>
+            {/* Real Macro Intelligence Strip (Derived from Scraped Chrono24 Ingestion) */}
+            <section style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '14px'
+            }}>
+              
+              {/* Metric 1: Luxe 5 Secondary Basket Index */}
+              <div className="glass-card" style={{ padding: '18px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    LUXE 5 BENCHMARK INDEX
+                  </span>
+                  <span className="badge badge-emerald">
+                    <TrendingUp size={11} /> +{MACRO_METRICS.luxeIndexChangePct}% 30D
+                  </span>
+                </div>
+                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#FFF' }}>
+                  ${MACRO_METRICS.luxeIndexValue.toLocaleString()}
+                </div>
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  Secondary basket: Rolex (3), Patek 5711, AP 15500
+                </div>
               </div>
-              <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '6px' }}>
-                P2P Luxury Asset Escrow & Direct Transaction Infrastructure
-              </h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                Once verified collector liquidity reaches benchmark thresholds, LuxeData unlocks zero-inventory peer-to-peer auction middleman infrastructure with 5–10% low-take-rate fees, mandatory KYC verification, and certified physical authentication escrow.
-              </p>
-            </div>
 
-            <button className="btn-primary" style={{ padding: '12px 24px', fontSize: '0.9rem' }}>
-              Request Private Dealer Beta Access <ArrowRight size={16} />
-            </button>
-          </div>
-        </section>
-        </>
+              {/* Metric 2: Monitored Secondary Liquidity */}
+              <div className="glass-card" style={{ padding: '18px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    MONITORED SECONDARY CAPITAL
+                  </span>
+                  <span className="badge badge-gold">
+                    <span className="pulse-indicator"></span> LIVE FEED
+                  </span>
+                </div>
+                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                  ${(MACRO_METRICS.totalCatalogValue / 1000000).toFixed(1)}M+
+                </div>
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  {MACRO_METRICS.totalTrackedListings} active lots across professional dealers & private sellers
+                </div>
+              </div>
+
+              {/* Metric 3: Institutional Dealer Spread */}
+              <div className="glass-card" style={{ padding: '18px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    DEALER CONSENSUS SPREAD
+                  </span>
+                  <span className="badge badge-subtle">PRO STANDARD</span>
+                </div>
+                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+                  {MACRO_METRICS.averageDealerSpreadPct.toFixed(1)}%
+                </div>
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  Consensus retail asking vs. dealer cash buy-in floor
+                </div>
+              </div>
+
+              {/* Metric 4: Top Arbitrage Signal */}
+              <div 
+                onClick={() => {
+                  const targetWatch = WATCH_MODELS.find(w => w.reference === MACRO_METRICS.topArbitrageDeal.reference);
+                  if (targetWatch) setSelectedWatch(targetWatch);
+                }}
+                className="glass-card-interactive" 
+                style={{
+                  padding: '18px 20px',
+                  border: '1px solid var(--border-gold-subtle)',
+                  background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(14, 19, 29, 0.95) 100%)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-gold)', textTransform: 'uppercase', fontWeight: 600 }}>
+                    TOP ARBITRAGE SIGNAL
+                  </span>
+                  <span className="badge badge-emerald">
+                    SAVE ${MACRO_METRICS.topArbitrageDeal.profitDollars.toLocaleString()}
+                  </span>
+                </div>
+                <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {MACRO_METRICS.topArbitrageDeal.model}
+                </div>
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>{MACRO_METRICS.topArbitrageDeal.discountPct}% below dealer consensus</span>
+                  <ArrowUpRight size={12} style={{ color: 'var(--gold-light)' }} />
+                </div>
+              </div>
+            </section>
+
+            {/* Benchmark Reference Quick Selector (Pinned at Top for Zero-Friction Switching) */}
+            <ReferenceSelector 
+              watches={filteredWatches.length > 0 ? filteredWatches : WATCH_MODELS}
+              selectedWatch={selectedWatch}
+              onSelectWatch={setSelectedWatch}
+            />
+
+            {/* Selected Watch Terminal Intelligence Engine */}
+            <section style={{ marginTop: '6px' }}>
+              <WatchDetailView watch={selectedWatch} />
+            </section>
+
+            {/* Institutional Private Inquiries Strip */}
+            <section className="glass-card" style={{
+              padding: '24px 30px',
+              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.06) 0%, rgba(14, 19, 29, 0.85) 100%)',
+              border: '1px solid var(--border-gold-subtle)'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '20px'
+              }}>
+                <div style={{ maxWidth: '780px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span className="badge badge-gold">B2B DEALER INTEGRATION</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>REST API &amp; INVENTORY FEEDS</span>
+                  </div>
+                  <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '6px', color: '#FFF' }}>
+                    Institutional Watch Dealer &amp; Private Portfolio Intelligence
+                  </h3>
+                  <p style={{ fontSize: '0.80rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                    LuxeData provides luxury watch dealers, pawnbrokers, and alternative asset funds with real-time Chrono24 consensus valuation feeds, instant cash buy-in appraisals, and automated secondary arbitrage scanners.
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => setActiveTab('appraisal')}
+                    className="btn-primary" 
+                    style={{ fontSize: '0.82rem', padding: '10px 20px' }}
+                  >
+                    Open Dealer Terminal <ArrowRight size={15} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          </>
         )}
 
       </main>
 
       {/* Institutional Legal Footer */}
-      <footer style={{ borderTop: '1px solid var(--border-subtle)', background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, #05070B 80%)', padding: '40px 24px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-        <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+      <footer style={{
+        borderTop: '1px solid var(--border-hairline)',
+        background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.04) 0%, #05070B 80%)',
+        padding: '36px 24px',
+        fontSize: '0.74rem',
+        color: 'var(--text-muted)'
+      }}>
+        <div style={{
+          maxWidth: '1440px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '24px'
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <Logo size={42} />
+            <Logo size={36} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '1.05rem', color: '#FFF', letterSpacing: '0.06em' }}>
-                  LUXE<span className="gold-text">DATA</span> TERMINAL
+                <span className="serif-heading" style={{ fontWeight: 700, fontSize: '1.0rem', color: '#FFF', letterSpacing: '0.06em' }}>
+                  LUXE<span className="gold-gradient-text">DATA</span> SYSTEMS
                 </span>
-                <span className="badge badge-gold" style={{ fontSize: '0.65rem' }}>OFFICIAL</span>
+                <span className="badge badge-gold" style={{ fontSize: '0.60rem' }}>CHRONO24 INGESTION</span>
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.72rem', marginTop: '2px' }}>
-                Institutional Luxury Timepiece Intelligence • Chrono24 Consensus Engine • Algorithmic Spread Tracking
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.70rem', marginTop: '2px' }}>
+                Institutional Luxury Timepiece Terminal • 10% Trimmed Mean Consensus • 20% Buy-In Margin Engine
               </div>
             </div>
           </div>
 
-          <div style={{ maxWidth: '540px', textAlign: 'right', fontSize: '0.72rem' }}>
+          <div style={{ maxWidth: '580px', textAlign: 'right', fontSize: '0.70rem' }}>
             <p style={{ color: 'var(--text-muted)' }}>
-              Data provenance: Chrono24 active market listings, Sotheby&apos;s, Christie&apos;s, Antiquorum, and WatchCharts index feeds. All valuation algorithms utilize 10% trimmed mean consensus and verified 20% dealer buy-in formulas.
+              Data provenance: Chrono24 live active market listings across verified professional dealers and private collectors. Consensus market value is calculated via 10% trimmed mean algorithm. Buy-in floor reflects 20% dealer margin spread standard.
             </p>
             <div style={{ marginTop: '8px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-              <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                <span className="pulse-indicator"></span> SYSTEMS NORMAL • LATENCY 24MS
+              <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span className="pulse-indicator"></span> CONSENSUS ENGINE ONLINE • 24MS LATENCY
               </span>
-              <span>© 2026 LuxeData Systems.</span>
+              <span>© 2026 LuxeData Systems. All rights reserved.</span>
             </div>
           </div>
         </div>
