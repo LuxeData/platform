@@ -179,12 +179,8 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
         </div>
       </div>
 
-      {/* 2. Main Terminal Grid: 2-Column Responsive Layout */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1.15fr)',
-        gap: '20px'
-      }}>
+      {/* 2. Main Terminal Grid: Responsive Layout (Stacks on Mobile) */}
+      <div className="responsive-two-col">
         
         {/* LEFT COLUMN: Price History, Provenance Matrix, Real Scraped Lots */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

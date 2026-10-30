@@ -158,18 +158,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
       {/* 2. FLOATING INSTITUTIONAL COMMAND DOCK (De-Meshed Macro Strip) */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
         <div 
-          className="border-beam-card" 
+          className="border-beam-card responsive-command-dock" 
           style={{
-            padding: '28px 32px',
-            background: 'linear-gradient(180deg, rgba(14, 19, 29, 0.88) 0%, rgba(8, 12, 19, 0.96) 100%)',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '24px',
-            alignItems: 'center'
+            padding: '24px 28px',
+            background: 'linear-gradient(180deg, rgba(14, 19, 29, 0.88) 0%, rgba(8, 12, 19, 0.96) 100%)'
           }}
         >
           {/* Metric 1: Luxe 5 Secondary Index */}
-          <div style={{ paddingRight: '20px', borderRight: '1px solid var(--border-hairline)' }}>
+          <div className="responsive-dock-item">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                 LUXE 5 BENCHMARK INDEX
@@ -178,7 +174,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <TrendingUp size={10} /> +{macro.luxeIndexChangePct}% 30D
               </span>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '2.0rem', fontWeight: 800, color: '#FFF' }}>
+            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: '#FFF' }}>
               ${formatUSD(macro.luxeIndexValue)}
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -187,14 +183,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
           </div>
 
           {/* Metric 2: Monitored Capital */}
-          <div style={{ paddingRight: '20px', borderRight: '1px solid var(--border-hairline)' }}>
+          <div className="responsive-dock-item">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                 MONITORED SECONDARY CAPITAL
               </span>
               <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>LIVE SYNC</span>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--gold-light)' }}>
+            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-light)' }}>
               ${(macro.totalCatalogValue / 1000000).toFixed(1)}M+
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -203,14 +199,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
           </div>
 
           {/* Metric 3: Institutional Buy-In Spread */}
-          <div style={{ paddingRight: '20px', borderRight: '1px solid var(--border-hairline)' }}>
+          <div className="responsive-dock-item">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                 DEALER BUY-IN SPREAD
               </span>
               <span className="badge badge-subtle" style={{ fontSize: '0.62rem' }}>BENCHMARK</span>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
+            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
               {macro.averageDealerSpreadPct.toFixed(1)}%
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -219,14 +215,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
           </div>
 
           {/* Metric 4: Verified Arbitrage Deals */}
-          <div>
+          <div className="responsive-dock-item">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <span style={{ fontSize: '0.68rem', color: 'var(--text-gold)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
                 ARBITRAGE SIGNALS
               </span>
               <span className="badge badge-emerald" style={{ fontSize: '0.62rem' }}>SUB-WHOLESALE</span>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '2.0rem', fontWeight: 800, color: '#FFF' }}>
+            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: '#FFF' }}>
               {macro.arbitrageCount} Active
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--emerald-gain)', marginTop: '4px' }}>
@@ -240,7 +236,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
         
         {/* Section Title & Intro */}
-        <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 36px auto' }}>
+        <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 32px auto' }}>
           <span className="badge badge-gold" style={{ marginBottom: '10px' }}>CORE LIQUIDITY BENCHMARKS</span>
           <h2 className="serif-heading" style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.4rem)', fontWeight: 700, color: '#FFF' }}>
             The 5 Benchmark Secondary Curves
@@ -250,13 +246,13 @@ export const LandingView: React.FC<LandingViewProps> = ({
           </p>
         </div>
 
-        {/* Interactive Reference Tabs Selector */}
-        <div style={{
+        {/* Interactive Reference Tabs Selector (Touch Scrollable on Mobile) */}
+        <div className="mobile-tabs-container" style={{
           display: 'flex',
           justifyContent: 'center',
           gap: '10px',
-          flexWrap: 'wrap',
-          marginBottom: '28px'
+          marginBottom: '28px',
+          padding: '4px 0'
         }}>
           {watches.map((w) => {
             const isSelected = w.reference === activeBenchmarkRef;
@@ -268,14 +264,16 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   background: isSelected ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(14, 19, 29, 0.95) 100%)' : 'rgba(255, 255, 255, 0.03)',
                   border: isSelected ? '1px solid var(--gold-primary)' : '1px solid var(--border-hairline)',
                   color: isSelected ? 'var(--gold-light)' : 'var(--text-secondary)',
-                  padding: '10px 18px',
+                  padding: '9px 16px',
                   borderRadius: '10px',
-                  fontSize: '0.82rem',
+                  fontSize: '0.80rem',
                   fontWeight: isSelected ? 700 : 500,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
+                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
                   transition: 'all 0.2s ease',
                   boxShadow: isSelected ? '0 0 20px rgba(212, 175, 55, 0.2)' : 'none'
                 }}
@@ -287,22 +285,18 @@ export const LandingView: React.FC<LandingViewProps> = ({
           })}
         </div>
 
-        {/* Featured Benchmark Stage: Expansive Split Showcase */}
+        {/* Featured Benchmark Stage: Responsive Split Showcase (Stacks cleanly on Mobile) */}
         {spotlightWatch && (
           <div 
-            className="border-beam-card" 
+            className="border-beam-card responsive-split-showcase" 
             style={{
               padding: '36px',
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1.4fr)',
-              gap: '36px',
-              alignItems: 'center',
               background: 'radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.08) 0%, rgba(10, 14, 23, 0.98) 70%)'
             }}
           >
             {/* Left: Timepiece Dossier & Terminal Jump */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <span className="badge badge-gold" style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)' }}>
                   REF: {spotlightWatch.reference}
                 </span>
@@ -314,11 +308,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 </span>
               </div>
 
-              <h3 className="serif-heading" style={{ fontSize: '2.0rem', fontWeight: 800, color: '#FFF', marginBottom: '8px' }}>
+              <h3 className="serif-heading" style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.0rem)', fontWeight: 800, color: '#FFF', marginBottom: '8px', lineHeight: '1.25' }}>
                 {spotlightWatch.brand} {spotlightWatch.model}
               </h3>
 
-              <div style={{ display: 'flex', gap: '16px', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '22px' }}>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '18px', flexWrap: 'wrap' }}>
                 <span>Case: <strong style={{ color: 'var(--text-secondary)' }}>{spotlightWatch.caseSize}</strong></span>
                 <span>•</span>
                 <span>Dial: <strong style={{ color: 'var(--text-secondary)' }}>{spotlightWatch.dialColor}</strong></span>
@@ -326,14 +320,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <span>Liquidity: <strong style={{ color: 'var(--gold-light)' }}>{spotlightWatch.dealerMetrics?.totalActiveListings || 60} Active Lots</strong></span>
               </div>
 
-              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '28px' }}>
+              <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '24px' }}>
                 {spotlightWatch.aiAnalysis.summary}
               </p>
 
               <button
                 onClick={() => onEnterTerminal(spotlightWatch)}
-                className="btn-primary"
-                style={{ padding: '12px 24px', fontSize: '0.88rem' }}
+                className="btn-primary mobile-full-width"
+                style={{ padding: '13px 24px', fontSize: '0.88rem' }}
               >
                 Inspect Full Order Book &amp; Listings <ArrowRight size={15} />
               </button>
@@ -344,30 +338,30 @@ export const LandingView: React.FC<LandingViewProps> = ({
               background: 'rgba(255, 255, 255, 0.02)',
               border: '1px solid var(--border-hairline)',
               borderRadius: '14px',
-              padding: '28px',
+              padding: '24px 20px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px'
+              gap: '18px'
             }}>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Chrono24 Consensus Valuation Matrix
               </div>
 
-              {/* Price Pair */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              {/* Price Pair (Stacks on mobile, side-by-side on desktop) */}
+              <div className="responsive-price-pair">
                 <div style={{
                   background: 'rgba(212, 175, 55, 0.06)',
                   border: '1px solid var(--border-gold)',
                   borderRadius: '10px',
-                  padding: '16px'
+                  padding: '14px'
                 }}>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--text-gold)', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-gold)', textTransform: 'uppercase', fontWeight: 700 }}>
                     CONSENSUS RETAIL (CMV)
                   </div>
-                  <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--gold-light)', margin: '4px 0' }}>
+                  <div className="tabular-nums" style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.75rem)', fontWeight: 800, color: 'var(--gold-light)', margin: '4px 0' }}>
                     ${formatUSD(spotlightWatch.currentAskingAvg)}
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '0.66rem', color: 'var(--text-secondary)' }}>
                     10% trimmed mean of {spotlightWatch.dealerMetrics?.dealerListingsCount || 50} dealer lots
                   </div>
                 </div>
@@ -376,15 +370,15 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   background: 'rgba(16, 185, 129, 0.08)',
                   border: '1px solid rgba(16, 185, 129, 0.35)',
                   borderRadius: '10px',
-                  padding: '16px'
+                  padding: '14px'
                 }}>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', fontWeight: 700 }}>
                     DEALER CASH BUY-IN FLOOR
                   </div>
-                  <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FFF', margin: '4px 0' }}>
+                  <div className="tabular-nums" style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.75rem)', fontWeight: 800, color: '#FFF', margin: '4px 0' }}>
                     ${formatUSD(spotlightWatch.recentSoldAvg)}
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '0.66rem', color: 'var(--text-secondary)' }}>
                     Immediate wholesale payout (-20% margin)
                   </div>
                 </div>
@@ -394,33 +388,33 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '12px',
+                gap: '8px',
                 borderTop: '1px solid var(--border-hairline)',
-                paddingTop: '16px',
+                paddingTop: '14px',
                 textAlign: 'center'
               }}>
                 <div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)' }}>Wholesale Spread</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--emerald-gain)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Wholesale Spread</div>
+                  <div className="tabular-nums" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', fontWeight: 700, color: 'var(--emerald-gain)', marginTop: '2px' }}>
                     +${formatUSD(spotlightWatch.currentAskingAvg - spotlightWatch.recentSoldAvg)}
                   </div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-faint)' }}>20% Margin Protection</div>
+                  <div style={{ fontSize: '0.60rem', color: 'var(--text-faint)' }}>20% Margin</div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)' }}>Institutional Sample</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
-                    {spotlightWatch.dealerMetrics?.dealerListingsCount || 50} Verified Desks
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Institutional Sample</div>
+                  <div className="tabular-nums" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
+                    {spotlightWatch.dealerMetrics?.dealerListingsCount || 50} Lots
                   </div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-faint)' }}>Filtered Company Asks</div>
+                  <div style={{ fontSize: '0.60rem', color: 'var(--text-faint)' }}>Verified Desks</div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)' }}>Sub-Wholesale Arb</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--gold-light)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Sub-Wholesale Arb</div>
+                  <div className="tabular-nums" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', fontWeight: 700, color: 'var(--gold-light)', marginTop: '2px' }}>
                     {spotlightWatch.dealerMetrics?.arbitrageCount || 0} Lots
                   </div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-faint)' }}>Priced &lt; Buy-In Floor</div>
+                  <div style={{ fontSize: '0.60rem', color: 'var(--text-faint)' }}>Priced &lt; Floor</div>
                 </div>
               </div>
             </div>

@@ -9,6 +9,7 @@ export const MechanicalBackground: React.FC = () => {
       left: 0,
       right: 0,
       bottom: 0,
+      maxWidth: '100%',
       overflow: 'hidden',
       pointerEvents: 'none',
       zIndex: 0

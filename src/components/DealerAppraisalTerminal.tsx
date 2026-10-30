@@ -205,7 +205,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
       </div>
 
       {/* Main Grid: Left Controls + Right Live Appraisal Certificate */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1.45fr)', gap: '20px' }}>
+      <div className="responsive-appraisal-grid">
         
         {/* Left Column: Appraisal Variable Controls */}
         <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
@@ -419,7 +419,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             </div>
 
             {/* Core Two-Price Breakdown: Buy-In vs Retail CMV */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+            <div className="responsive-price-pair" style={{ marginBottom: '20px' }}>
               
               {/* Client Cash Buy Offer */}
               <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>

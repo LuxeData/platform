@@ -95,16 +95,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main style={{
-        maxWidth: '1440px',
-        width: '100%',
-        margin: '0 auto',
-        padding: '24px 24px 60px 24px',
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px'
-      }}>
+      <main className="main-container">
 
         {/* VIEW 0: WELCOME & COMPANY LANDING GATEWAY */}
         {activeTab === 'overview' && (
@@ -312,11 +303,11 @@ export default function Home() {
             </div>
           </div>
 
-          <div style={{ maxWidth: '580px', textAlign: 'right', fontSize: '0.70rem' }}>
+          <div className="footer-disclaimer" style={{ maxWidth: '580px', textAlign: 'right', fontSize: '0.70rem' }}>
             <p style={{ color: 'var(--text-muted)' }}>
               Data provenance: Chrono24 live active market listings across verified professional dealers and private collectors. Consensus market value is calculated via 10% trimmed mean algorithm. Buy-in floor reflects 20% dealer margin spread standard.
             </p>
-            <div style={{ marginTop: '8px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+            <div className="footer-status-row" style={{ marginTop: '8px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
               <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                 <span className="pulse-indicator"></span> CONSENSUS ENGINE ONLINE • 24MS LATENCY
               </span>

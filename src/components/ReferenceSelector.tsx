@@ -39,11 +39,11 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
         </span>
       </div>
 
-      {/* 5-Column Clean Desktop Grid with Mobile Horizontal Scroll */}
+      {/* 5-Column Clean Desktop Grid with Mobile Adaptive Wrapping */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-        gap: '12px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: '10px',
         width: '100%'
       }}>
         {watches.map((w) => {

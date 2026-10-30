@@ -100,7 +100,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
       </div>
 
       {/* Grid of Deals */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
         {filteredDeals.map(deal => (
           <div 
             key={deal.id}
