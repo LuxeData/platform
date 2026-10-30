@@ -7,7 +7,9 @@ import { WatchDetailView } from '../components/WatchDetailView';
 import { DealerAppraisalTerminal } from '../components/DealerAppraisalTerminal';
 import { ArbitrageScanner } from '../components/ArbitrageScanner';
 import { AuthModal } from '../components/AuthModal';
+import { LegalView } from '../components/LegalView';
 import { Logo } from '../components/Logo';
+import Link from 'next/link';
 import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
 import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
@@ -25,11 +27,14 @@ import {
   Target, 
   ArrowUpRight, 
   Clock, 
-  Sparkles 
+  Sparkles,
+  Scale,
+  Lock
 } from 'lucide-react';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'terminal' | 'appraisal' | 'arbitrage'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'terminal' | 'appraisal' | 'arbitrage' | 'legal'>('overview');
+  const [legalDoc, setLegalDoc] = useState<'terms' | 'privacy'>('terms');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBrandFilter, setActiveBrandFilter] = useState('ALL');
   const [selectedWatch, setSelectedWatch] = useState<WatchModel>(WATCH_MODELS[0]);
@@ -291,13 +296,26 @@ export default function Home() {
           </>
         )}
 
+        {/* VIEW 5: INSTITUTIONAL LEGAL & GOVERNANCE */}
+        {activeTab === 'legal' && (
+          <div style={{ marginTop: '10px' }}>
+            <LegalView 
+              initialDoc={legalDoc}
+              onBackToTerminal={() => {
+                setActiveTab('terminal');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </div>
+        )}
+
       </main>
 
       {/* Institutional Legal Footer */}
       <footer style={{
         borderTop: '1px solid var(--border-hairline)',
         background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.04) 0%, #05070B 80%)',
-        padding: '36px 24px',
+        padding: '40px 24px',
         fontSize: '0.74rem',
         color: 'var(--text-muted)'
       }}>
@@ -306,34 +324,107 @@ export default function Home() {
           margin: '0 auto',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           flexWrap: 'wrap',
-          gap: '24px'
+          gap: '28px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', maxWidth: '440px' }}>
             <Logo size={36} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className="serif-heading" style={{ fontWeight: 700, fontSize: '1.0rem', color: '#FFF', letterSpacing: '0.06em' }}>
-                  LUXE<span className="gold-gradient-text">DATA</span> SYSTEMS
+                  LUXE<span className="gold-gradient-text">DATA</span> TECHNOLOGIES
                 </span>
-                <span className="badge badge-gold" style={{ fontSize: '0.60rem' }}>CHRONO24 INGESTION</span>
+                <span className="badge badge-gold" style={{ fontSize: '0.60rem' }}>TRI-VENUE CONSENSUS</span>
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.70rem', marginTop: '2px' }}>
-                Institutional Luxury Timepiece Terminal • 10% Trimmed Mean Consensus • 20% Buy-In Margin Engine
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.70rem', marginTop: '4px', lineHeight: '1.5' }}>
+                Institutional Luxury Timepiece Intelligence Terminal • 10% Trimmed Mean Consensus Engine • State of Delaware Registered Entity.
+              </div>
+              
+              {/* Institutional Compliance Badges */}
+              <div style={{ display: 'flex', gap: '14px', marginTop: '12px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <ShieldCheck size={12} color="var(--emerald-gain)" /> SOC 2 Type II Aligned
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Lock size={12} color="var(--gold-primary)" /> AES-256 HSM Encrypted
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Scale size={12} color="var(--gold-champagne)" /> Zero Data Brokering
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="footer-disclaimer" style={{ maxWidth: '580px', textAlign: 'right', fontSize: '0.70rem' }}>
-            <p style={{ color: 'var(--text-muted)' }}>
-              Data provenance: Chrono24 live active market listings across verified professional dealers and private collectors. Consensus market value is calculated via 10% trimmed mean algorithm. Buy-in floor reflects 20% dealer margin spread standard.
+          <div className="footer-disclaimer" style={{ maxWidth: '620px', textAlign: 'right', fontSize: '0.70rem' }}>
+            {/* Quick Legal Links Navigation */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end', 
+              alignItems: 'center', 
+              gap: '20px', 
+              marginBottom: '12px',
+              fontWeight: 600
+            }}>
+              <button
+                onClick={() => {
+                  setLegalDoc('terms');
+                  setActiveTab('legal');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--gold-champagne)',
+                  fontSize: '0.74rem',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px'
+                }}
+              >
+                Terms of Service
+              </button>
+
+              <button
+                onClick={() => {
+                  setLegalDoc('privacy');
+                  setActiveTab('legal');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--gold-champagne)',
+                  fontSize: '0.74rem',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px'
+                }}
+              >
+                Privacy Policy
+              </button>
+
+              <Link
+                href="/terms"
+                style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.72rem',
+                  textDecoration: 'none'
+                }}
+              >
+                Standalone URL ↗
+              </Link>
+            </div>
+
+            <p style={{ color: 'var(--text-muted)', lineHeight: '1.5' }}>
+              Data Provenance: Tri-Venue quantitative synthesis combining Chrono24 active asks (50%), eBay Authenticity Guarantee realized cash sales (30%), and WatchCharts secondary dealer index (20%). Consensus values reflect statistical estimates for market research and do not constitute USPAP certified appraisals or broker-dealer securities offerings.
             </p>
-            <div className="footer-status-row" style={{ marginTop: '8px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+
+            <div className="footer-status-row" style={{ marginTop: '10px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px', alignItems: 'center' }}>
               <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                 <span className="pulse-indicator"></span> CONSENSUS ENGINE ONLINE • 24MS LATENCY
               </span>
-              <span>© 2026 LuxeData Systems. All rights reserved.</span>
+              <span>© 2026 LuxeData Technologies Inc. All rights reserved.</span>
             </div>
           </div>
         </div>
