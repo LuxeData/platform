@@ -120,8 +120,8 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
             </p>
           </div>
 
-          {/* Pricing Metrics Strip */}
-          <div style={{
+          {/* Pricing Metrics Strip (Responsive 1-col on mobile, flex on desktop) */}
+          <div className="responsive-pricing-strip" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '24px',
@@ -187,11 +187,13 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
           
           {/* Price History Area Chart */}
           <div className="glass-card" style={{ padding: '22px 24px' }}>
-            <div style={{
+            <div className="responsive-chart-header" style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '16px'
+              marginBottom: '16px',
+              flexWrap: 'wrap',
+              gap: '12px'
             }}>
               <div>
                 <h3 style={{
@@ -210,12 +212,12 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 </p>
               </div>
 
-              {/* Timeframe Controls */}
+              {/* Timeframe Controls (Touch optimized for mobile) */}
               <div style={{
                 display: 'flex',
-                gap: '4px',
+                gap: '6px',
                 background: 'rgba(255, 255, 255, 0.03)',
-                padding: '3px',
+                padding: '4px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-hairline)'
               }}>
@@ -225,9 +227,11 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                     onClick={() => setTimeframe(tf)}
                     className={`btn-ghost ${timeframe === tf ? 'active' : ''}`}
                     style={{
-                      padding: '3px 9px',
-                      fontSize: '0.72rem',
-                      fontFamily: 'var(--font-mono)'
+                      padding: '5px 12px',
+                      fontSize: '0.74rem',
+                      fontFamily: 'var(--font-mono)',
+                      cursor: 'pointer',
+                      touchAction: 'manipulation'
                     }}
                   >
                     {tf}
@@ -322,14 +326,14 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                   <button 
                     onClick={() => setHasBoxPapers(true)}
                     className={`btn-ghost ${hasBoxPapers ? 'active' : ''}`}
-                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '6px 4px' }}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '8px 4px', minHeight: '38px', cursor: 'pointer', touchAction: 'manipulation' }}
                   >
                     Full Set (+8%)
                   </button>
                   <button 
                     onClick={() => setHasBoxPapers(false)}
                     className={`btn-ghost ${!hasBoxPapers ? 'active' : ''}`}
-                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '6px 4px' }}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '8px 4px', minHeight: '38px', cursor: 'pointer', touchAction: 'manipulation' }}
                   >
                     Naked (-10%)
                   </button>
@@ -352,7 +356,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                       key={grade}
                       onClick={() => setConditionGrade(grade)}
                       className={`btn-ghost ${conditionGrade === grade ? 'active' : ''}`}
-                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.72rem', padding: '6px 2px' }}
+                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.72rem', padding: '8px 2px', minHeight: '38px', cursor: 'pointer', touchAction: 'manipulation' }}
                     >
                       {grade}
                     </button>
@@ -411,9 +415,28 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
               </span>
             </div>
 
-            {/* Table */}
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.80rem' }}>
+            {/* Mobile Scroll Hint */}
+            <div style={{
+              fontSize: '0.66rem',
+              color: 'var(--text-muted)',
+              marginBottom: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <span style={{ color: 'var(--gold-primary)' }}>↔</span>
+              <span>Swipe table horizontally to inspect all columns</span>
+            </div>
+
+            {/* Table Container with Controlled Overflow */}
+            <div style={{
+              width: '100%',
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              borderRadius: '8px',
+              border: '1px solid var(--border-hairline)'
+            }}>
+              <table style={{ minWidth: '480px', width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                 <thead>
                   <tr style={{
                     borderBottom: '1px solid var(--border-hairline)',
@@ -524,7 +547,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.06em' }}>
                 EXECUTIVE INTELLIGENCE SYNTHESIS
               </div>
-              <p style={{ fontSize: '0.80rem', lineHeight: '1.5', color: 'var(--text-main)' }}>
+              <p style={{ fontSize: '0.80rem', lineHeight: '1.5', color: 'var(--text-main)', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 {watch.aiAnalysis.summary}
               </p>
             </div>
@@ -536,8 +559,8 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
               </div>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {watch.aiAnalysis.catalysts.map((cat, idx) => (
-                  <li key={idx} style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                    <span style={{ color: 'var(--gold-primary)' }}>▸</span>
+                  <li key={idx} style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '6px', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                    <span style={{ color: 'var(--gold-primary)', flexShrink: 0 }}>▸</span>
                     <span>{cat}</span>
                   </li>
                 ))}
@@ -593,7 +616,9 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 border: '1px solid var(--border-hairline)',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '6px'
               }}>
                 <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Premium Over Boutiques (MSRP):</span>
                 <span className="tabular-nums" style={{
@@ -629,7 +654,9 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '8px 12px',
+                      flexWrap: 'wrap',
+                      gap: '8px',
+                      padding: '10px 12px',
                       background: 'rgba(16, 185, 129, 0.05)',
                       borderRadius: '8px',
                       border: '1px solid rgba(16, 185, 129, 0.18)',
@@ -663,9 +690,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                           textDecoration: 'none',
                           fontSize: '0.72rem',
                           fontWeight: 600,
-                          padding: '4px 8px',
+                          padding: '5px 10px',
                           borderRadius: '6px',
-                          background: 'rgba(212, 175, 55, 0.1)'
+                          background: 'rgba(212, 175, 55, 0.1)',
+                          marginLeft: 'auto'
                         }}
                       >
                         Inspect Lot <ArrowUpRight size={12} />
