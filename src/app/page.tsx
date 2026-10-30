@@ -9,7 +9,7 @@ import { ArbitrageScanner } from '../components/ArbitrageScanner';
 import { AuthModal } from '../components/AuthModal';
 import { Logo } from '../components/Logo';
 import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
-import { WatchModel } from '../types/watch';
+import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
 import { 
   TrendingUp, 
@@ -34,7 +34,7 @@ export default function Home() {
   const [activeBrandFilter, setActiveBrandFilter] = useState('ALL');
   const [selectedWatch, setSelectedWatch] = useState<WatchModel>(WATCH_MODELS[0]);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string; dealership: string } | null>(null);
+  const [user, setUser] = useState<UserSession | null>(null);
 
   // Load saved user session if exists
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function Home() {
     }
   }, []);
 
-  const handleAuthenticated = (userData: { name: string; email: string; dealership: string }) => {
+  const handleAuthenticated = (userData: UserSession) => {
     setUser(userData);
     try {
       localStorage.setItem('luxedata_user', JSON.stringify(userData));
@@ -57,6 +57,16 @@ export default function Home() {
     }
     setActiveTab('terminal');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSignOut = () => {
+    setUser(null);
+    try {
+      localStorage.removeItem('luxedata_user');
+    } catch (e) {
+      // ignore
+    }
+    setIsAuthOpen(false);
   };
 
   const handleEnterTerminal = (watch?: WatchModel) => {
@@ -110,7 +120,12 @@ export default function Home() {
         
         {/* VIEW 1: DEALER APPRAISAL TERMINAL */}
         {activeTab === 'appraisal' && (
-          <DealerAppraisalTerminal watches={WATCH_MODELS} onSelectWatch={setSelectedWatch} user={user} />
+          <DealerAppraisalTerminal 
+            watches={WATCH_MODELS} 
+            onSelectWatch={setSelectedWatch} 
+            user={user} 
+            onOpenAuth={() => setIsAuthOpen(true)}
+          />
         )}
 
         {/* VIEW 2: ARBITRAGE RADAR */}
@@ -121,6 +136,8 @@ export default function Home() {
               setSelectedWatch(w); 
               setActiveTab('terminal'); 
             }} 
+            user={user}
+            onOpenAuth={() => setIsAuthOpen(true)}
           />
         )}
 
@@ -222,11 +239,16 @@ export default function Home() {
               watches={filteredWatches.length > 0 ? filteredWatches : WATCH_MODELS}
               selectedWatch={selectedWatch}
               onSelectWatch={setSelectedWatch}
+              user={user}
             />
 
             {/* Selected Watch Terminal Intelligence Engine */}
             <section style={{ marginTop: '6px' }}>
-              <WatchDetailView watch={selectedWatch} />
+              <WatchDetailView 
+                watch={selectedWatch} 
+                user={user} 
+                onOpenAuth={() => setIsAuthOpen(true)} 
+              />
             </section>
 
             {/* Institutional Private Inquiries Strip */}
@@ -321,7 +343,9 @@ export default function Home() {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
+        user={user}
         onAuthenticated={handleAuthenticated}
+        onSignOut={handleSignOut}
       />
 
     </div>

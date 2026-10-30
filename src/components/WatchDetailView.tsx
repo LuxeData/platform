@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { WatchModel } from '../types/watch';
+import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
 import { 
   ResponsiveContainer, 
@@ -28,15 +28,19 @@ import {
   Users,
   Target,
   ArrowUpRight,
-  Info
+  Info,
+  Lock,
+  Crown
 } from 'lucide-react';
 
 interface WatchDetailViewProps {
   watch: WatchModel;
   onBack?: () => void;
+  user?: UserSession | null;
+  onOpenAuth?: () => void;
 }
 
-export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
+export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, onOpenAuth }) => {
   const [timeframe, setTimeframe] = useState<'30D' | '90D' | '1Y' | 'ALL'>('1Y');
   
   // Interactive valuation condition and provenance toggles
@@ -71,6 +75,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
   };
 
   const valuation = calculateAdjustedValuation();
+
+  const isFreeWatch = watch.reference === '126610LN';
+  const isUserPro = user?.tier === 'pro';
+  const isLocked = !isFreeWatch && !isUserPro;
 
   // Filter price history by timeframe
   const filteredHistory = React.useMemo(() => {
@@ -156,10 +164,16 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 Dealer Buy-In Offer (-20%)
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
-                ${formatUSD(valuation.dealerCashOffer)}
+                {isLocked ? (
+                  <span style={{ color: 'var(--gold-light)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
+                    <Lock size={15} /> PRO DESK
+                  </span>
+                ) : (
+                  `$${formatUSD(valuation.dealerCashOffer)}`
+                )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                Wholesale acquisition target
+                {isLocked ? 'Reserved for Pro partners' : 'Wholesale acquisition target'}
               </div>
             </div>
 
@@ -169,10 +183,16 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 Gross Dealer Spread
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-gold)' }}>
-                +${formatUSD(valuation.grossSpread)}
+                {isLocked ? (
+                  <span style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
+                    <Lock size={15} /> 20.0% MARGIN
+                  </span>
+                ) : (
+                  `+$${formatUSD(valuation.grossSpread)}`
+                )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                20.0% standard margin
+                {isLocked ? 'Protected buy formula' : '20.0% standard margin'}
               </div>
             </div>
           </div>
@@ -180,7 +200,118 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
       </div>
 
       {/* 2. Main Terminal Grid: Responsive Layout (Stacks on Mobile) */}
-      <div className="responsive-two-col">
+      {isLocked ? (
+        <div style={{ position: 'relative', width: '100%' }}>
+          
+          {/* Institutional Pro Gated Callout Box */}
+          <div className="glass-card" style={{
+            padding: '40px 24px',
+            border: '1px solid var(--border-gold)',
+            background: 'radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.14) 0%, rgba(10, 14, 23, 0.98) 75%)',
+            borderRadius: '16px',
+            textAlign: 'center',
+            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.15)',
+            marginBottom: '20px'
+          }}>
+            <div style={{
+              display: 'inline-flex',
+              padding: '16px',
+              borderRadius: '50%',
+              background: 'rgba(212, 175, 55, 0.12)',
+              border: '1px solid var(--border-gold)',
+              boxShadow: '0 0 24px rgba(212, 175, 55, 0.25)',
+              marginBottom: '18px'
+            }}>
+              <Lock size={32} style={{ color: 'var(--gold-light)' }} />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <span className="badge badge-gold" style={{ letterSpacing: '0.06em', fontWeight: 700 }}>
+                INSTITUTIONAL PRO DESK
+              </span>
+              <span className="badge badge-subtle">{watch.brand.toUpperCase()} {watch.reference}</span>
+            </div>
+
+            <h3 className="serif-heading" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#FFF', marginBottom: '10px' }}>
+              Unlock {watch.brand} {watch.model} Order Book
+            </h3>
+
+            <p style={{ maxWidth: '560px', margin: '0 auto 20px auto', fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+              Live Chrono24 dealer vs. private order books, 10% trimmed mean consensus metrics, condition multipliers, and 20% margin protection buy slips for <strong>{watch.model}</strong> are reserved for verified partner desks.
+            </p>
+
+            {/* Feature Bullets */}
+            <div style={{
+              maxWidth: '520px',
+              margin: '0 auto 24px auto',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '10px',
+              textAlign: 'left'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
+                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+                <span>{watch.dealerMetrics?.totalActiveListings || 40} real scraped Chrono24 active lots</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
+                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+                <span>Defensible 20% wholesale cash buy-in formula</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
+                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+                <span>Full-set vs. naked provenance pricing adjustments</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
+                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+                <span>Instant sub-wholesale flip alerts for {watch.reference}</span>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              <button
+                onClick={onOpenAuth}
+                className="btn-primary"
+                style={{ padding: '12px 26px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <ShieldCheck size={16} /> Sign In with Registered Desk
+              </button>
+
+              <button
+                onClick={onOpenAuth}
+                className="btn-ghost"
+                style={{ padding: '12px 24px', fontSize: '0.88rem', border: '1px solid var(--border-gold-subtle)', color: 'var(--gold-light)' }}
+              >
+                <Crown size={15} /> Request Direct Invoice ($99/mo)
+              </button>
+            </div>
+
+            <div style={{ marginTop: '16px', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              Note: <strong>Rolex Submariner (126610LN)</strong> is completely free for all guests to inspect.
+            </div>
+          </div>
+
+          {/* Frosted Silhouette Preview Underneath */}
+          <div style={{
+            filter: 'blur(8px)',
+            opacity: 0.35,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            maxHeight: '420px',
+            overflow: 'hidden'
+          }}>
+            <div className="responsive-two-col">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="glass-card" style={{ padding: '22px 24px', height: '240px' }}></div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="glass-card" style={{ padding: '24px', height: '240px' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="responsive-two-col">
         
         {/* LEFT COLUMN: Price History, Provenance Matrix, Real Scraped Lots */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -708,6 +839,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
         </div>
 
       </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useMemo } from 'react';
-import { WatchModel } from '../types/watch';
+import { WatchModel, UserSession } from '../types/watch';
 import { Logo } from './Logo';
 import { formatUSD } from '../lib/format';
 import { saveAppraisalToDb } from '../lib/supabaseClient';
@@ -20,16 +20,19 @@ import {
   TrendingUp,
   FileText,
   BookmarkCheck,
-  Database
+  Database,
+  Lock,
+  Crown
 } from 'lucide-react';
 
 interface DealerAppraisalTerminalProps {
   watches: WatchModel[];
   onSelectWatch?: (watch: WatchModel) => void;
-  user?: { name: string; email: string; dealership: string } | null;
+  user?: UserSession | null;
+  onOpenAuth?: () => void;
 }
 
-export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = ({ watches, user }) => {
+export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = ({ watches, user, onOpenAuth }) => {
   const [selectedRef, setSelectedRef] = useState<string>(watches[0]?.reference || '126610LN');
   const [condition, setCondition] = useState<'Unworn' | 'Very Good' | 'Good' | 'Fair'>('Very Good');
   const [hasBox, setHasBox] = useState<boolean>(true);
@@ -107,6 +110,10 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
   };
 
   const handleSaveToLedger = async () => {
+    if (!user) {
+      onOpenAuth?.();
+      return;
+    }
     if (!valuation || !activeWatch) return;
     setIsSaving(true);
     try {
@@ -225,17 +232,68 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               Select Catalog Reference
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
-              {watches.map(w => (
-                <button
-                  key={w.reference}
-                  onClick={() => setSelectedRef(w.reference)}
-                  className={`btn-ghost ${selectedRef.toUpperCase() === w.reference.toUpperCase() ? 'active' : ''}`}
-                  style={{ fontSize: '0.75rem', padding: '8px 6px', textAlign: 'center', justifyContent: 'center' }}
-                >
-                  {w.reference} ({w.brand})
-                </button>
-              ))}
+              {watches.map(w => {
+                const isProRef = w.reference !== '126610LN';
+                const isUserPro = user?.tier === 'pro';
+
+                return (
+                  <button
+                    key={w.reference}
+                    onClick={() => setSelectedRef(w.reference)}
+                    className={`btn-ghost ${selectedRef.toUpperCase() === w.reference.toUpperCase() ? 'active' : ''}`}
+                    style={{
+                      fontSize: '0.74rem',
+                      padding: '8px 6px',
+                      textAlign: 'center',
+                      justifyContent: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <span>{w.reference}</span>
+                    {isProRef && !isUserPro && (
+                      <Lock size={10} style={{ color: 'var(--gold-light)' }} />
+                    )}
+                  </button>
+                );
+              })}
             </div>
+
+            {selectedRef !== '126610LN' && user?.tier !== 'pro' && (
+              <div style={{
+                marginTop: '10px',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                background: 'rgba(212, 175, 55, 0.08)',
+                border: '1px solid var(--border-gold-subtle)',
+                fontSize: '0.74rem',
+                color: 'var(--gold-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8px'
+              }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Lock size={13} /> {activeWatch.brand} buy-in formulas are in preview mode.
+                </span>
+                <button
+                  onClick={onOpenAuth}
+                  style={{
+                    background: 'var(--gold-primary)',
+                    color: '#000',
+                    fontWeight: 700,
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '3px 8px',
+                    fontSize: '0.68rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Unlock Pro
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Condition Selector */}

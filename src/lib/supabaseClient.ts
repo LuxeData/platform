@@ -1,9 +1,99 @@
 import { createClient } from '@supabase/supabase-js';
+import { UserSession } from '../types/watch';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://extdvvsqcpwekmbaslct.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_KznAuLW0d_1mi7YtDxd3GQ_PRZCkLgl';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+/**
+ * Verifies if an email has Pro status in Supabase dealer_leads, or registers a new dealer lead
+ */
+export async function verifyOrRegisterDealer(lead: {
+  email: string;
+  dealership?: string;
+  role?: 'dealer' | 'collector';
+}): Promise<{ success: boolean; user: UserSession; isNew: boolean; error?: string }> {
+  try {
+    const cleanEmail = lead.email.trim().toLowerCase();
+
+    // 1. Check if dealer exists in Supabase
+    const { data: existing, error: fetchError } = await supabase
+      .from('dealer_leads')
+      .select('*')
+      .ilike('email', cleanEmail)
+      .maybeSingle();
+
+    if (existing) {
+      const isProRole = ['pro', 'partner', 'admin', 'vip'].includes(existing.role?.toLowerCase());
+      const sessionUser: UserSession = {
+        name: existing.dealership_name || 'Verified Member',
+        email: existing.email,
+        dealership: existing.dealership_name || 'Independent Horology Desk',
+        role: existing.role || 'dealer',
+        tier: isProRole ? 'pro' : 'free'
+      };
+      return { success: true, user: sessionUser, isNew: false };
+    }
+
+    // 2. If new user, register them in dealer_leads
+    const newDealership = lead.dealership?.trim() || 'Independent Horology Desk';
+    const newRole = lead.role || 'dealer';
+
+    const { data: inserted, error: insertError } = await supabase
+      .from('dealer_leads')
+      .insert([
+        {
+          email: cleanEmail,
+          dealership_name: newDealership,
+          role: newRole,
+          created_at: new Date().toISOString()
+        }
+      ])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.warn('Supabase lead registration notice:', insertError.message);
+      // Fallback local session if Supabase has network glitch
+      return {
+        success: true,
+        user: {
+          name: newDealership,
+          email: cleanEmail,
+          dealership: newDealership,
+          role: newRole,
+          tier: 'free'
+        },
+        isNew: true
+      };
+    }
+
+    const sessionUser: UserSession = {
+      name: inserted.dealership_name || newDealership,
+      email: inserted.email,
+      dealership: inserted.dealership_name || newDealership,
+      role: inserted.role || newRole,
+      tier: 'free'
+    };
+
+    return { success: true, user: sessionUser, isNew: true };
+  } catch (err: any) {
+    console.error('Supabase dealer verification error:', err);
+    return {
+      success: false,
+      user: {
+        name: lead.dealership || 'Guest Member',
+        email: lead.email,
+        dealership: lead.dealership || 'Independent Horology Desk',
+        role: 'dealer',
+        tier: 'free'
+      },
+      isNew: false,
+      error: err.message
+    };
+  }
+}
 
 /**
  * Registers a new dealer or collector lead in Supabase
@@ -13,28 +103,7 @@ export async function registerDealerLead(lead: {
   dealership: string;
   role: 'dealer' | 'collector';
 }) {
-  try {
-    const { data, error } = await supabase
-      .from('dealer_leads')
-      .insert([
-        {
-          email: lead.email,
-          dealership_name: lead.dealership,
-          role: lead.role,
-          created_at: new Date().toISOString()
-        }
-      ])
-      .select();
-
-    if (error) {
-      console.warn('Supabase lead insertion warning:', error.message);
-      return { success: false, error: error.message };
-    }
-    return { success: true, data };
-  } catch (err: any) {
-    console.error('Supabase lead error:', err);
-    return { success: false, error: err.message };
-  }
+  return verifyOrRegisterDealer(lead);
 }
 
 /**

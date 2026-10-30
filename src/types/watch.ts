@@ -70,6 +70,14 @@ export interface DealerMarketMetrics {
   scrapedAt?: string;
 }
 
+export interface UserSession {
+  name: string;
+  email: string;
+  dealership: string;
+  role: 'dealer' | 'collector' | 'pro' | 'partner' | 'admin';
+  tier: 'free' | 'pro';
+}
+
 export interface WatchModel {
   id: string;
   brand: string;

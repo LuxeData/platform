@@ -1,9 +1,10 @@
 'use client';
 import React from 'react';
-import { Search, ArrowUpRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn } from 'lucide-react';
+import { Search, ArrowUpRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn, Crown } from 'lucide-react';
 import { Logo } from './Logo';
 import { WATCH_MODELS } from '../lib/marketEngine';
 import { formatUSD } from '../lib/format';
+import { UserSession } from '../types/watch';
 
 interface NavbarProps {
   searchQuery: string;
@@ -12,7 +13,7 @@ interface NavbarProps {
   setActiveFilter: (filter: string) => void;
   activeTab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage';
   setActiveTab: (tab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage') => void;
-  user: { name: string; email: string; dealership: string } | null;
+  user: UserSession | null;
   onOpenAuth: () => void;
 }
 
@@ -254,17 +255,43 @@ export const Navbar: React.FC<NavbarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: 'rgba(212, 175, 55, 0.12)',
-                border: '1px solid var(--border-gold)',
-                padding: '6px 12px',
+                background: user.tier === 'pro'
+                  ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(14, 19, 29, 0.95) 100%)'
+                  : 'rgba(255, 255, 255, 0.04)',
+                border: user.tier === 'pro' ? '1px solid var(--border-gold)' : '1px solid var(--border-subtle)',
+                padding: '6px 14px',
                 borderRadius: '8px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: user.tier === 'pro' ? '0 0 16px rgba(212, 175, 55, 0.2)' : 'none'
               }}
             >
-              <UserCheck size={14} style={{ color: 'var(--gold-primary)' }} />
-              <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#FFF' }}>
-                {user.dealership}
-              </span>
+              {user.tier === 'pro' ? (
+                <Crown size={14} style={{ color: 'var(--gold-light)' }} />
+              ) : (
+                <UserCheck size={14} style={{ color: 'var(--text-secondary)' }} />
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                <span style={{
+                  fontSize: '0.60rem',
+                  color: user.tier === 'pro' ? 'var(--gold-light)' : 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  fontWeight: user.tier === 'pro' ? 700 : 500,
+                  letterSpacing: '0.04em'
+                }}>
+                  {user.tier === 'pro' ? '👑 PRO DESK' : 'FREE DESK'}
+                </span>
+                <span style={{
+                  fontSize: '0.74rem',
+                  fontWeight: 600,
+                  color: '#FFF',
+                  maxWidth: '130px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {user.dealership}
+                </span>
+              </div>
             </div>
           ) : (
             <button

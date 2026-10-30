@@ -1,19 +1,21 @@
 'use client';
 import React from 'react';
-import { WatchModel } from '../types/watch';
-import { TrendingUp, ArrowUpRight, Target } from 'lucide-react';
+import { WatchModel, UserSession } from '../types/watch';
+import { TrendingUp, ArrowUpRight, Target, Lock, Crown } from 'lucide-react';
 import { formatUSD } from '../lib/format';
 
 interface ReferenceSelectorProps {
   watches: WatchModel[];
   selectedWatch: WatchModel;
   onSelectWatch: (watch: WatchModel) => void;
+  user?: UserSession | null;
 }
 
 export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
   watches,
   selectedWatch,
-  onSelectWatch
+  onSelectWatch,
+  user
 }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -83,9 +85,24 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                 }}>
                   {w.brand.toUpperCase()}
                 </span>
-                <span className="badge badge-gold" style={{ fontSize: '0.62rem', padding: '1px 6px', fontFamily: 'var(--font-mono)' }}>
-                  {w.reference}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="badge badge-gold" style={{ fontSize: '0.62rem', padding: '1px 6px', fontFamily: 'var(--font-mono)' }}>
+                    {w.reference}
+                  </span>
+                  {w.reference === '126610LN' ? (
+                    <span className="badge badge-emerald" style={{ fontSize: '0.55rem', padding: '1px 5px', fontWeight: 700 }}>
+                      FREE
+                    </span>
+                  ) : user?.tier === 'pro' ? (
+                    <span className="badge badge-gold" style={{ fontSize: '0.55rem', padding: '1px 5px', display: 'inline-flex', alignItems: 'center', gap: '2px', fontWeight: 700 }}>
+                      <Crown size={8} /> PRO
+                    </span>
+                  ) : (
+                    <span className="badge badge-subtle" style={{ fontSize: '0.55rem', padding: '1px 5px', color: 'var(--gold-light)', border: '1px solid var(--border-gold-subtle)', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                      <Lock size={8} /> PRO
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Model Name */}
