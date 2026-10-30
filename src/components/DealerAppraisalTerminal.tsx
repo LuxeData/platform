@@ -2,6 +2,8 @@
 import React, { useState, useMemo } from 'react';
 import { WatchModel } from '../types/watch';
 import { Logo } from './Logo';
+import { formatUSD } from '../lib/format';
+import { saveAppraisalToDb } from '../lib/supabaseClient';
 import { 
   Calculator, 
   DollarSign, 
@@ -16,21 +18,26 @@ import {
   AlertTriangle,
   Building2,
   TrendingUp,
-  FileText
+  FileText,
+  BookmarkCheck,
+  Database
 } from 'lucide-react';
 
 interface DealerAppraisalTerminalProps {
   watches: WatchModel[];
   onSelectWatch?: (watch: WatchModel) => void;
+  user?: { name: string; email: string; dealership: string } | null;
 }
 
-export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = ({ watches }) => {
+export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = ({ watches, user }) => {
   const [selectedRef, setSelectedRef] = useState<string>(watches[0]?.reference || '126610LN');
   const [condition, setCondition] = useState<'Unworn' | 'Very Good' | 'Good' | 'Fair'>('Very Good');
   const [hasBox, setHasBox] = useState<boolean>(true);
   const [hasPapers, setHasPapers] = useState<boolean>(true);
   const [dealerMarginPct, setDealerMarginPct] = useState<number>(20); // 20% rule from Bayam Jewelry dealer interview
   const [copied, setCopied] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
   const activeWatch = useMemo(() => {
     return watches.find(w => w.reference.toUpperCase() === selectedRef.toUpperCase()) || watches[0];
@@ -89,7 +96,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
 
   const handleCopyQuote = () => {
     if (!valuation || !activeWatch) return;
-    const text = `--- LUXEDATA DEALER APPRAISAL ---\nModel: ${activeWatch.brand} ${activeWatch.model} (Ref: ${activeWatch.reference})\nCondition: ${condition} | Provenance: ${hasBox && hasPapers ? 'Full Set' : 'Incomplete'}\nConsensus Retail Value (CMV): $${valuation.adjustedCMV.toLocaleString()}\nCash Buy-In Offer: $${valuation.maxBuyOffer.toLocaleString()}\nTarget Margin: ${dealerMarginPct}%\nVerified via LuxeData Chrono24 Intelligence Feed.`;
+    const text = `--- LUXEDATA DEALER APPRAISAL ---\nModel: ${activeWatch.brand} ${activeWatch.model} (Ref: ${activeWatch.reference})\nCondition: ${condition} | Provenance: ${hasBox && hasPapers ? 'Full Set' : 'Incomplete'}\nConsensus Retail Value (CMV): $${formatUSD(valuation.adjustedCMV)}\nCash Buy-In Offer: $${formatUSD(valuation.maxBuyOffer)}\nTarget Margin: ${dealerMarginPct}%\nVerified via LuxeData Chrono24 Intelligence Feed.`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -97,6 +104,34 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleSaveToLedger = async () => {
+    if (!valuation || !activeWatch) return;
+    setIsSaving(true);
+    try {
+      await saveAppraisalToDb({
+        dealerEmail: user?.email,
+        dealershipName: user?.dealership,
+        reference: activeWatch.reference,
+        brand: activeWatch.brand,
+        model: activeWatch.model,
+        condition,
+        hasBox,
+        hasPapers,
+        adjustedCMV: valuation.adjustedCMV,
+        maxBuyOffer: valuation.maxBuyOffer,
+        projectedProfit: valuation.projectedProfit,
+        dealerMarginPct,
+        clientName: user?.name ? `${user.name} Appraisal` : 'Walk-In Client'
+      });
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } catch (e) {
+      console.warn('Appraisal save error:', e);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!activeWatch || !valuation) return null;
@@ -126,7 +161,30 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button 
+              onClick={handleSaveToLedger}
+              disabled={isSaving}
+              className="btn-ghost"
+              style={{
+                fontSize: '0.78rem',
+                padding: '8px 14px',
+                borderColor: savedSuccess ? 'rgba(16, 185, 129, 0.5)' : undefined,
+                color: savedSuccess ? 'var(--emerald-gain)' : undefined
+              }}
+            >
+              {savedSuccess ? (
+                <>
+                  <CheckCircle2 size={14} style={{ color: 'var(--emerald-gain)' }} />
+                  <span>Saved to Ledger</span>
+                </>
+              ) : (
+                <>
+                  <Database size={14} style={{ color: 'var(--gold-primary)' }} />
+                  <span>{isSaving ? 'Logging to DB...' : 'Save to DB Ledger'}</span>
+                </>
+              )}
+            </button>
             <button 
               onClick={handleCopyQuote} 
               className="btn-ghost"
@@ -369,7 +427,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                   RECOMMENDED CASH BUY OFFER
                 </div>
                 <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: '#FFF', margin: '4px 0' }}>
-                  ${valuation.maxBuyOffer.toLocaleString()}
+                  ${formatUSD(valuation.maxBuyOffer)}
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
                   Immediate dealer wire payout (-{dealerMarginPct}% spread)
@@ -382,7 +440,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                   CONSENSUS RETAIL VALUE (CMV)
                 </div>
                 <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-light)', margin: '4px 0' }}>
-                  ${valuation.adjustedCMV.toLocaleString()}
+                  ${formatUSD(valuation.adjustedCMV)}
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
                   10% trimmed mean of professional dealer lots
@@ -399,7 +457,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                 <div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Projected Dealer Profit</div>
                   <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
-                    +${valuation.projectedProfit.toLocaleString()}
+                    +${formatUSD(valuation.projectedProfit)}
                   </div>
                   <div className="tabular-nums" style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{valuation.projectedROI}% ROI</div>
                 </div>

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { WatchModel, ArbitrageListing } from '../types/watch';
 import { Logo } from './Logo';
+import { formatUSD } from '../lib/format';
 import { 
   Target, 
   ExternalLink, 
@@ -117,7 +118,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <span className="badge badge-subtle">{deal.brand}</span>
                 <span className="badge badge-emerald tabular-nums" style={{ fontWeight: 700 }}>
-                  Save ${deal.estimated_profit_dollars?.toLocaleString()} (-{deal.discount_from_cmv_pct}%)
+                  Save ${formatUSD(deal.estimated_profit_dollars)} (-{deal.discount_from_cmv_pct}%)
                 </span>
               </div>
 
@@ -139,12 +140,12 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
                   <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Asking Price:</span>
                   <span className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFF' }}>
-                    ${deal.price.toLocaleString()}
+                    ${formatUSD(deal.price)}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                  <span>Retail CMV: <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>${deal.cmv.toLocaleString()}</strong></span>
-                  <span>Buy-In Floor: <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${deal.buyIn.toLocaleString()}</strong></span>
+                  <span>Retail CMV: <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>${formatUSD(deal.cmv)}</strong></span>
+                  <span>Buy-In Floor: <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${formatUSD(deal.buyIn)}</strong></span>
                 </div>
               </div>
 

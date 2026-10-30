@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { WatchModel } from '../types/watch';
+import { formatUSD } from '../lib/format';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -115,7 +116,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
             </h1>
 
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.84rem' }}>
-              Case: <strong style={{ color: 'var(--text-main)' }}>{watch.caseSize}</strong> • Material: <strong style={{ color: 'var(--text-main)' }}>{watch.material}</strong> • Dial: <strong style={{ color: 'var(--text-main)' }}>{watch.dialColor}</strong> • Boutique Retail MSRP: <strong style={{ color: 'var(--text-gold)', fontFamily: 'var(--font-mono)' }}>${retailMSRP.toLocaleString()}</strong>
+              Case: <strong style={{ color: 'var(--text-main)' }}>{watch.caseSize}</strong> • Material: <strong style={{ color: 'var(--text-main)' }}>{watch.material}</strong> • Dial: <strong style={{ color: 'var(--text-main)' }}>{watch.dialColor}</strong> • Boutique Retail MSRP: <strong style={{ color: 'var(--text-gold)', fontFamily: 'var(--font-mono)' }}>${formatUSD(retailMSRP)}</strong>
             </p>
           </div>
 
@@ -135,7 +136,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 Consensus Market Value (CMV)
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--gold-light)' }}>
-                ${valuation.adjustedCMV.toLocaleString()}
+                ${formatUSD(valuation.adjustedCMV)}
               </div>
               <div style={{
                 fontSize: '0.74rem',
@@ -155,7 +156,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 Dealer Buy-In Offer (-20%)
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
-                ${valuation.dealerCashOffer.toLocaleString()}
+                ${formatUSD(valuation.dealerCashOffer)}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                 Wholesale acquisition target
@@ -168,7 +169,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                 Gross Dealer Spread
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-gold)' }}>
-                +${valuation.grossSpread.toLocaleString()}
+                +${formatUSD(valuation.grossSpread)}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                 20.0% standard margin
@@ -274,7 +275,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                       fontSize: '0.80rem',
                       fontFamily: 'var(--font-mono)'
                     }}
-                    formatter={(val: number) => [`$${val.toLocaleString()}`, 'Consensus Value']}
+                    formatter={(val: number) => [`$${formatUSD(val)}`, 'Consensus Value']}
                     labelFormatter={(label) => `Date: ${label}`}
                   />
                   <Area 
@@ -374,10 +375,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                   ADJUSTED DEALER BUY OFFER
                 </div>
                 <div className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
-                  ${valuation.dealerCashOffer.toLocaleString()}
+                  ${formatUSD(valuation.dealerCashOffer)}
                 </div>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
-                  Target Profit: <strong style={{ color: '#FFF' }}>${valuation.grossSpread.toLocaleString()}</strong> ({dealerTargetMargin}%)
+                  Target Profit: <strong style={{ color: '#FFF' }}>${formatUSD(valuation.grossSpread)}</strong> ({dealerTargetMargin}%)
                 </div>
               </div>
             </div>
@@ -456,7 +457,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                         )}
                       </td>
                       <td className="tabular-nums" style={{ padding: '10px 10px', textAlign: 'right', fontWeight: 700, color: 'var(--gold-light)' }}>
-                        ${sale.soldPrice.toLocaleString()}
+                        ${formatUSD(sale.soldPrice)}
                       </td>
                     </tr>
                   ))}
@@ -604,7 +605,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                   fontWeight: 700,
                   fontSize: '0.82rem'
                 }}>
-                  +{valuation.premiumOverRetail}% (${retailMSRP.toLocaleString()} retail)
+                  +{valuation.premiumOverRetail}% (${formatUSD(retailMSRP)} retail)
                 </span>
               </div>
             </div>
@@ -642,14 +643,14 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch }) => {
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 700 }}>
-                          ${deal.price.toLocaleString()}
+                          ${formatUSD(deal.price)}
                         </span>
                         <span className="badge badge-subtle" style={{ fontSize: '0.60rem', padding: '1px 5px' }}>
                           {deal.location}
                         </span>
                       </div>
                       <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 600 }}>
-                        Save ${deal.estimated_profit_dollars?.toLocaleString()} ({deal.discount_from_cmv_pct}% off CMV)
+                        Save ${formatUSD(deal.estimated_profit_dollars)} ({deal.discount_from_cmv_pct}% off CMV)
                       </div>
                     </div>
 

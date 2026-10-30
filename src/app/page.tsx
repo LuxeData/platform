@@ -1,13 +1,16 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
+import { LandingView } from '../components/LandingView';
 import { ReferenceSelector } from '../components/ReferenceSelector';
 import { WatchDetailView } from '../components/WatchDetailView';
 import { DealerAppraisalTerminal } from '../components/DealerAppraisalTerminal';
 import { ArbitrageScanner } from '../components/ArbitrageScanner';
+import { AuthModal } from '../components/AuthModal';
 import { Logo } from '../components/Logo';
 import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
 import { WatchModel } from '../types/watch';
+import { formatUSD } from '../lib/format';
 import { 
   TrendingUp, 
   Layers, 
@@ -15,21 +18,52 @@ import {
   BarChart3, 
   ShieldAlert, 
   Filter, 
-  ArrowRight,
-  Database,
-  Cpu,
-  ShieldCheck,
-  Target,
-  ArrowUpRight,
-  Clock,
-  Sparkles
+  ArrowRight, 
+  Database, 
+  Cpu, 
+  ShieldCheck, 
+  Target, 
+  ArrowUpRight, 
+  Clock, 
+  Sparkles 
 } from 'lucide-react';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'terminal' | 'appraisal' | 'arbitrage'>('terminal');
+  const [activeTab, setActiveTab] = useState<'overview' | 'terminal' | 'appraisal' | 'arbitrage'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBrandFilter, setActiveBrandFilter] = useState('ALL');
   const [selectedWatch, setSelectedWatch] = useState<WatchModel>(WATCH_MODELS[0]);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; dealership: string } | null>(null);
+
+  // Load saved user session if exists
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('luxedata_user');
+      if (saved) {
+        setUser(JSON.parse(saved));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  const handleAuthenticated = (userData: { name: string; email: string; dealership: string }) => {
+    setUser(userData);
+    try {
+      localStorage.setItem('luxedata_user', JSON.stringify(userData));
+    } catch (e) {
+      // ignore
+    }
+    setActiveTab('terminal');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleEnterTerminal = (watch?: WatchModel) => {
+    if (watch) setSelectedWatch(watch);
+    setActiveTab('terminal');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Filter watches based on search query
   const filteredWatches = WATCH_MODELS.filter((watch) => {
@@ -56,6 +90,8 @@ export default function Home() {
         setActiveFilter={setActiveBrandFilter}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        user={user}
+        onOpenAuth={() => setIsAuthOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -69,10 +105,21 @@ export default function Home() {
         flexDirection: 'column',
         gap: '24px'
       }}>
+
+        {/* VIEW 0: WELCOME & COMPANY LANDING GATEWAY */}
+        {activeTab === 'overview' && (
+          <LandingView
+            watches={WATCH_MODELS}
+            macro={MACRO_METRICS}
+            onEnterTerminal={handleEnterTerminal}
+            onOpenAuth={() => setIsAuthOpen(true)}
+            onNavigateTab={setActiveTab}
+          />
+        )}
         
         {/* VIEW 1: DEALER APPRAISAL TERMINAL */}
         {activeTab === 'appraisal' && (
-          <DealerAppraisalTerminal watches={WATCH_MODELS} onSelectWatch={setSelectedWatch} />
+          <DealerAppraisalTerminal watches={WATCH_MODELS} onSelectWatch={setSelectedWatch} user={user} />
         )}
 
         {/* VIEW 2: ARBITRAGE RADAR */}
@@ -107,7 +154,7 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#FFF' }}>
-                  ${MACRO_METRICS.luxeIndexValue.toLocaleString()}
+                  ${formatUSD(MACRO_METRICS.luxeIndexValue)}
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                   Secondary basket: Rolex (3), Patek 5711, AP 15500
@@ -166,7 +213,7 @@ export default function Home() {
                     TOP ARBITRAGE SIGNAL
                   </span>
                   <span className="badge badge-emerald">
-                    SAVE ${MACRO_METRICS.topArbitrageDeal.profitDollars.toLocaleString()}
+                    SAVE ${formatUSD(MACRO_METRICS.topArbitrageDeal.profitDollars)}
                   </span>
                 </div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -223,7 +270,7 @@ export default function Home() {
                     className="btn-primary" 
                     style={{ fontSize: '0.82rem', padding: '10px 20px' }}
                   >
-                    Open Dealer Terminal <ArrowRight size={15} />
+                    Open Dealer Desk <ArrowRight size={15} />
                   </button>
                 </div>
               </div>
@@ -278,6 +325,13 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Auth & Access Modal */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onAuthenticated={handleAuthenticated}
+      />
 
     </div>
   );

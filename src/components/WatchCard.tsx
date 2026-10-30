@@ -2,6 +2,7 @@
 import React from 'react';
 import { WatchModel } from '../types/watch';
 import { TrendingUp, TrendingDown, ChevronRight, Sparkles, Activity } from 'lucide-react';
+import { formatUSD } from '../lib/format';
 
 interface WatchCardProps {
   watch: WatchModel;
@@ -52,14 +53,14 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected, onSelec
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
             <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Consensus Market Value</span>
             <span className="tabular-nums" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold-light)' }}>
-              ${watch.currentAskingAvg.toLocaleString()}
+              ${formatUSD(watch.currentAskingAvg)}
             </span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>MSRP: ${watch.aiAnalysis.retailMSRP.toLocaleString()}</span>
+            <span style={{ color: 'var(--text-muted)' }}>MSRP: ${formatUSD(watch.aiAnalysis.retailMSRP)}</span>
             <span className="tabular-nums" style={{ color: 'var(--text-gold)', fontWeight: 600 }}>
-              Spread: +${watch.aiAnalysis.spreadDollars.toLocaleString()} ({watch.aiAnalysis.currentSpread}%)
+              Spread: +${formatUSD(watch.aiAnalysis.spreadDollars)} ({watch.aiAnalysis.currentSpread}%)
             </span>
           </div>
 
@@ -74,7 +75,7 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected, onSelec
               borderTop: '1px dashed rgba(255, 255, 255, 0.06)'
             }}>
               <span style={{ color: 'var(--text-secondary)' }}>Dealer Buy-In (-20%):</span>
-              <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${watch.dealerMetrics.dealerBuyInPrice.toLocaleString()}</strong>
+              <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${formatUSD(watch.dealerMetrics.dealerBuyInPrice)}</strong>
             </div>
           )}
         </div>

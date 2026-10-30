@@ -2,6 +2,7 @@
 import React from 'react';
 import { WatchModel } from '../types/watch';
 import { TrendingUp, ArrowUpRight, Target } from 'lucide-react';
+import { formatUSD } from '../lib/format';
 
 interface ReferenceSelectorProps {
   watches: WatchModel[];
@@ -117,7 +118,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                     fontWeight: 700,
                     color: isSelected ? 'var(--gold-light)' : '#FFF'
                   }}>
-                    ${w.currentAskingAvg.toLocaleString()}
+                    ${formatUSD(w.currentAskingAvg)}
                   </div>
                 </div>
 
@@ -130,7 +131,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                     fontWeight: 600,
                     color: 'var(--emerald-gain)'
                   }}>
-                    ${w.recentSoldAvg.toLocaleString()}
+                    ${formatUSD(w.recentSoldAvg)}
                   </div>
                 </div>
               </div>

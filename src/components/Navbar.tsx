@@ -1,16 +1,19 @@
 'use client';
 import React from 'react';
-import { Search, ArrowUpRight, TrendingUp, SlidersHorizontal, Shield, Sparkles } from 'lucide-react';
+import { Search, ArrowUpRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn } from 'lucide-react';
 import { Logo } from './Logo';
 import { WATCH_MODELS } from '../lib/marketEngine';
+import { formatUSD } from '../lib/format';
 
 interface NavbarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
-  activeTab: 'terminal' | 'appraisal' | 'arbitrage';
-  setActiveTab: (tab: 'terminal' | 'appraisal' | 'arbitrage') => void;
+  activeTab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage';
+  setActiveTab: (tab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage') => void;
+  user: { name: string; email: string; dealership: string } | null;
+  onOpenAuth: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -19,7 +22,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeFilter,
   setActiveFilter,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  user,
+  onOpenAuth
 }) => {
   return (
     <header style={{
@@ -60,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               LIVE CHRONO24 FEED
             </span>
             <span style={{ color: 'var(--text-faint)' }}>•</span>
-            <span style={{ color: 'var(--text-muted)' }}>281 Monitored Dealer & Private Lots</span>
+            <span style={{ color: 'var(--text-muted)' }}>281 Active Lots</span>
           </div>
 
           {/* Scrolling Watch Feeds */}
@@ -69,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div key={w.reference} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>{w.brand} {w.reference}:</span>
                 <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
-                  ${w.currentAskingAvg.toLocaleString()}
+                  ${formatUSD(w.currentAskingAvg)}
                 </span>
                 <span className="tabular-nums" style={{
                   color: w.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
@@ -88,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Engine Latency Badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, color: 'var(--text-muted)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-              METHODOLOGY: 10% TRIMMED MEAN
+              10% TRIMMED MEAN CONSENSUS
             </span>
           </div>
         </div>
@@ -102,10 +107,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '24px'
+        gap: '20px'
       }}>
         {/* Brand Emblem */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }} onClick={() => setActiveTab('terminal')}>
+        <div 
+          style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }} 
+          onClick={() => setActiveTab('overview')}
+        >
           <Logo size={40} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -128,13 +136,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               textTransform: 'uppercase',
               fontFamily: 'var(--font-mono)'
             }}>
-              Secondary Luxury Asset Pricing Terminal
+              Luxury Asset Intelligence Terminal
             </div>
           </div>
         </div>
 
         {/* Global Reference Search Bar */}
-        <div style={{ flex: 1, maxWidth: '440px', position: 'relative' }}>
+        <div style={{ flex: 1, maxWidth: '380px', position: 'relative' }}>
           <Search size={15} style={{
             position: 'absolute',
             left: '14px',
@@ -144,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           }} />
           <input
             type="text"
-            placeholder="Search reference (e.g. 126610LN, 116500LN, 5711) or model..."
+            placeholder="Search reference (126610LN, 116500LN)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -152,19 +160,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               background: 'rgba(14, 19, 29, 0.75)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '9px',
-              padding: '9px 40px 9px 38px',
+              padding: '9px 38px 9px 36px',
               color: 'var(--text-main)',
               fontSize: '0.82rem',
               outline: 'none',
-              transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+              transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-gold)';
-              e.currentTarget.style.boxShadow = '0 0 16px rgba(212, 175, 55, 0.15)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-subtle)';
-              e.currentTarget.style.boxShadow = 'none';
+            onFocus={() => {
+              if (activeTab === 'overview') setActiveTab('terminal');
             }}
           />
           <kbd style={{
@@ -195,14 +198,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           gap: '3px'
         }}>
           <button
+            onClick={() => setActiveTab('overview')}
+            className={`btn-ghost ${activeTab === 'overview' ? 'active' : ''}`}
+            style={{
+              fontSize: '0.76rem',
+              padding: '7px 13px',
+              border: 'none',
+              borderRadius: '7px',
+              fontWeight: activeTab === 'overview' ? 700 : 500
+            }}
+          >
+            Overview
+          </button>
+
+          <button
             onClick={() => setActiveTab('terminal')}
             className={`btn-ghost ${activeTab === 'terminal' ? 'active' : ''}`}
             style={{
               fontSize: '0.76rem',
-              padding: '7px 15px',
+              padding: '7px 13px',
               border: 'none',
               borderRadius: '7px',
-              fontWeight: activeTab === 'terminal' ? 600 : 500
+              fontWeight: activeTab === 'terminal' ? 700 : 500
             }}
           >
             Market Terminal
@@ -213,13 +230,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             className={`btn-ghost ${activeTab === 'appraisal' ? 'active' : ''}`}
             style={{
               fontSize: '0.76rem',
-              padding: '7px 15px',
+              padding: '7px 13px',
               border: 'none',
               borderRadius: '7px',
-              fontWeight: activeTab === 'appraisal' ? 600 : 500
+              fontWeight: activeTab === 'appraisal' ? 700 : 500
             }}
           >
-            Dealer Appraisal
+            Appraisal Desk
           </button>
 
           <button
@@ -227,10 +244,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             className={`btn-ghost ${activeTab === 'arbitrage' ? 'active' : ''}`}
             style={{
               fontSize: '0.76rem',
-              padding: '7px 15px',
+              padding: '7px 13px',
               border: 'none',
               borderRadius: '7px',
-              fontWeight: activeTab === 'arbitrage' ? 600 : 500,
+              fontWeight: activeTab === 'arbitrage' ? 700 : 500,
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px'
@@ -241,8 +258,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               background: 'var(--emerald-gain)',
               color: '#000',
               fontWeight: 800,
-              fontSize: '0.62rem',
-              padding: '1px 6px',
+              fontSize: '0.60rem',
+              padding: '1px 5px',
               borderRadius: '9999px'
             }}>
               31
@@ -250,15 +267,36 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
 
-        {/* Institutional Inquiries CTA */}
-        <button
-          onClick={() => setActiveTab('appraisal')}
-          className="btn-primary"
-          style={{ fontSize: '0.78rem', padding: '8px 16px', borderRadius: '8px' }}
-        >
-          <Shield size={14} />
-          <span>Dealer Portal</span>
-        </button>
+        {/* User Auth / Dealer Access Button */}
+        {user ? (
+          <div 
+            onClick={onOpenAuth}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(212, 175, 55, 0.12)',
+              border: '1px solid var(--border-gold)',
+              padding: '6px 14px',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            <UserCheck size={14} style={{ color: 'var(--gold-primary)' }} />
+            <span style={{ fontSize: '0.76rem', fontWeight: 600, color: '#FFF' }}>
+              {user.dealership}
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={onOpenAuth}
+            className="btn-primary"
+            style={{ fontSize: '0.76rem', padding: '8px 16px', borderRadius: '8px' }}
+          >
+            <Shield size={14} />
+            <span>Dealer Access</span>
+          </button>
+        )}
       </div>
     </header>
   );
