@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div style={{
         background: 'linear-gradient(90deg, #070A10 0%, #0C121D 50%, #070A10 100%)',
         borderBottom: '1px solid var(--border-hairline)',
-        padding: '6px 24px',
+        padding: '6px 20px',
         fontSize: '0.72rem',
         overflow: 'hidden',
         position: 'relative'
@@ -49,52 +49,106 @@ export const Navbar: React.FC<NavbarProps> = ({
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '20px'
+          gap: '14px'
         }}>
-          {/* Provenance Tag */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {/* Provenance Tag (Pinned Left) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexShrink: 0,
+            paddingRight: '14px',
+            borderRight: '1px solid var(--border-hairline)',
+            zIndex: 2
+          }}>
             <span className="pulse-indicator"></span>
             <span style={{
               fontFamily: 'var(--font-mono)',
               color: 'var(--text-gold)',
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase'
+              fontWeight: 700,
+              letterSpacing: '0.07em',
+              textTransform: 'uppercase',
+              fontSize: '0.68rem'
             }}>
               LIVE CHRONO24 FEED
             </span>
             <span style={{ color: 'var(--text-faint)' }}>•</span>
-            <span style={{ color: 'var(--text-muted)' }}>281 Active Lots</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontFamily: 'var(--font-mono)' }}>281 LOTS</span>
           </div>
 
-          {/* Scrolling Watch Feeds */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '28px', overflowX: 'auto', whiteSpace: 'nowrap', scrollbarWidth: 'none' }}>
-            {WATCH_MODELS.map((w) => (
-              <div key={w.reference} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>{w.brand} {w.reference}:</span>
-                <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
-                  ${formatUSD(w.currentAskingAvg)}
-                </span>
-                <span className="tabular-nums" style={{
-                  color: w.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '2px',
-                  fontWeight: 600
-                }}>
-                  <ArrowUpRight size={11} />
-                  +{w.thirtyDayChangePct}%
-                </span>
-              </div>
-            ))}
+          {/* Continuous Horizontally Scrolling Watch Marquee */}
+          <div style={{
+            flex: 1,
+            overflow: 'hidden',
+            position: 'relative',
+            maskImage: 'linear-gradient(to right, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%)'
+          }}>
+            <div className="ticker-marquee-track">
+              {/* Set 1 */}
+              {WATCH_MODELS.map((w) => (
+                <div key={`ticker-1-${w.reference}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '0 16px', fontSize: '0.72rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>
+                    {w.brand} <strong style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong>:
+                  </span>
+                  <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
+                    ${formatUSD(w.currentAskingAvg)}
+                  </span>
+                  <span className="tabular-nums" style={{
+                    color: w.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '2px',
+                    fontWeight: 600
+                  }}>
+                    <ArrowUpRight size={11} />
+                    +{w.thirtyDayChangePct}%
+                  </span>
+                  <span style={{ color: 'rgba(212, 175, 55, 0.35)', marginLeft: '12px' }}>◆</span>
+                </div>
+              ))}
+
+              {/* Set 2 (Duplicates for endless smooth 60fps loop) */}
+              {WATCH_MODELS.map((w) => (
+                <div key={`ticker-2-${w.reference}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '0 16px', fontSize: '0.72rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>
+                    {w.brand} <strong style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong>:
+                  </span>
+                  <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
+                    ${formatUSD(w.currentAskingAvg)}
+                  </span>
+                  <span className="tabular-nums" style={{
+                    color: w.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '2px',
+                    fontWeight: 600
+                  }}>
+                    <ArrowUpRight size={11} />
+                    +{w.thirtyDayChangePct}%
+                  </span>
+                  <span style={{ color: 'rgba(212, 175, 55, 0.35)', marginLeft: '12px' }}>◆</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Engine Latency Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, color: 'var(--text-muted)' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-              10% TRIMMED MEAN CONSENSUS
+          {/* Engine Latency Badge (Pinned Right) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexShrink: 0,
+            paddingLeft: '14px',
+            borderLeft: '1px solid var(--border-hairline)',
+            zIndex: 2,
+            color: 'var(--text-muted)'
+          }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.66rem', color: 'var(--text-muted)' }}>
+              10% TRIMMED MEAN
             </span>
+            <span style={{ color: 'var(--text-faint)' }}>•</span>
+            <span style={{ color: 'var(--emerald-gain)', fontSize: '0.66rem', fontFamily: 'var(--font-mono)' }}>24MS</span>
           </div>
         </div>
       </div>

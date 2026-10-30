@@ -279,21 +279,139 @@ body {
 /* Marquee Ticker Animation */
 @keyframes ticker-scroll {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-.ticker-marquee {
+.ticker-marquee-track {
   display: flex;
+  width: max-content;
   white-space: nowrap;
-  animation: ticker-scroll 45s linear infinite;
+  animation: ticker-scroll 38s linear infinite;
+  will-change: transform;
 }
 
-.ticker-marquee:hover {
+.ticker-marquee-track:hover {
   animation-play-state: paused;
+}
+
+/* Horological Mechanical Gear & Ring Animations */
+@keyframes rotate-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate-counter-clockwise {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-rotate-slow {
+  animation: rotate-clockwise 75s linear infinite;
+}
+
+.animate-rotate-reverse {
+  animation: rotate-counter-clockwise 105s linear infinite;
+}
+
+.animate-rotate-medium {
+  animation: rotate-clockwise 45s linear infinite;
+}
+
+/* Ambient Floating Aurora Light Orbs */
+@keyframes aurora-float-1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.12;
+  }
+  50% {
+    transform: translate(40px, -25px) scale(1.15);
+    opacity: 0.22;
+  }
+  100% {
+    transform: translate(-30px, 20px) scale(0.95);
+    opacity: 0.12;
+  }
+}
+
+@keyframes aurora-float-2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.08;
+  }
+  50% {
+    transform: translate(-50px, 35px) scale(1.2);
+    opacity: 0.18;
+  }
+  100% {
+    transform: translate(35px, -20px) scale(1.05);
+    opacity: 0.08;
+  }
+}
+
+.ambient-aurora-gold {
+  animation: aurora-float-1 16s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.ambient-aurora-sapphire {
+  animation: aurora-float-2 22s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+/* Gold Text Specular Sheen */
+@keyframes gold-sheen-sweep {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gold-sheen-text {
+  background: linear-gradient(
+    90deg,
+    #D4AF37 0%,
+    #FFF8DE 20%,
+    #D4AF37 40%,
+    #ECC868 60%,
+    #FFF8DE 80%,
+    #D4AF37 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-sheen-sweep 8s linear infinite;
+}
+
+/* Border Shimmer & Glowing Beams */
+.border-beam-card {
+  position: relative;
+  background: var(--bg-card);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border-gold-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.7), 0 0 24px rgba(212, 175, 55, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.border-beam-card:hover {
+  border-color: var(--border-gold);
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
 }
 
 /* Printable Appraisal Sheet Media Query */
