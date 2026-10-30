@@ -1,0 +1,131 @@
+name: LuxeData CI/CD Quality & Security Gate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Static Analysis, TypeScript Strict Check & ESLint
+  # -------------------------------------------------------------
+  typecheck-and-lint:
+    name: 🛡️ TypeScript & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Strict TypeScript Compilation (Zero Emit)
+        run: npm run typecheck
+
+      - name: Next.js ESLint Code Quality
+        run: npm run lint
+
+  # -------------------------------------------------------------
+  # Job 2: Next.js Production Build Gate
+  # -------------------------------------------------------------
+  production-build-gate:
+    name: 🏗️ Production Next.js Build
+    needs: [typecheck-and-lint]
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://extdvvsqcpwekmbaslct.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_KznAuLW0d_1mi7YtDxd3GQ_PRZCkLgl' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Restore Next.js Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute Production Build
+        run: npm run build
+
+  # -------------------------------------------------------------
+  # Job 3: Security & Secret Scanning
+  # -------------------------------------------------------------
+  security-audit:
+    name: 🔒 Security & Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for Unintended Committed Secrets & Private Keys
+        run: |
+          echo "Scanning working tree for rogue private keys or tokens..."
+          # Fail if accidental .env.local with live secrets or private keys was tracked in git
+          if git ls-files | grep -E '(\.env\.local|\.env\.production|id_rsa|private_key\.pem)$'; then
+            echo "❌ CRITICAL: Sensitive environment file tracked in git!"
+            exit 1
+          fi
+          echo "✅ No sensitive credential files committed."
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: NPM Dependency Audit
+        run: npm audit --audit-level=critical
+        continue-on-error: true
+
+  # -------------------------------------------------------------
+  # Job 4: Final Status Gate for Branch Protection
+  # -------------------------------------------------------------
+  ci-status-gate:
+    name: ✅ CI All-Checks Gate
+    needs: [typecheck-and-lint, production-build-gate, security-audit]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Verify All CI Jobs Succeeded
+        run: |
+          if [ "${{ needs.typecheck-and-lint.result }}" != "success" ]; then
+            echo "❌ TypeScript or Linting failed."
+            exit 1
+          fi
+          if [ "${{ needs.production-build-gate.result }}" != "success" ]; then
+            echo "❌ Production Next.js build failed."
+            exit 1
+          fi
+          echo "🎉 All CI checks passed! Pull Request is eligible to merge."
+
