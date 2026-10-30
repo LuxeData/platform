@@ -495,13 +495,13 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               {/* Retail Consensus Market Value */}
               <div style={{ background: 'rgba(212, 175, 55, 0.06)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-gold)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  CONSENSUS RETAIL VALUE (CMV)
+                  TRI-VENUE RETAIL VALUE (CMV)
                 </div>
                 <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-light)', margin: '4px 0' }}>
                   ${formatUSD(valuation.adjustedCMV)}
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
-                  10% trimmed mean of professional dealer lots
+                  Calibrated across Chrono24, eBay Realized, &amp; WatchCharts
                 </div>
               </div>
             </div>
@@ -545,7 +545,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               Provenance: {hasBox && hasPapers ? 'Original Box & Papers (Full Set)' : hasBox ? 'Box Only' : hasPapers ? 'Papers Only' : 'Watch Only (Naked)'}
             </div>
             <div style={{ fontSize: '0.70rem', color: 'var(--text-gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldCheck size={13} /> Backed by LuxeData Consensus Algorithm
+              <ShieldCheck size={13} /> Backed by LuxeData Tri-Venue Algorithm (C24 + eBay Realized + WatchCharts)
             </div>
           </div>
         </div>

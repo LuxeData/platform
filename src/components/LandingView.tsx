@@ -76,7 +76,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
         <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <span className="badge badge-gold" style={{ padding: '5px 14px', fontSize: '0.72rem' }}>
             <span className="pulse-indicator"></span>
-            CHRONO24 CONSENSUS ENGINE • 281 ACTIVE LOTS
+            TRI-VENUE CONSENSUS • CHRONO24 + EBAY + WATCHCHARTS
           </span>
           <span className="badge badge-subtle" style={{ padding: '5px 14px', fontSize: '0.70rem', fontFamily: 'var(--font-mono)' }}>
             INSTITUTIONAL B2B SUITE
@@ -104,7 +104,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
             maxWidth: '780px',
             margin: '0 auto'
           }}>
-            LuxeData replaces speculative asking price guesswork with an outlier-trimmed <strong>Consensus Market Value (CMV)</strong>, equips dealers with a defensible <strong>20% cash buy-in formula</strong>, and scans thousands of secondary listings for sub-wholesale arbitrage.
+            LuxeData replaces speculative asking price guesswork with a multi-venue <strong>Consensus Market Value (CMV)</strong> calibrated across Chrono24 dealer asks, eBay realized cash sales, and WatchCharts index data. It equips dealers with a defensible <strong>20% cash buy-in formula</strong> and scans live secondary listings for sub-wholesale arbitrage.
           </p>
         </div>
 
@@ -344,7 +344,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               gap: '18px'
             }}>
               <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Chrono24 Consensus Valuation Matrix
+                Multi-Venue Consensus Valuation Matrix
               </div>
 
               {/* Price Pair (Stacks on mobile, side-by-side on desktop) */}

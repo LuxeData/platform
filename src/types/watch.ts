@@ -55,6 +55,28 @@ export interface ArbitrageListing {
   estimated_profit_dollars?: number;
 }
 
+export interface VenuePricingData {
+  venue: 'Chrono24' | 'eBay' | 'WatchCharts';
+  venueType: 'Dealer Asking Consensus' | 'Realized Sold Transactions' | 'Aggregated Secondary Index';
+  price: number;
+  weightPct: number;
+  sampleCount: number;
+  status: 'LIVE ASKING' | 'REALIZED TRANSACTIONS' | 'INDEX COMPOSITE';
+  lastUpdated: string;
+  notes: string;
+}
+
+export interface MultiVenueConsensus {
+  consolidatedPrice: number;
+  chrono24: VenuePricingData;
+  ebay: VenuePricingData;
+  watchcharts: VenuePricingData;
+  methodology: string;
+  confidenceScore: number;
+  venueSpreadPct: number;
+  askingVsRealizedGapPct: number;
+}
+
 export interface DealerMarketMetrics {
   consensusMarketValue: number;
   dealerBuyInPrice: number; // 20% discount from consensus market value
@@ -67,6 +89,7 @@ export interface DealerMarketMetrics {
   methodology: string;
   spreadRule: string;
   arbitrageDeals?: ArbitrageListing[];
+  multiVenue?: MultiVenueConsensus;
   scrapedAt?: string;
 }
 
@@ -95,5 +118,6 @@ export interface WatchModel {
   recentSales: SoldListing[];
   aiAnalysis: AIAnalysis;
   dealerMetrics?: DealerMarketMetrics;
+  multiVenue?: MultiVenueConsensus;
   imageUrl?: string;
 }

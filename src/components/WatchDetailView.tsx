@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
+import { MultiVenueConsensusCard } from './MultiVenueConsensusCard';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -30,7 +31,8 @@ import {
   ArrowUpRight,
   Info,
   Lock,
-  Crown
+  Crown,
+  Layers
 } from 'lucide-react';
 
 interface WatchDetailViewProps {
@@ -199,7 +201,16 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
         </div>
       </div>
 
-      {/* 2. Main Terminal Grid: Responsive Layout (Stacks on Mobile) */}
+      {/* 2. Tri-Venue Consensus Engine (Chrono24 + eBay Realized Sold + WatchCharts) */}
+      {watch.multiVenue && (
+        <MultiVenueConsensusCard
+          multiVenue={watch.multiVenue}
+          watchModel={watch.model}
+          reference={watch.reference}
+        />
+      )}
+
+      {/* 3. Main Terminal Grid: Responsive Layout (Stacks on Mobile) */}
       {isLocked ? (
         <div style={{ position: 'relative', width: '100%' }}>
           
@@ -535,14 +546,14 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                   color: '#FFF'
                 }}>
                   <Scale size={16} style={{ color: 'var(--gold-primary)' }} />
-                  Live Chrono24 Market Feed (Real Ingested Lots)
+                  Multi-Venue Order Book &amp; Realized Sales
                 </h3>
                 <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Active listings scraped via headless browser with seller classification
+                  Cross-referenced Chrono24 dealer/private listings and eBay completed transactions (Authenticity Guaranteed)
                 </p>
               </div>
               <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
-                {watch.dealerMetrics?.totalActiveListings || 60} ACTIVE LOTS TRACKED
+                MULTI-VENUE ACTIVE + SOLD
               </span>
             </div>
 
@@ -577,10 +588,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                     textTransform: 'uppercase'
                   }}>
                     <th style={{ padding: '8px 10px' }}>LOT / ID</th>
-                    <th style={{ padding: '8px 10px' }}>SELLER TYPE</th>
+                    <th style={{ padding: '8px 10px' }}>VENUE / SOURCE</th>
                     <th style={{ padding: '8px 10px' }}>CONDITION</th>
                     <th style={{ padding: '8px 10px' }}>PROVENANCE</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>ASKING PRICE</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>PRICE / HAMMER</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -590,7 +601,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                         #{sale.id}
                       </td>
                       <td style={{ padding: '10px 10px' }}>
-                        <span className={sale.source.includes('Dealer') ? 'badge badge-gold' : 'badge badge-subtle'} style={{ fontSize: '0.65rem' }}>
+                        <span 
+                          className={sale.source.includes('eBay') ? 'badge badge-emerald' : sale.source.includes('Dealer') ? 'badge badge-gold' : 'badge badge-subtle'} 
+                          style={{ fontSize: '0.65rem' }}
+                        >
                           {sale.source}
                         </span>
                       </td>

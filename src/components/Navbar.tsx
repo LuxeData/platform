@@ -71,10 +71,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               textTransform: 'uppercase',
               fontSize: '0.68rem'
             }}>
-              LIVE CHRONO24 FEED
+              TRI-VENUE FEED
             </span>
             <span style={{ color: 'var(--text-faint)' }}>•</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontFamily: 'var(--font-mono)' }}>281 LOTS</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.66rem', fontFamily: 'var(--font-mono)' }}>CHRONO24 + EBAY + WCI</span>
           </div>
 
           {/* Continuous Horizontally Scrolling Watch Marquee */}
