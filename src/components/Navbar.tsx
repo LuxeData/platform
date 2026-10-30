@@ -11,8 +11,8 @@ interface NavbarProps {
   setSearchQuery: (query: string) => void;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
-  activeTab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage';
-  setActiveTab: (tab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage') => void;
+  activeTab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage' | 'legal';
+  setActiveTab: (tab: 'overview' | 'terminal' | 'appraisal' | 'arbitrage' | 'legal') => void;
   user: UserSession | null;
   onOpenAuth: () => void;
 }
