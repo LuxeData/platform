@@ -1,7 +1,13 @@
 'use client';
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Logo } from './Logo';
-import { verifyOrRegisterDealer } from '../lib/supabaseClient';
+import { 
+  signInWithSupabase, 
+  signUpWithSupabase, 
+  signOutFromSupabase, 
+  requestPasswordReset 
+} from '../lib/supabaseClient';
 import { UserSession } from '../types/watch';
 import { 
   X, 
@@ -11,12 +17,16 @@ import {
   Building2, 
   ArrowRight, 
   CheckCircle2, 
-  Sparkles,
-  UserCheck,
-  Crown,
-  LogOut,
-  Zap,
-  Check
+  Crown, 
+  LogOut, 
+  Check, 
+  Eye, 
+  EyeOff, 
+  AlertCircle, 
+  Loader2,
+  KeyRound,
+  Shield,
+  HelpCircle
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -34,79 +44,164 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onAuthenticated,
   onSignOut
 }) => {
+  // Auth Modes: 'signin' | 'register' | 'forgot'
+  const [authMode, setAuthMode] = useState<'signin' | 'register' | 'forgot'>('signin');
+
+  // Form Fields
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [dealership, setDealership] = useState('');
   const [role, setRole] = useState<'dealer' | 'collector'>('dealer');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedMessage, setSubmittedMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // States
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [copiedInvoice, setCopiedInvoice] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const resetFormState = () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setPassword('');
+    setConfirmPassword('');
+  };
+
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
-    setIsSubmitting(true);
+    if (!email || !password) {
+      setErrorMessage('Please provide both your work email and password.');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const result = await verifyOrRegisterDealer({
-        email,
-        dealership,
-        role
-      });
+      const res = await signInWithSupabase({ email, password });
+      setIsLoading(false);
 
-      setIsSubmitting(false);
-
-      if (result.user.tier === 'pro') {
-        setSubmittedMessage('👑 Pro Partner Verified! Full terminal order books unlocked.');
-      } else {
-        setSubmittedMessage('✓ Verified Dealer Session initialized (Free Submariner Tier).');
+      if (!res.success || !res.user) {
+        setErrorMessage(res.error || 'Invalid email or password. Please verify your credentials.');
+        return;
       }
 
+      setSuccessMessage(`Welcome back, ${res.user.dealership}. Authenticating terminal...`);
       setTimeout(() => {
-        onAuthenticated(result.user);
+        onAuthenticated(res.user!);
         onClose();
-        setSubmittedMessage(null);
-      }, 1200);
-    } catch (err) {
-      console.warn('Supabase auth notice:', err);
-      setIsSubmitting(false);
-      onAuthenticated({
-        name: dealership || 'Independent Horology Desk',
-        email: email || 'dealer@luxedata.io',
-        dealership: dealership || 'Independent Horology Desk',
-        role: 'dealer',
-        tier: 'free'
-      });
-      onClose();
+        resetFormState();
+      }, 1000);
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err?.message || 'Authentication service error. Please try again.');
     }
   };
 
-  const handleInstantGuestAccess = () => {
-    onAuthenticated({
-      name: 'Guest Dealer',
-      email: 'guest@luxedata.io',
-      dealership: 'Private Client Desk',
-      role: 'dealer',
-      tier: 'free'
-    });
-    onClose();
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!email || !password || !dealership) {
+      setErrorMessage('Please complete all required fields.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters in length.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match. Please re-enter.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await signUpWithSupabase({
+        email,
+        password,
+        dealership,
+        role
+      });
+      setIsLoading(false);
+
+      if (!res.success) {
+        setErrorMessage(res.error || 'Failed to initialize dealer account. Please try again.');
+        return;
+      }
+
+      if (res.requiresEmailConfirmation) {
+        setSuccessMessage(
+          'Verification email dispatched! Please check your inbox to confirm your email, then sign in.'
+        );
+        setTimeout(() => {
+          setAuthMode('signin');
+          resetFormState();
+        }, 3500);
+        return;
+      }
+
+      if (res.user) {
+        setSuccessMessage('Dealer account initialized. Opening institutional desk...');
+        setTimeout(() => {
+          onAuthenticated(res.user!);
+          onClose();
+          resetFormState();
+        }, 1200);
+      }
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err?.message || 'Registration service error. Please try again.');
+    }
   };
 
-  const handleDemoProAccess = () => {
-    onAuthenticated({
-      name: 'Bayam Luxury & Timepieces',
-      email: 'vip.partner@luxedata.io',
-      dealership: 'Bayam Luxury Desk (Partner)',
-      role: 'pro',
-      tier: 'pro'
-    });
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!email) {
+      setErrorMessage('Please enter your registered professional email address.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await requestPasswordReset(email);
+      setIsLoading(false);
+
+      if (!res.success) {
+        setErrorMessage(res.error || 'Unable to dispatch reset link. Please verify the email address.');
+        return;
+      }
+
+      setSuccessMessage('Password reset instructions sent. Please check your inbox.');
+      setTimeout(() => {
+        setAuthMode('signin');
+        resetFormState();
+      }, 3000);
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err?.message || 'Password reset request failed.');
+    }
+  };
+
+  const handleSignOutClick = async () => {
+    await signOutFromSupabase();
+    onSignOut();
     onClose();
   };
 
   const handleCopyInvoiceInstructions = () => {
     navigator.clipboard.writeText(
-      'LuxeData Pro Terminal Invoice Request — $99/mo (Direct Wire / ACH / Zelle). Dealership: ' + (user?.dealership || 'Horology Desk') + ' — Email: ' + (user?.email || 'dealer@luxedata.io')
+      `LuxeData Pro Terminal Invoice Request — $1,188/yr (Direct Wire / ACH). Dealership: ${user?.dealership || 'Horology Desk'} — Email: ${user?.email || 'dealer@luxedata.io'}`
     );
     setCopiedInvoice(true);
     setTimeout(() => setCopiedInvoice(false), 2500);
@@ -119,7 +214,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(6, 8, 13, 0.88)',
+      background: 'rgba(5, 7, 11, 0.90)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       display: 'flex',
@@ -132,13 +227,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         className="glass-card" 
         style={{
           width: '100%',
-          maxWidth: '480px',
-          padding: '32px',
+          maxWidth: '490px',
+          padding: '34px',
           border: '1px solid var(--border-gold)',
-          background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.12) 0%, #0A0E17 80%)',
+          background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.10) 0%, #0A0E17 80%)',
           position: 'relative',
           borderRadius: '16px',
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 32px rgba(212, 175, 55, 0.15)'
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.85), 0 0 32px rgba(212, 175, 55, 0.15)'
         }}
       >
         {/* Close Button */}
@@ -152,12 +247,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             border: 'none',
             color: 'var(--text-muted)',
             cursor: 'pointer',
-            padding: '4px',
+            padding: '6px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: '50%'
           }}
+          title="Close dialog"
         >
           <X size={18} />
         </button>
@@ -167,26 +263,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
             <Logo size={46} />
           </div>
-          <h3 className="serif-heading" style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF', letterSpacing: '0.04em' }}>
-            Institutional Dealer Portal
+          <h3 className="serif-heading" style={{ fontSize: '1.42rem', fontWeight: 700, color: '#FFF', letterSpacing: '0.04em' }}>
+            {user ? 'Active Desk Profile' : 'Institutional Authentication'}
           </h3>
           <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            Verified consensus terminal, 20% buy-in appraisal ledger, and Holy Trinity order books.
+            {user 
+              ? 'Cryptographically isolated session on Supabase PostgreSQL' 
+              : 'Sign in to access your authorized dealer terminal and appraisal desk.'}
           </p>
         </div>
 
-        {/* ACTIVE LOGGED-IN STATE */}
+        {/* ============================================================== */}
+        {/* LOGGED-IN VIEW: EXECUTIVE DESK OVERVIEW */}
+        {/* ============================================================== */}
         {user ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{
               background: 'rgba(255, 255, 255, 0.02)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '12px',
-              padding: '16px 18px'
+              padding: '18px'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Active Workspace Desk
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Authenticated Entity
                 </span>
                 {user.tier === 'pro' ? (
                   <span className="badge badge-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
@@ -194,166 +294,204 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </span>
                 ) : (
                   <span className="badge badge-subtle" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    FREE TIER
+                    VERIFIED DESK (FREE)
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFF', marginBottom: '2px' }}>
+
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFF', marginBottom: '4px' }}>
                 {user.dealership}
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                 {user.email}
               </div>
+
+              {user.id && (
+                <div style={{ fontSize: '0.66rem', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', marginTop: '6px' }}>
+                  UUID: {user.id}
+                </div>
+              )}
             </div>
 
-            {/* If User is Free: Upsell to Pro with Direct Invoice */}
+            {/* If Free: Upgrade to Pro via Direct Invoice */}
             {user.tier !== 'pro' ? (
               <div style={{
-                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(14, 19, 29, 0.9) 100%)',
+                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(14, 19, 29, 0.95) 100%)',
                 border: '1px solid var(--border-gold-subtle)',
                 borderRadius: '12px',
-                padding: '16px',
+                padding: '18px',
                 textAlign: 'left'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <Crown size={14} style={{ color: 'var(--gold-light)' }} />
-                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--gold-light)' }}>
-                    Unlock Full Pro Terminal ($99/mo)
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <Crown size={15} style={{ color: 'var(--gold-light)' }} />
+                  <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                    Upgrade to Enterprise Pro Desk ($1,188/yr)
                   </span>
                 </div>
-                <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', lineHeight: '1.45', marginBottom: '12px' }}>
-                  Access Audemars Piguet &amp; Patek Philippe order books, all 31 live arbitrage signals, and automated PDF buy-in certificates. Pay via direct dealer invoice (Wire / ACH / Zelle).
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '14px' }}>
+                  Unlocks all Holy Trinity order books (AP Royal Oak, Patek Nautilus, Rolex Daytona), 31 live arbitrage signals, and unlimited certified PDF appraisal slips.
                 </p>
 
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button
-                    onClick={handleCopyInvoiceInstructions}
-                    className="btn-primary"
-                    style={{ flex: 1, padding: '9px 12px', fontSize: '0.76rem' }}
-                  >
-                    {copiedInvoice ? (
-                      <>
-                        <Check size={13} /> Invoice Details Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Mail size={13} /> Request Direct Invoice
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={handleDemoProAccess}
-                    className="btn-ghost"
-                    style={{ padding: '9px 12px', fontSize: '0.76rem' }}
-                    title="Instantly test the Pro features without waiting for database invoice approval"
-                  >
-                    <Zap size={13} style={{ color: 'var(--gold-light)' }} /> Test Pro Mode
-                  </button>
-                </div>
+                <button
+                  onClick={handleCopyInvoiceInstructions}
+                  className="btn-primary"
+                  style={{ width: '100%', padding: '10px 14px', fontSize: '0.80rem' }}
+                >
+                  {copiedInvoice ? (
+                    <>
+                      <Check size={14} /> Wire Instructions Copied to Clipboard!
+                    </>
+                  ) : (
+                    <>
+                      <Mail size={14} /> Request Direct Wire Invoice ($1,188/yr)
+                    </>
+                  )}
+                </button>
               </div>
             ) : (
               <div style={{
-                background: 'rgba(16, 185, 129, 0.08)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
+                background: 'rgba(16, 185, 129, 0.06)',
+                border: '1px solid var(--emerald-border)',
                 borderRadius: '12px',
                 padding: '14px',
                 textAlign: 'center'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: 'var(--emerald-gain)', fontSize: '0.82rem', fontWeight: 700 }}>
-                  <CheckCircle2 size={16} /> All 5 Holy Trinity Order Books &amp; 31 Arbitrage Deals Active
+                  <CheckCircle2 size={16} /> All Holy Trinity Order Books &amp; Arbitrage Feeds Active
                 </div>
               </div>
             )}
 
-            {/* Sign Out Button */}
+            {/* Actions: Sign Out */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px' }}>
               <button
-                onClick={onSignOut}
+                onClick={handleSignOutClick}
                 style={{
                   background: 'none',
                   border: 'none',
                   color: 'var(--crimson-drop)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.76rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '5px',
                   cursor: 'pointer'
                 }}
               >
-                <LogOut size={13} /> Sign Out / Switch Desk
+                <LogOut size={14} /> Terminate Session / Sign Out
               </button>
 
               <button
                 onClick={onClose}
                 className="btn-ghost"
-                style={{ fontSize: '0.76rem', padding: '6px 14px' }}
+                style={{ fontSize: '0.78rem', padding: '6px 16px' }}
               >
                 Return to Terminal
               </button>
             </div>
           </div>
         ) : (
-          /* NOT LOGGED IN - LOGIN / REGISTER FORM */
+          /* ============================================================== */
+          /* AUTHENTICATION FORMS: SIGN IN / REGISTER / FORGOT */
+          /* ============================================================== */
           <>
-            {submittedMessage ? (
-              <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                <CheckCircle2 size={42} style={{ color: 'var(--emerald-gain)', margin: '0 auto 12px auto' }} />
-                <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFF' }}>
-                  {submittedMessage}
-                </h4>
-                <p style={{ fontSize: '0.80rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                  Opening verified terminal desk...
-                </p>
+            {/* Mode Switcher Tabs */}
+            {authMode !== 'forgot' && (
+              <div style={{
+                display: 'flex',
+                background: 'rgba(255, 255, 255, 0.03)',
+                padding: '4px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-hairline)',
+                marginBottom: '18px'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('signin');
+                    resetFormState();
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '8px 0',
+                    fontSize: '0.78rem',
+                    fontWeight: authMode === 'signin' ? 700 : 500,
+                    background: authMode === 'signin' ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                    color: authMode === 'signin' ? 'var(--gold-light)' : 'var(--text-secondary)',
+                    border: authMode === 'signin' ? '1px solid var(--border-gold-subtle)' : 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('register');
+                    resetFormState();
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '8px 0',
+                    fontSize: '0.78rem',
+                    fontWeight: authMode === 'register' ? 700 : 500,
+                    background: authMode === 'register' ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                    color: authMode === 'register' ? 'var(--gold-light)' : 'var(--text-secondary)',
+                    border: authMode === 'register' ? '1px solid var(--border-gold-subtle)' : 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  Register Desk
+                </button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                
-                {/* Account Type Selector */}
-                <div style={{
-                  display: 'flex',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  padding: '3px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-hairline)'
-                }}>
-                  <button
-                    type="button"
-                    onClick={() => setRole('dealer')}
-                    style={{
-                      flex: 1,
-                      padding: '7px 0',
-                      fontSize: '0.75rem',
-                      fontWeight: role === 'dealer' ? 700 : 500,
-                      background: role === 'dealer' ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
-                      color: role === 'dealer' ? 'var(--gold-light)' : 'var(--text-secondary)',
-                      border: role === 'dealer' ? '1px solid var(--border-gold-subtle)' : 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Watch Dealer / Desk
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRole('collector')}
-                    style={{
-                      flex: 1,
-                      padding: '7px 0',
-                      fontSize: '0.75rem',
-                      fontWeight: role === 'collector' ? 700 : 500,
-                      background: role === 'collector' ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
-                      color: role === 'collector' ? 'var(--gold-light)' : 'var(--text-secondary)',
-                      border: role === 'collector' ? '1px solid var(--border-gold-subtle)' : 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Private Collector / Fund
-                  </button>
-                </div>
+            )}
 
-                {/* Work Email */}
+            {/* Error Banner */}
+            {errorMessage && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 14px',
+                background: 'rgba(244, 63, 94, 0.10)',
+                border: '1px solid rgba(244, 63, 94, 0.35)',
+                borderRadius: '8px',
+                color: 'var(--crimson-drop)',
+                fontSize: '0.76rem',
+                marginBottom: '16px'
+              }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {/* Success Banner */}
+            {successMessage && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 14px',
+                background: 'rgba(16, 185, 129, 0.10)',
+                border: '1px solid var(--emerald-border)',
+                borderRadius: '8px',
+                color: 'var(--emerald-gain)',
+                fontSize: '0.76rem',
+                marginBottom: '16px'
+              }}>
+                <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
+                <span>{successMessage}</span>
+              </div>
+            )}
+
+            {/* -------------------------------------------------------- */}
+            {/* 1. SIGN IN FORM */}
+            {/* -------------------------------------------------------- */}
+            {authMode === 'signin' && (
+              <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
                     Professional Email Address
@@ -362,7 +500,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <Mail size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="email"
-                      placeholder="e.g. dealer@dealership.com"
+                      placeholder="dealer@dealership.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -378,23 +516,302 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       }}
                     />
                   </div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--text-faint)', marginTop: '4px' }}>
-                    If you were granted Pro access in Supabase, enter that email to instantly unlock Pro mode.
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Master Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode('forgot');
+                        resetFormState();
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--gold-primary)',
+                        fontSize: '0.70rem',
+                        cursor: 'pointer',
+                        textDecoration: 'underline'
+                      }}
+                    >
+                      Forgot password?
+                    </button>
                   </div>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '8px',
+                        padding: '10px 40px 10px 36px',
+                        color: '#FFF',
+                        fontSize: '0.84rem',
+                        outline: 'none'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--text-muted)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="btn-primary"
+                  style={{ width: '100%', padding: '12px', fontSize: '0.86rem', marginTop: '6px' }}
+                >
+                  {isLoading ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader2 size={16} className="spinner" /> Authenticating...
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      Sign In to Terminal <ArrowRight size={15} />
+                    </span>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* -------------------------------------------------------- */}
+            {/* 2. REGISTER DESK FORM */}
+            {/* -------------------------------------------------------- */}
+            {authMode === 'register' && (
+              <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
+                {/* Account Type Selector */}
+                <div style={{
+                  display: 'flex',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  padding: '3px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-hairline)'
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => setRole('dealer')}
+                    style={{
+                      flex: 1,
+                      padding: '7px 0',
+                      fontSize: '0.74rem',
+                      fontWeight: role === 'dealer' ? 700 : 500,
+                      background: role === 'dealer' ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                      color: role === 'dealer' ? 'var(--gold-light)' : 'var(--text-secondary)',
+                      border: role === 'dealer' ? '1px solid var(--border-gold-subtle)' : 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Watch Dealer / Boutique
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole('collector')}
+                    style={{
+                      flex: 1,
+                      padding: '7px 0',
+                      fontSize: '0.74rem',
+                      fontWeight: role === 'collector' ? 700 : 500,
+                      background: role === 'collector' ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                      color: role === 'collector' ? 'var(--gold-light)' : 'var(--text-secondary)',
+                      border: role === 'collector' ? '1px solid var(--border-gold-subtle)' : 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Asset Fund / Collector
+                  </button>
                 </div>
 
                 {/* Dealership Name */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
-                    {role === 'dealer' ? 'Dealership or Boutique Name' : 'Collector or Organization'}
+                  <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '0.04em' }}>
+                    {role === 'dealer' ? 'Dealership or Boutique Name' : 'Fund or Organization'}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <Building2 size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="text"
-                      placeholder={role === 'dealer' ? 'e.g. Bayam Jewelry & Timepieces' : 'e.g. Private Collection'}
+                      placeholder="e.g. Geneva Horology Desk"
                       value={dealership}
                       onChange={(e) => setDealership(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '8px',
+                        padding: '9px 14px 9px 36px',
+                        color: '#FFF',
+                        fontSize: '0.84rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Email Address */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '0.04em' }}>
+                    Professional Email Address
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Mail size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                      type="email"
+                      placeholder="desk@dealership.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '8px',
+                        padding: '9px 14px 9px 36px',
+                        color: '#FFF',
+                        fontSize: '0.84rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Password Fields */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '0.04em' }}>
+                      Password (min 6)
+                    </label>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '8px',
+                        padding: '9px 12px',
+                        color: '#FFF',
+                        fontSize: '0.84rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '0.04em' }}>
+                      Confirm Password
+                    </label>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '8px',
+                        padding: '9px 12px',
+                        color: '#FFF',
+                        fontSize: '0.84rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Legal acknowledgment */}
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', lineHeight: '1.45', marginTop: '2px' }}>
+                  By initializing an account, you agree to the LuxeData{' '}
+                  <Link href="/terms" target="_blank" style={{ color: 'var(--gold-champagne)', textDecoration: 'underline' }}>
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" target="_blank" style={{ color: 'var(--gold-champagne)', textDecoration: 'underline' }}>
+                    Privacy Policy
+                  </Link>.
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="btn-primary"
+                  style={{ width: '100%', padding: '12px', fontSize: '0.86rem', marginTop: '4px' }}
+                >
+                  {isLoading ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader2 size={16} className="spinner" /> Provisioning Desk...
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      Initialize Dealer Account <ArrowRight size={15} />
+                    </span>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* -------------------------------------------------------- */}
+            {/* 3. FORGOT PASSWORD VIEW */}
+            {/* -------------------------------------------------------- */}
+            {authMode === 'forgot' && (
+              <form onSubmit={handlePasswordReset} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{
+                  padding: '12px 14px',
+                  background: 'rgba(212, 175, 55, 0.06)',
+                  border: '1px solid var(--border-gold-subtle)',
+                  borderRadius: '8px',
+                  fontSize: '0.76rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.5'
+                }}>
+                  Enter your registered professional email. Supabase Auth will dispatch a secure password reset link.
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
+                    Professional Email Address
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Mail size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                      type="email"
+                      placeholder="dealer@dealership.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                       style={{
                         width: '100%',
                         background: 'rgba(255, 255, 255, 0.03)',
@@ -409,77 +826,46 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-primary"
-                  style={{ width: '100%', padding: '12px', fontSize: '0.88rem', marginTop: '4px' }}
-                >
-                  {isSubmitting ? 'Verifying with Supabase...' : 'Sign In / Register Dealer Desk'} <ArrowRight size={15} />
-                </button>
-
-                {/* Quick Access Actions */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: '8px',
-                  paddingTop: '10px',
-                  borderTop: '1px solid var(--border-hairline)'
-                }}>
+                <div style={{ display: 'flex', gap: '10px' }}>
                   <button
                     type="button"
-                    onClick={handleInstantGuestAccess}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--text-muted)',
-                      fontSize: '0.74rem',
-                      textDecoration: 'underline',
-                      cursor: 'pointer'
+                    onClick={() => {
+                      setAuthMode('signin');
+                      resetFormState();
                     }}
+                    className="btn-ghost"
+                    style={{ flex: 1, padding: '10px', fontSize: '0.78rem' }}
                   >
-                    Continue in Free Guest Mode →
+                    Back to Sign In
                   </button>
 
                   <button
-                    type="button"
-                    onClick={handleDemoProAccess}
-                    style={{
-                      background: 'rgba(212, 175, 55, 0.1)',
-                      border: '1px solid var(--border-gold-subtle)',
-                      color: 'var(--gold-light)',
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn-primary"
+                    style={{ flex: 1, padding: '10px', fontSize: '0.78rem' }}
                   >
-                    <Crown size={12} /> Test Pro Desk Demo
+                    {isLoading ? 'Dispatching...' : 'Send Reset Link'}
                   </button>
                 </div>
-
-                {/* Certified Protocol Footer */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  paddingTop: '8px',
-                  fontSize: '0.68rem',
-                  color: 'var(--text-faint)'
-                }}>
-                  <ShieldCheck size={13} style={{ color: 'var(--gold-primary)' }} />
-                  <span>Direct Supabase ledger verification &amp; 20% margin protection</span>
-                </div>
-
               </form>
             )}
+
+            {/* Certified Security Footnote */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              paddingTop: '16px',
+              borderTop: '1px solid var(--border-hairline)',
+              marginTop: '16px',
+              fontSize: '0.68rem',
+              color: 'var(--text-faint)'
+            }}>
+              <ShieldCheck size={13} style={{ color: 'var(--gold-primary)' }} />
+              <span>Supabase Auth • TLS 1.3 Encryption • SOC 2 Type II Aligned</span>
+            </div>
           </>
         )}
       </div>
