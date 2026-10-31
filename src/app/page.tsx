@@ -10,6 +10,7 @@ import { AuthModal } from '../components/AuthModal';
 import { LegalView } from '../components/LegalView';
 import { Logo } from '../components/Logo';
 import Link from 'next/link';
+import { getActiveUserSession } from '../lib/supabaseClient';
 import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
 import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
@@ -51,6 +52,14 @@ export default function Home() {
     } catch (e) {
       // ignore
     }
+    getActiveUserSession().then((sessionUser) => {
+      if (sessionUser) {
+        setUser(sessionUser);
+        try {
+          localStorage.setItem('luxedata_user', JSON.stringify(sessionUser));
+        } catch (e) {}
+      }
+    });
   }, []);
 
   const handleAuthenticated = (userData: UserSession) => {

@@ -94,6 +94,7 @@ export interface DealerMarketMetrics {
 }
 
 export interface UserSession {
+  id?: string;
   name: string;
   email: string;
   dealership: string;
