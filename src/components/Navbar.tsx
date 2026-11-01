@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Search, ArrowUpRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn, Crown } from 'lucide-react';
+import { Search, ArrowUpRight, ArrowDownRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn, Crown } from 'lucide-react';
 import { Logo } from './Logo';
 import { WATCH_MODELS } from '../lib/marketEngine';
 import { formatUSD } from '../lib/format';
@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header style={{
       borderBottom: '1px solid var(--border-subtle)',
-      background: 'rgba(6, 8, 13, 0.94)',
+      background: 'rgba(255, 255, 255, 0.94)',
       backdropFilter: 'blur(18px)',
       position: 'sticky',
       top: 0,
@@ -38,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     }}>
       {/* Institutional Real-Time Ticker Bar */}
       <div style={{
-        background: 'linear-gradient(90deg, #070A10 0%, #0C121D 50%, #070A10 100%)',
+        background: '#F8FAFC',
         borderBottom: '1px solid var(--border-hairline)',
         padding: '6px 20px',
         fontSize: '0.72rem',
@@ -65,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="pulse-indicator"></span>
             <span style={{
               fontFamily: 'var(--font-mono)',
-              color: 'var(--text-gold)',
+              color: 'var(--gold-primary)',
               fontWeight: 700,
               letterSpacing: '0.07em',
               textTransform: 'uppercase',
@@ -90,9 +90,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               {WATCH_MODELS.map((w) => (
                 <div key={`ticker-1-${w.reference}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '0 16px', fontSize: '0.72rem' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>
-                    {w.brand} <strong style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong>:
+                    {w.brand} <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong>:
                   </span>
-                  <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
+                  <span className="tabular-nums" style={{ color: 'var(--text-main)', fontWeight: 700 }}>
                     ${formatUSD(w.currentAskingAvg)}
                   </span>
                   <span className="tabular-nums" style={{
@@ -100,12 +100,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '2px',
-                    fontWeight: 600
+                    fontWeight: 700
                   }}>
-                    <ArrowUpRight size={11} />
-                    +{w.thirtyDayChangePct}%
+                    {w.thirtyDayChangePct >= 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                    {w.thirtyDayChangePct >= 0 ? `+${w.thirtyDayChangePct}` : `${w.thirtyDayChangePct}`}%
                   </span>
-                  <span style={{ color: 'rgba(212, 175, 55, 0.35)', marginLeft: '12px' }}>◆</span>
+                  <span style={{ color: 'rgba(180, 130, 40, 0.4)', marginLeft: '12px' }}>◆</span>
                 </div>
               ))}
 
@@ -113,9 +113,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               {WATCH_MODELS.map((w) => (
                 <div key={`ticker-2-${w.reference}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '0 16px', fontSize: '0.72rem' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>
-                    {w.brand} <strong style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong>:
+                    {w.brand} <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong>:
                   </span>
-                  <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 600 }}>
+                  <span className="tabular-nums" style={{ color: 'var(--text-main)', fontWeight: 700 }}>
                     ${formatUSD(w.currentAskingAvg)}
                   </span>
                   <span className="tabular-nums" style={{
@@ -123,12 +123,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '2px',
-                    fontWeight: 600
+                    fontWeight: 700
                   }}>
-                    <ArrowUpRight size={11} />
-                    +{w.thirtyDayChangePct}%
+                    {w.thirtyDayChangePct >= 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                    {w.thirtyDayChangePct >= 0 ? `+${w.thirtyDayChangePct}` : `${w.thirtyDayChangePct}`}%
                   </span>
-                  <span style={{ color: 'rgba(212, 175, 55, 0.35)', marginLeft: '12px' }}>◆</span>
+                  <span style={{ color: 'rgba(180, 130, 40, 0.4)', marginLeft: '12px' }}>◆</span>
                 </div>
               ))}
             </div>
@@ -149,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               10% TRIMMED MEAN
             </span>
             <span style={{ color: 'var(--text-faint)' }}>•</span>
-            <span style={{ color: 'var(--emerald-gain)', fontSize: '0.66rem', fontFamily: 'var(--font-mono)' }}>24MS</span>
+            <span style={{ color: 'var(--emerald-gain)', fontSize: '0.66rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>24MS</span>
           </div>
         </div>
       </div>
@@ -158,10 +158,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div style={{
         maxWidth: '1440px',
         margin: '0 auto',
-        padding: '10px 20px',
+        padding: '12px 20px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '12px'
       }}>
         {/* Tier 1: Brand Emblem & Profile / Login */}
         <div style={{
@@ -180,9 +180,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span className="serif-heading" style={{
                   fontSize: '1.2rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                  color: '#FFF'
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  color: 'var(--text-main)'
                 }}>
                   LUXE<span className="gold-gradient-text">DATA</span>
                 </span>
@@ -195,7 +195,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 color: 'var(--text-muted)',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                fontFamily: 'var(--font-mono)'
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 600
               }}>
                 Luxury Asset Intelligence
               </div>
@@ -218,13 +219,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                background: 'rgba(14, 19, 29, 0.75)',
+                background: '#F1F5F9',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: '8px',
                 padding: '8px 36px 8px 34px',
                 color: 'var(--text-main)',
                 fontSize: '0.80rem',
-                outline: 'none'
+                outline: 'none',
+                fontWeight: 500
               }}
               onFocus={() => {
                 if (activeTab === 'overview') setActiveTab('terminal');
@@ -239,8 +241,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               fontFamily: 'var(--font-mono)',
               padding: '2px 5px',
               borderRadius: '4px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid var(--border-hairline)',
+              background: '#FFFFFF',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-muted)'
             }}>
               ⌘K
@@ -256,26 +258,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 alignItems: 'center',
                 gap: '8px',
                 background: user.tier === 'pro'
-                  ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(14, 19, 29, 0.95) 100%)'
-                  : 'rgba(255, 255, 255, 0.04)',
+                  ? 'rgba(161, 116, 36, 0.08)'
+                  : '#F1F5F9',
                 border: user.tier === 'pro' ? '1px solid var(--border-gold)' : '1px solid var(--border-subtle)',
                 padding: '6px 14px',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                boxShadow: user.tier === 'pro' ? '0 0 16px rgba(212, 175, 55, 0.2)' : 'none'
+                boxShadow: user.tier === 'pro' ? '0 2px 8px rgba(161, 116, 36, 0.15)' : 'none'
               }}
             >
               {user.tier === 'pro' ? (
-                <Crown size={14} style={{ color: 'var(--gold-light)' }} />
+                <Crown size={14} style={{ color: 'var(--gold-primary)' }} />
               ) : (
                 <UserCheck size={14} style={{ color: 'var(--text-secondary)' }} />
               )}
               <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                 <span style={{
                   fontSize: '0.60rem',
-                  color: user.tier === 'pro' ? 'var(--gold-light)' : 'var(--text-muted)',
+                  color: user.tier === 'pro' ? 'var(--gold-primary)' : 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  fontWeight: user.tier === 'pro' ? 700 : 500,
+                  fontWeight: 700,
                   letterSpacing: '0.04em'
                 }}>
                   {user.tier === 'pro' ? '👑 PRO DESK' : 'FREE DESK'}
@@ -283,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span style={{
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  color: '#FFF',
+                  color: 'var(--text-main)',
                   maxWidth: '130px',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -297,7 +299,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenAuth}
               className="btn-primary"
-              style={{ fontSize: '0.74rem', padding: '7px 14px', borderRadius: '8px' }}
+              style={{ fontSize: '0.74rem', padding: '8px 16px', borderRadius: '8px' }}
             >
               <Shield size={13} />
               <span>Dealer Access</span>
@@ -334,7 +336,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                background: 'rgba(14, 19, 29, 0.75)',
+                background: '#F1F5F9',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: '8px',
                 padding: '8px 14px 8px 34px',
@@ -351,10 +353,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Segmented Tab Switcher (Touch scrollable) */}
           <div className="mobile-tabs-container" style={{
             width: '100%',
-            background: 'rgba(14, 19, 29, 0.8)',
+            background: '#F1F5F9',
             borderRadius: '10px',
-            padding: '3px',
-            border: '1px solid var(--border-subtle)',
+            padding: '4px',
+            border: '1px solid var(--border-hairline)',
             justifyContent: 'flex-start'
           }}>
             <button
@@ -362,10 +364,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               className={`btn-ghost ${activeTab === 'overview' ? 'active' : ''}`}
               style={{
                 flex: '1 0 auto',
-                fontSize: '0.74rem',
-                padding: '6px 14px',
-                border: 'none',
-                borderRadius: '7px',
+                fontSize: '0.76rem',
+                padding: '7px 16px',
+                border: activeTab === 'overview' ? '1px solid var(--border-subtle)' : 'none',
+                background: activeTab === 'overview' ? '#FFFFFF' : 'transparent',
+                boxShadow: activeTab === 'overview' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                color: activeTab === 'overview' ? 'var(--text-main)' : 'var(--text-secondary)',
+                borderRadius: '8px',
                 fontWeight: activeTab === 'overview' ? 700 : 500,
                 textAlign: 'center'
               }}
@@ -378,10 +383,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               className={`btn-ghost ${activeTab === 'terminal' ? 'active' : ''}`}
               style={{
                 flex: '1 0 auto',
-                fontSize: '0.74rem',
-                padding: '6px 14px',
-                border: 'none',
-                borderRadius: '7px',
+                fontSize: '0.76rem',
+                padding: '7px 16px',
+                border: activeTab === 'terminal' ? '1px solid var(--border-subtle)' : 'none',
+                background: activeTab === 'terminal' ? '#FFFFFF' : 'transparent',
+                boxShadow: activeTab === 'terminal' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                color: activeTab === 'terminal' ? 'var(--text-main)' : 'var(--text-secondary)',
+                borderRadius: '8px',
                 fontWeight: activeTab === 'terminal' ? 700 : 500,
                 textAlign: 'center'
               }}
@@ -394,10 +402,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               className={`btn-ghost ${activeTab === 'appraisal' ? 'active' : ''}`}
               style={{
                 flex: '1 0 auto',
-                fontSize: '0.74rem',
-                padding: '6px 14px',
-                border: 'none',
-                borderRadius: '7px',
+                fontSize: '0.76rem',
+                padding: '7px 16px',
+                border: activeTab === 'appraisal' ? '1px solid var(--border-subtle)' : 'none',
+                background: activeTab === 'appraisal' ? '#FFFFFF' : 'transparent',
+                boxShadow: activeTab === 'appraisal' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                color: activeTab === 'appraisal' ? 'var(--text-main)' : 'var(--text-secondary)',
+                borderRadius: '8px',
                 fontWeight: activeTab === 'appraisal' ? 700 : 500,
                 textAlign: 'center'
               }}
@@ -410,10 +421,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               className={`btn-ghost ${activeTab === 'arbitrage' ? 'active' : ''}`}
               style={{
                 flex: '1 0 auto',
-                fontSize: '0.74rem',
-                padding: '6px 14px',
-                border: 'none',
-                borderRadius: '7px',
+                fontSize: '0.76rem',
+                padding: '7px 16px',
+                border: activeTab === 'arbitrage' ? '1px solid var(--border-subtle)' : 'none',
+                background: activeTab === 'arbitrage' ? '#FFFFFF' : 'transparent',
+                boxShadow: activeTab === 'arbitrage' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                color: activeTab === 'arbitrage' ? 'var(--text-main)' : 'var(--text-secondary)',
+                borderRadius: '8px',
                 fontWeight: activeTab === 'arbitrage' ? 700 : 500,
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -424,10 +438,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Arbitrage</span>
               <span style={{
                 background: 'var(--emerald-gain)',
-                color: '#000',
-                fontWeight: 800,
-                fontSize: '0.58rem',
-                padding: '1px 5px',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: '0.60rem',
+                padding: '1px 6px',
                 borderRadius: '9999px'
               }}>
                 31

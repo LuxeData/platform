@@ -525,7 +525,8 @@ export function getLiveMarketEngine() {
       priceHistory,
       recentSales,
       dealerMetrics,
-      multiVenue
+      multiVenue,
+      imageUrl: `/watches/${refKey.toLowerCase().replace('/', '_')}.jpg`
     };
 
     watchModels.push(watchModel);

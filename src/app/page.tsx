@@ -16,6 +16,7 @@ import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
 import { 
   TrendingUp, 
+  TrendingDown,
   Layers, 
   Zap, 
   BarChart3, 
@@ -124,7 +125,7 @@ export default function Home() {
         {/* VIEW 0: WELCOME & COMPANY LANDING GATEWAY */}
         {activeTab === 'overview' && (
           <LandingView
-            watches={WATCH_MODELS}
+            watches={filteredWatches.length > 0 ? filteredWatches : WATCH_MODELS}
             macro={MACRO_METRICS}
             onEnterTerminal={handleEnterTerminal}
             onOpenAuth={() => setIsAuthOpen(true)}
@@ -171,11 +172,11 @@ export default function Home() {
                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     LUXE 5 BENCHMARK INDEX
                   </span>
-                  <span className="badge badge-emerald">
-                    <TrendingUp size={11} /> +{MACRO_METRICS.luxeIndexChangePct}% 30D
+                  <span className={MACRO_METRICS.luxeIndexChangePct >= 0 ? 'badge badge-emerald' : 'badge badge-crimson'}>
+                    {MACRO_METRICS.luxeIndexChangePct >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />} {MACRO_METRICS.luxeIndexChangePct >= 0 ? `+${MACRO_METRICS.luxeIndexChangePct}` : `${MACRO_METRICS.luxeIndexChangePct}`}% 30D
                   </span>
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#FFF' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--text-main)' }}>
                   ${formatUSD(MACRO_METRICS.luxeIndexValue)}
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -193,7 +194,7 @@ export default function Home() {
                     <span className="pulse-indicator"></span> LIVE FEED
                   </span>
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--gold-dark)' }}>
                   ${(MACRO_METRICS.totalCatalogValue / 1000000).toFixed(1)}M+
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -227,23 +228,23 @@ export default function Home() {
                 style={{
                   padding: '18px 20px',
                   border: '1px solid var(--border-gold-subtle)',
-                  background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(14, 19, 29, 0.95) 100%)'
+                  background: 'linear-gradient(135deg, rgba(180, 130, 40, 0.06) 0%, #FFFFFF 100%)'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-gold)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--gold-dark)', textTransform: 'uppercase', fontWeight: 600 }}>
                     TOP ARBITRAGE SIGNAL
                   </span>
                   <span className="badge badge-emerald">
                     SAVE ${formatUSD(MACRO_METRICS.topArbitrageDeal.profitDollars)}
                   </span>
                 </div>
-                <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {MACRO_METRICS.topArbitrageDeal.model}
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <span>{MACRO_METRICS.topArbitrageDeal.discountPct}% below dealer consensus</span>
-                  <ArrowUpRight size={12} style={{ color: 'var(--gold-light)' }} />
+                  <ArrowUpRight size={12} style={{ color: 'var(--gold-dark)' }} />
                 </div>
               </div>
             </section>
@@ -267,8 +268,8 @@ export default function Home() {
 
             {/* Institutional Private Inquiries Strip */}
             <section className="glass-card" style={{
-              padding: '24px 30px',
-              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.06) 0%, rgba(14, 19, 29, 0.85) 100%)',
+              padding: '28px 32px',
+              background: 'linear-gradient(135deg, rgba(180, 130, 40, 0.05) 0%, #FFFFFF 100%)',
               border: '1px solid var(--border-gold-subtle)'
             }}>
               <div style={{
@@ -283,7 +284,7 @@ export default function Home() {
                     <span className="badge badge-gold">B2B DEALER INTEGRATION</span>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>REST API &amp; INVENTORY FEEDS</span>
                   </div>
-                  <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '6px', color: '#FFF' }}>
+                  <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '6px', color: 'var(--text-main)' }}>
                     Institutional Watch Dealer &amp; Private Portfolio Intelligence
                   </h3>
                   <p style={{ fontSize: '0.80rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
@@ -323,8 +324,8 @@ export default function Home() {
       {/* Institutional Legal Footer */}
       <footer style={{
         borderTop: '1px solid var(--border-hairline)',
-        background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.04) 0%, #05070B 80%)',
-        padding: '40px 24px',
+        background: '#FFFFFF',
+        padding: '48px 24px',
         fontSize: '0.74rem',
         color: 'var(--text-muted)'
       }}>
@@ -341,7 +342,7 @@ export default function Home() {
             <Logo size={36} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="serif-heading" style={{ fontWeight: 700, fontSize: '1.0rem', color: '#FFF', letterSpacing: '0.06em' }}>
+                <span className="serif-heading" style={{ fontWeight: 700, fontSize: '1.0rem', color: 'var(--text-main)', letterSpacing: '0.06em' }}>
                   LUXE<span className="gold-gradient-text">DATA</span> TECHNOLOGIES
                 </span>
                 <span className="badge badge-gold" style={{ fontSize: '0.60rem' }}>TRI-VENUE CONSENSUS</span>
@@ -359,7 +360,7 @@ export default function Home() {
                   <Lock size={12} color="var(--gold-primary)" /> AES-256 HSM Encrypted
                 </span>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <Scale size={12} color="var(--gold-champagne)" /> Zero Data Brokering
+                  <Scale size={12} color="var(--gold-primary)" /> Zero Data Brokering
                 </span>
               </div>
             </div>
@@ -384,7 +385,7 @@ export default function Home() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--gold-champagne)',
+                  color: 'var(--gold-dark)',
                   fontSize: '0.74rem',
                   cursor: 'pointer',
                   textDecoration: 'underline',
@@ -403,7 +404,7 @@ export default function Home() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--gold-champagne)',
+                  color: 'var(--gold-dark)',
                   fontSize: '0.74rem',
                   cursor: 'pointer',
                   textDecoration: 'underline',

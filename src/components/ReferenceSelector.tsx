@@ -1,8 +1,10 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import { WatchModel, UserSession } from '../types/watch';
 import { TrendingUp, ArrowUpRight, Target, Lock, Crown } from 'lucide-react';
 import { formatUSD } from '../lib/format';
+import { Logo } from './Logo';
 
 interface ReferenceSelectorProps {
   watches: WatchModel[];
@@ -18,7 +20,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
   user
 }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -27,25 +29,26 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{
-            fontSize: '0.72rem',
+            fontSize: '0.74rem',
             fontFamily: 'var(--font-mono)',
             color: 'var(--text-muted)',
             textTransform: 'uppercase',
-            letterSpacing: '0.06em'
+            letterSpacing: '0.06em',
+            fontWeight: 600
           }}>
             Benchmark Reference Index (5 Core Models)
           </span>
         </div>
-        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          Click reference to load terminal analytics
+        <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+          Select reference to inspect terminal order book
         </span>
       </div>
 
       {/* 5-Column Clean Desktop Grid with Mobile Adaptive Wrapping */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-        gap: '10px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gap: '12px',
         width: '100%'
       }}>
         {watches.map((w) => {
@@ -58,10 +61,14 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
               onClick={() => onSelectWatch(w)}
               className={`glass-card-interactive ${isSelected ? 'glass-card-active' : ''}`}
               style={{
-                padding: '14px 16px',
+                padding: '16px',
                 position: 'relative',
                 overflow: 'hidden',
-                borderRadius: '12px'
+                borderRadius: '14px',
+                background: '#FFFFFF',
+                border: isSelected ? '2px solid var(--border-gold)' : '1px solid var(--border-subtle)',
+                boxShadow: isSelected ? '0 8px 24px rgba(161, 116, 36, 0.14)' : 'var(--shadow-card)',
+                transition: 'all 0.2s ease'
               }}
             >
               {isSelected && (
@@ -70,23 +77,53 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: '2px',
-                  background: 'var(--gold-gradient)'
+                  height: '3px',
+                  background: 'var(--gold-primary)'
                 }} />
               )}
 
+              {/* Watch Thumbnail (Physical Product Focus) */}
+              <div style={{
+                background: '#F8FAFC',
+                borderRadius: '10px',
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '10px',
+                height: '75px',
+                position: 'relative'
+              }}>
+                {w.imageUrl ? (
+                  <div style={{ position: 'relative', width: '100%', height: '65px' }}>
+                    <Image
+                      src={w.imageUrl}
+                      alt={w.model}
+                      fill
+                      sizes="120px"
+                      style={{
+                        objectFit: 'contain',
+                        filter: 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.12))'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <Logo size={28} />
+                )}
+              </div>
+
               {/* Brand & Reference Badge */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <span style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.66rem',
                   fontWeight: 600,
-                  color: isSelected ? 'var(--gold-light)' : 'var(--text-secondary)',
+                  color: isSelected ? 'var(--gold-primary)' : 'var(--text-muted)',
                   letterSpacing: '0.04em'
                 }}>
                   {w.brand.toUpperCase()}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span className="badge badge-gold" style={{ fontSize: '0.62rem', padding: '1px 6px', fontFamily: 'var(--font-mono)' }}>
+                  <span className="badge badge-gold" style={{ fontSize: '0.60rem', padding: '1px 6px', fontFamily: 'var(--font-mono)' }}>
                     {w.reference}
                   </span>
                   {w.reference === '126610LN' ? (
@@ -98,7 +135,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                       <Crown size={8} /> PRO
                     </span>
                   ) : (
-                    <span className="badge badge-subtle" style={{ fontSize: '0.55rem', padding: '1px 5px', color: 'var(--gold-light)', border: '1px solid var(--border-gold-subtle)', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                    <span className="badge badge-subtle" style={{ fontSize: '0.55rem', padding: '1px 5px', color: 'var(--gold-primary)', border: '1px solid var(--border-gold-subtle)', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
                       <Lock size={8} /> PRO
                     </span>
                   )}
@@ -109,7 +146,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
               <div style={{
                 fontSize: '0.88rem',
                 fontWeight: 700,
-                color: '#FFF',
+                color: 'var(--text-main)',
                 marginBottom: '8px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -118,7 +155,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                 {w.model}
               </div>
 
-              {/* Price & Spread Line */}
+              {/* Radical Data Minimalism: 1 Core Stat (Cash Floor) + Consensus */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -127,28 +164,28 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                 paddingTop: '8px'
               }}>
                 <div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                    Consensus Value
+                  <div style={{ fontSize: '0.60rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', fontWeight: 700 }}>
+                    Buy-In (-20%)
                   </div>
                   <div className="tabular-nums" style={{
                     fontSize: '1.05rem',
-                    fontWeight: 700,
-                    color: isSelected ? 'var(--gold-light)' : '#FFF'
+                    fontWeight: 800,
+                    color: 'var(--emerald-gain)'
                   }}>
-                    ${formatUSD(w.currentAskingAvg)}
+                    ${formatUSD(w.recentSoldAvg)}
                   </div>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                    Buy-In (-20%)
+                  <div style={{ fontSize: '0.60rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                    Consensus
                   </div>
                   <div className="tabular-nums" style={{
                     fontSize: '0.85rem',
-                    fontWeight: 600,
-                    color: 'var(--emerald-gain)'
+                    fontWeight: 700,
+                    color: 'var(--text-main)'
                   }}>
-                    ${formatUSD(w.recentSoldAvg)}
+                    ${formatUSD(w.currentAskingAvg)}
                   </div>
                 </div>
               </div>
@@ -159,18 +196,18 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '0.68rem'
+                fontSize: '0.66rem'
               }}>
-                <span className="badge badge-emerald" style={{ fontSize: '0.60rem', padding: '1px 6px' }}>
-                  <Target size={10} /> {arbCount} Arb Lots
+                <span className="badge badge-emerald" style={{ fontSize: '0.58rem', padding: '1px 6px' }}>
+                  <Target size={9} /> {arbCount} Arb Lots
                 </span>
                 <span className="tabular-nums" style={{
                   color: w.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  fontWeight: 600
+                  fontWeight: 700
                 }}>
-                  +{w.thirtyDayChangePct}% (30D)
+                  {w.thirtyDayChangePct >= 0 ? `+${w.thirtyDayChangePct}` : `${w.thirtyDayChangePct}`}%
                 </span>
               </div>
             </div>

@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { WatchModel, UserSession } from '../types/watch';
 import { Logo } from './Logo';
 import { formatUSD } from '../lib/format';
@@ -144,25 +145,25 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
   if (!activeWatch || !valuation) return null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       {/* Top Appraisal Header */}
       <div className="glass-card" style={{
-        padding: '22px 28px',
-        border: '1px solid var(--border-gold-subtle)',
-        background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.06) 0%, rgba(14, 19, 29, 0.95) 100%)'
+        padding: '24px 28px',
+        border: '1px solid var(--border-subtle)',
+        background: '#FFFFFF'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <Logo size={40} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Logo size={42} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 className="serif-heading" style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFF' }}>
+                <h2 className="serif-heading" style={{ fontSize: '1.40rem', fontWeight: 800, color: 'var(--text-main)' }}>
                   Dealer Cash Buy-In &amp; Appraisal Terminal
                 </h2>
                 <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>20% BUY-IN FORMULA</span>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '2px' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.80rem', marginTop: '2px' }}>
                 Algorithmic wholesale acquisition quotes calibrated from dealer interviews (20% dealer buy-in spread from Chrono24 consensus)
               </p>
             </div>
@@ -175,8 +176,8 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               className="btn-ghost"
               style={{
                 fontSize: '0.78rem',
-                padding: '8px 14px',
-                borderColor: savedSuccess ? 'rgba(16, 185, 129, 0.5)' : undefined,
+                padding: '9px 16px',
+                borderColor: savedSuccess ? 'var(--emerald-gain)' : undefined,
                 color: savedSuccess ? 'var(--emerald-gain)' : undefined
               }}
             >
@@ -195,7 +196,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             <button 
               onClick={handleCopyQuote} 
               className="btn-ghost"
-              style={{ fontSize: '0.78rem', padding: '8px 14px' }}
+              style={{ fontSize: '0.78rem', padding: '9px 16px' }}
             >
               {copied ? <Check size={14} style={{ color: 'var(--emerald-gain)' }} /> : <Copy size={14} />}
               {copied ? 'Quote Copied' : 'Copy Quote Text'}
@@ -203,7 +204,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             <button 
               onClick={handlePrint} 
               className="btn-primary"
-              style={{ fontSize: '0.78rem', padding: '8px 16px' }}
+              style={{ fontSize: '0.78rem', padding: '9px 18px' }}
             >
               <Printer size={14} /> Print Appraisal Sheet
             </button>
@@ -215,20 +216,20 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
       <div className="responsive-appraisal-grid">
         
         {/* Left Column: Appraisal Variable Controls */}
-        <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px', background: '#FFFFFF' }}>
           <div>
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: '#FFF' }}>
-              <Calculator size={17} style={{ color: 'var(--gold-primary)' }} />
+            <h3 style={{ fontSize: '1.02rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: 'var(--text-main)' }}>
+              <Calculator size={18} style={{ color: 'var(--gold-primary)' }} />
               Piece Assessment Parameters
             </h3>
-            <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
               Configure watch reference, condition, and provenance to compute wholesale replacement value
             </p>
           </div>
 
           {/* Select Reference Watch */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
+            <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em', fontWeight: 600 }}>
               Select Catalog Reference
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
@@ -242,66 +243,31 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                     onClick={() => setSelectedRef(w.reference)}
                     className={`btn-ghost ${selectedRef.toUpperCase() === w.reference.toUpperCase() ? 'active' : ''}`}
                     style={{
-                      fontSize: '0.74rem',
-                      padding: '8px 6px',
+                      fontSize: '0.76rem',
+                      padding: '8px 8px',
                       textAlign: 'center',
                       justifyContent: 'center',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px'
+                      gap: '6px'
                     }}
                   >
                     <span>{w.reference}</span>
                     {isProRef && !isUserPro && (
-                      <Lock size={10} style={{ color: 'var(--gold-light)' }} />
+                      <Lock size={10} style={{ color: 'var(--gold-primary)' }} />
                     )}
                   </button>
                 );
               })}
             </div>
-
-            {selectedRef !== '126610LN' && user?.tier !== 'pro' && (
-              <div style={{
-                marginTop: '10px',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                background: 'rgba(212, 175, 55, 0.08)',
-                border: '1px solid var(--border-gold-subtle)',
-                fontSize: '0.74rem',
-                color: 'var(--gold-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '8px'
-              }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Lock size={13} /> {activeWatch.brand} buy-in formulas are in preview mode.
-                </span>
-                <button
-                  onClick={onOpenAuth}
-                  style={{
-                    background: 'var(--gold-primary)',
-                    color: '#000',
-                    fontWeight: 700,
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '3px 8px',
-                    fontSize: '0.68rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Unlock Pro
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Condition Selector */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
-              Case &amp; Movement Condition
+            <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em', fontWeight: 600 }}>
+              Condition Grade
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
               {(['Unworn', 'Very Good', 'Good', 'Fair'] as const).map(c => (
                 <button
                   key={c}
@@ -315,19 +281,19 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             </div>
           </div>
 
-          {/* Provenance Box & Papers Toggles */}
+          {/* Provenance Checkboxes */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
-              Scope of Delivery (Provenance)
+            <label style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em', fontWeight: 600 }}>
+              Physical Provenance &amp; Set Completeness
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <div 
                 onClick={() => setHasBox(!hasBox)}
                 style={{
-                  padding: '12px',
+                  padding: '14px',
                   borderRadius: '10px',
-                  border: hasBox ? '1px solid var(--border-gold)' : '1px solid var(--border-hairline)',
-                  background: hasBox ? 'rgba(212, 175, 55, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                  border: hasBox ? '1.5px solid var(--gold-primary)' : '1px solid var(--border-hairline)',
+                  background: hasBox ? 'rgba(161, 116, 36, 0.06)' : '#F8FAFC',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -338,17 +304,17 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                   width: '18px',
                   height: '18px',
                   borderRadius: '4px',
-                  border: '1px solid var(--gold-primary)',
+                  border: '1.5px solid var(--gold-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   background: hasBox ? 'var(--gold-primary)' : 'transparent',
-                  color: '#07090E'
+                  color: '#FFFFFF'
                 }}>
                   {hasBox && <Check size={12} strokeWidth={3} />}
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.80rem', fontWeight: 600, color: hasBox ? '#FFF' : 'var(--text-secondary)' }}>Original Presentation Box</div>
+                  <div style={{ fontSize: '0.80rem', fontWeight: 600, color: 'var(--text-main)' }}>Original Presentation Box</div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Manufacture packaging (+4%)</div>
                 </div>
               </div>
@@ -356,10 +322,10 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               <div 
                 onClick={() => setHasPapers(!hasPapers)}
                 style={{
-                  padding: '12px',
+                  padding: '14px',
                   borderRadius: '10px',
-                  border: hasPapers ? '1px solid var(--border-gold)' : '1px solid var(--border-hairline)',
-                  background: hasPapers ? 'rgba(212, 175, 55, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                  border: hasPapers ? '1.5px solid var(--gold-primary)' : '1px solid var(--border-hairline)',
+                  background: hasPapers ? 'rgba(161, 116, 36, 0.06)' : '#F8FAFC',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -370,17 +336,17 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                   width: '18px',
                   height: '18px',
                   borderRadius: '4px',
-                  border: '1px solid var(--gold-primary)',
+                  border: '1.5px solid var(--gold-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   background: hasPapers ? 'var(--gold-primary)' : 'transparent',
-                  color: '#07090E'
+                  color: '#FFFFFF'
                 }}>
                   {hasPapers && <Check size={12} strokeWidth={3} />}
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.80rem', fontWeight: 600, color: hasPapers ? '#FFF' : 'var(--text-secondary)' }}>Warranty Card / Papers</div>
+                  <div style={{ fontSize: '0.80rem', fontWeight: 600, color: 'var(--text-main)' }}>Warranty Card / Papers</div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Serial provenance (+8%)</div>
                 </div>
               </div>
@@ -388,12 +354,12 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
           </div>
 
           {/* Dealer Margin Target Slider */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-hairline)' }}>
+          <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-hairline)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
                 Dealer Target Gross Margin
               </span>
-              <span className="tabular-nums" style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+              <span className="tabular-nums" style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                 {dealerMarginPct}% {dealerMarginPct === 20 && '(Industry Standard)'}
               </span>
             </div>
@@ -406,7 +372,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               onChange={(e) => setDealerMarginPct(Number(e.target.value))}
               style={{ width: '100%', accentColor: 'var(--gold-primary)', cursor: 'pointer' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               <span>12% (Thin Margin / Quick Flip)</span>
               <span>20% (Bayam Interview Baseline)</span>
               <span>30% (Exotic Pieces)</span>
@@ -418,20 +384,16 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
         <div 
           className="glass-card" 
           style={{ 
-            padding: '28px', 
-            border: '1px solid var(--border-gold)', 
-            background: 'radial-gradient(circle at 90% 10%, rgba(212, 175, 55, 0.06) 0%, rgba(11, 15, 25, 0.98) 70%)',
+            padding: '32px', 
+            border: '1.5px solid var(--border-gold)', 
+            background: '#FFFFFF',
+            boxShadow: '0 8px 32px rgba(161, 116, 36, 0.08)',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
         >
-          {/* Subtle Watermark Logo in Background */}
-          <div style={{ position: 'absolute', right: '20px', bottom: '20px', opacity: 0.04, pointerEvents: 'none' }}>
-            <Logo size={240} />
-          </div>
-
           <div>
             {/* Certificate Header */}
             <div style={{
@@ -439,40 +401,66 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               justifyContent: 'space-between',
               alignItems: 'flex-start',
               borderBottom: '1px solid var(--border-hairline)',
-              paddingBottom: '16px',
-              marginBottom: '18px'
+              paddingBottom: '18px',
+              marginBottom: '20px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Logo size={36} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <Logo size={40} />
                 <div>
-                  <div className="serif-heading" style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFF', letterSpacing: '0.06em' }}>
+                  <div className="serif-heading" style={{ fontSize: '1.10rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '0.04em' }}>
                     LUXEDATA APPRAISAL CERTIFICATE
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--gold-light)', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                     INSTITUTIONAL SECONDARY VALUATION MEMO
                   </div>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span className="badge badge-emerald" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <ShieldCheck size={11} /> VERIFIED DATA
+                  <ShieldCheck size={12} /> VERIFIED DATA
                 </span>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
                   Ref: #{valuation.activeLots} Active Lots
                 </div>
               </div>
             </div>
 
-            {/* Target Piece Metadata */}
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Evaluated Timepiece</div>
-              <h2 className="serif-heading" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#FFF', margin: '4px 0' }}>
-                {activeWatch.brand} {activeWatch.model}
-              </h2>
-              <div style={{ display: 'flex', gap: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                <span>Ref: <strong style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>{activeWatch.reference}</strong></span>
-                <span>• Case: {activeWatch.caseSize}</span>
-                <span>• Dial: {activeWatch.dialColor}</span>
+            {/* Target Piece Metadata + Watch Photo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '22px' }}>
+              {activeWatch.imageUrl && (
+                <div style={{
+                  width: '90px',
+                  height: '90px',
+                  background: '#F8FAFC',
+                  borderRadius: '12px',
+                  padding: '6px',
+                  border: '1px solid var(--border-hairline)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  position: 'relative'
+                }}>
+                  <Image
+                    src={activeWatch.imageUrl}
+                    alt={activeWatch.model}
+                    fill
+                    sizes="90px"
+                    style={{ objectFit: 'contain', padding: '6px' }}
+                  />
+                </div>
+              )}
+
+              <div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Evaluated Timepiece</div>
+                <h2 className="serif-heading" style={{ fontSize: '1.40rem', fontWeight: 800, color: 'var(--text-main)', margin: '2px 0' }}>
+                  {activeWatch.brand} {activeWatch.model}
+                </h2>
+                <div style={{ display: 'flex', gap: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                  <span>Ref: <strong style={{ color: 'var(--gold-primary)', fontFamily: 'var(--font-mono)' }}>{activeWatch.reference}</strong></span>
+                  <span>• Case: {activeWatch.caseSize}</span>
+                  <span>• Dial: {activeWatch.dialColor}</span>
+                </div>
               </div>
             </div>
 
@@ -480,72 +468,72 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             <div className="responsive-price-pair" style={{ marginBottom: '20px' }}>
               
               {/* Client Cash Buy Offer */}
-              <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+              <div style={{ background: 'rgba(5, 150, 105, 0.06)', padding: '18px', borderRadius: '12px', border: '1.5px solid var(--emerald-border)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   RECOMMENDED CASH BUY OFFER
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: '#FFF', margin: '4px 0' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
                   ${formatUSD(valuation.maxBuyOffer)}
                 </div>
-                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                   Immediate dealer wire payout (-{dealerMarginPct}% spread)
                 </div>
               </div>
 
               {/* Retail Consensus Market Value */}
-              <div style={{ background: 'rgba(212, 175, 55, 0.06)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-gold)' }}>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ background: '#F8FAFC', padding: '18px', borderRadius: '12px', border: '1.5px solid var(--border-gold-subtle)' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   TRI-VENUE RETAIL VALUE (CMV)
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-light)', margin: '4px 0' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
                   ${formatUSD(valuation.adjustedCMV)}
                 </div>
-                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
-                  Calibrated across Chrono24, eBay Realized, &amp; WatchCharts
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                  Calibrated across Chrono24, eBay, &amp; WatchCharts
                 </div>
               </div>
             </div>
 
             {/* Negotiation Justification Metrics */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-hairline)', marginBottom: '18px' }}>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-hairline)', marginBottom: '20px' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px', fontWeight: 600 }}>
                 Dealer Valuation Breakdown (Proof for Client)
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
                 <div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Projected Dealer Profit</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+                  <div className="tabular-nums" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
                     +${formatUSD(valuation.projectedProfit)}
                   </div>
-                  <div className="tabular-nums" style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{valuation.projectedROI}% ROI</div>
+                  <div className="tabular-nums" style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>{valuation.projectedROI}% ROI</div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Turnover Velocity</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFF' }}>
+                  <div className="tabular-nums" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
                     ~{valuation.daysToSell} Days
                   </div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>Avg Market Liquidity</div>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Avg Market Liquidity</div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Institutional Sample</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                  <div className="tabular-nums" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                     {valuation.dealerClustering} Lots
                   </div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>Clustered Company Lots</div>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Clustered Company Lots</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Footer Official Seal */}
-          <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+          <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>
               Provenance: {hasBox && hasPapers ? 'Original Box & Papers (Full Set)' : hasBox ? 'Box Only' : hasPapers ? 'Papers Only' : 'Watch Only (Naked)'}
             </div>
-            <div style={{ fontSize: '0.70rem', color: 'var(--text-gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldCheck size={13} /> Backed by LuxeData Tri-Venue Algorithm (C24 + eBay Realized + WatchCharts)
+            <div style={{ fontSize: '0.72rem', color: 'var(--gold-primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <ShieldCheck size={14} /> Backed by LuxeData Tri-Venue Algorithm
             </div>
           </div>
         </div>

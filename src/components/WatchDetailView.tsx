@@ -1,8 +1,10 @@
 'use client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
 import { MultiVenueConsensusCard } from './MultiVenueConsensusCard';
+import { Logo } from './Logo';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -91,43 +93,72 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
   }, [watch.priceHistory, timeframe]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       {/* 1. Main Header Reference Hero Card */}
-      <div className="glass-card" style={{ padding: '24px 28px' }}>
+      <div className="glass-card" style={{ padding: '28px 32px', background: '#FFFFFF' }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '20px'
+          gap: '24px'
         }}>
-          {/* Reference Meta */}
-          <div style={{ maxWidth: '600px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
-              <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
-                REF: {watch.reference}
-              </span>
-              <span className="badge badge-subtle">{watch.brand}</span>
-              <span className="badge badge-subtle">{watch.category}</span>
-              <span className="badge badge-emerald">
-                <ShieldCheck size={12} /> VERIFIED CHRONO24 CONSENSUS
-              </span>
+          {/* Reference Meta + Watch Thumbnail */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', maxWidth: '640px' }}>
+            {watch.imageUrl && (
+              <div style={{
+                width: '100px',
+                height: '100px',
+                background: '#F8FAFC',
+                borderRadius: '14px',
+                border: '1px solid var(--border-hairline)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                position: 'relative'
+              }}>
+                <Image
+                  src={watch.imageUrl}
+                  alt={watch.model}
+                  fill
+                  sizes="100px"
+                  style={{
+                    objectFit: 'contain',
+                    padding: '8px',
+                    filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))'
+                  }}
+                />
+              </div>
+            )}
+
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
+                  REF: {watch.reference}
+                </span>
+                <span className="badge badge-subtle">{watch.brand}</span>
+                <span className="badge badge-subtle">{watch.category}</span>
+                <span className="badge badge-emerald">
+                  <ShieldCheck size={12} /> VERIFIED CHRONO24 CONSENSUS
+                </span>
+              </div>
+
+              <h1 className="serif-heading" style={{
+                fontSize: '1.75rem',
+                fontWeight: 800,
+                color: 'var(--text-main)',
+                letterSpacing: '-0.01em',
+                marginBottom: '4px'
+              }}>
+                {watch.brand} {watch.model}
+              </h1>
+
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
+                Case: <strong style={{ color: 'var(--text-main)' }}>{watch.caseSize}</strong> • Material: <strong style={{ color: 'var(--text-main)' }}>{watch.material}</strong> • Dial: <strong style={{ color: 'var(--text-main)' }}>{watch.dialColor}</strong> • Boutique MSRP: <strong style={{ color: 'var(--gold-primary)', fontFamily: 'var(--font-mono)' }}>${formatUSD(retailMSRP)}</strong>
+              </p>
             </div>
-
-            <h1 className="serif-heading" style={{
-              fontSize: '1.85rem',
-              fontWeight: 700,
-              color: '#FFF',
-              letterSpacing: '-0.01em',
-              marginBottom: '6px'
-            }}>
-              {watch.brand} {watch.model}
-            </h1>
-
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.84rem' }}>
-              Case: <strong style={{ color: 'var(--text-main)' }}>{watch.caseSize}</strong> • Material: <strong style={{ color: 'var(--text-main)' }}>{watch.material}</strong> • Dial: <strong style={{ color: 'var(--text-main)' }}>{watch.dialColor}</strong> • Boutique Retail MSRP: <strong style={{ color: 'var(--text-gold)', fontFamily: 'var(--font-mono)' }}>${formatUSD(retailMSRP)}</strong>
-            </p>
           </div>
 
           {/* Pricing Metrics Strip (Responsive 1-col on mobile, flex on desktop) */}
@@ -135,17 +166,17 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             display: 'flex',
             alignItems: 'center',
             gap: '24px',
-            background: 'rgba(255, 255, 255, 0.02)',
-            padding: '12px 20px',
-            borderRadius: '12px',
-            border: '1px solid var(--border-hairline)'
+            background: '#F8FAFC',
+            padding: '16px 24px',
+            borderRadius: '14px',
+            border: '1px solid var(--border-subtle)'
           }}>
             {/* Consensus Market Value (CMV) */}
             <div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                 Consensus Market Value (CMV)
               </div>
-              <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 ${formatUSD(valuation.adjustedCMV)}
               </div>
               <div style={{
@@ -153,21 +184,22 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                 color: watch.thirtyDayChangePct >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px'
+                gap: '4px',
+                fontWeight: 600
               }}>
-                <TrendingUp size={13} />
-                +{watch.thirtyDayChangePct}% (30D)
+                {watch.thirtyDayChangePct >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+                {watch.thirtyDayChangePct >= 0 ? `+${watch.thirtyDayChangePct}` : `${watch.thirtyDayChangePct}`}% (30D)
               </div>
             </div>
 
             {/* Dealer Cash Buy-In Floor (-20%) */}
-            <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '20px' }}>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '24px' }}>
+              <div style={{ fontSize: '0.66rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
                 Dealer Buy-In Offer (-20%)
               </div>
-              <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
                 {isLocked ? (
-                  <span style={{ color: 'var(--gold-light)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
+                  <span style={{ color: 'var(--gold-primary)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
                     <Lock size={15} /> PRO DESK
                   </span>
                 ) : (
@@ -180,11 +212,11 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             </div>
 
             {/* Gross Dealer Margin Spread */}
-            <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '20px' }}>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '24px' }}>
+              <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                 Gross Dealer Spread
               </div>
-              <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-gold)' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                 {isLocked ? (
                   <span style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
                     <Lock size={15} /> 20.0% MARGIN
@@ -216,24 +248,24 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
           
           {/* Institutional Pro Gated Callout Box */}
           <div className="glass-card" style={{
-            padding: '40px 24px',
-            border: '1px solid var(--border-gold)',
-            background: 'radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.14) 0%, rgba(10, 14, 23, 0.98) 75%)',
-            borderRadius: '16px',
+            padding: '48px 24px',
+            border: '1.5px solid var(--border-gold)',
+            background: '#FFFFFF',
+            borderRadius: '18px',
             textAlign: 'center',
-            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.15)',
+            boxShadow: '0 16px 48px rgba(161, 116, 36, 0.12)',
             marginBottom: '20px'
           }}>
             <div style={{
               display: 'inline-flex',
               padding: '16px',
               borderRadius: '50%',
-              background: 'rgba(212, 175, 55, 0.12)',
-              border: '1px solid var(--border-gold)',
-              boxShadow: '0 0 24px rgba(212, 175, 55, 0.25)',
+              background: 'rgba(161, 116, 36, 0.08)',
+              border: '1.5px solid var(--border-gold)',
+              boxShadow: '0 4px 16px rgba(161, 116, 36, 0.15)',
               marginBottom: '18px'
             }}>
-              <Lock size={32} style={{ color: 'var(--gold-light)' }} />
+              <Lock size={32} style={{ color: 'var(--gold-primary)' }} />
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
@@ -243,37 +275,37 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <span className="badge badge-subtle">{watch.brand.toUpperCase()} {watch.reference}</span>
             </div>
 
-            <h3 className="serif-heading" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#FFF', marginBottom: '10px' }}>
+            <h3 className="serif-heading" style={{ fontSize: '1.55rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '10px' }}>
               Unlock {watch.brand} {watch.model} Order Book
             </h3>
 
-            <p style={{ maxWidth: '560px', margin: '0 auto 20px auto', fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+            <p style={{ maxWidth: '560px', margin: '0 auto 24px auto', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
               Live Chrono24 dealer vs. private order books, 10% trimmed mean consensus metrics, condition multipliers, and 20% margin protection buy slips for <strong>{watch.model}</strong> are reserved for verified partner desks.
             </p>
 
             {/* Feature Bullets */}
             <div style={{
               maxWidth: '520px',
-              margin: '0 auto 24px auto',
+              margin: '0 auto 28px auto',
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: '10px',
+              gap: '12px',
               textAlign: 'left'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
-                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.80rem', color: 'var(--text-main)' }}>
+                <CheckCircle2 size={16} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
                 <span>{watch.dealerMetrics?.totalActiveListings || 40} real scraped Chrono24 active lots</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
-                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.80rem', color: 'var(--text-main)' }}>
+                <CheckCircle2 size={16} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
                 <span>Defensible 20% wholesale cash buy-in formula</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
-                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.80rem', color: 'var(--text-main)' }}>
+                <CheckCircle2 size={16} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
                 <span>Full-set vs. naked provenance pricing adjustments</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#FFF' }}>
-                <CheckCircle2 size={15} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.80rem', color: 'var(--text-main)' }}>
+                <CheckCircle2 size={16} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
                 <span>Instant sub-wholesale flip alerts for {watch.reference}</span>
               </div>
             </div>
@@ -283,7 +315,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <button
                 onClick={onOpenAuth}
                 className="btn-primary"
-                style={{ padding: '12px 26px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{ padding: '13px 28px', fontSize: '0.90rem', display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 <ShieldCheck size={16} /> Sign In with Registered Desk
               </button>
@@ -291,33 +323,14 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <button
                 onClick={onOpenAuth}
                 className="btn-ghost"
-                style={{ padding: '12px 24px', fontSize: '0.88rem', border: '1px solid var(--border-gold-subtle)', color: 'var(--gold-light)' }}
+                style={{ padding: '13px 26px', fontSize: '0.90rem', border: '1px solid var(--border-medium)', color: 'var(--text-main)' }}
               >
-                <Crown size={15} /> Request Direct Invoice ($99/mo)
+                <Crown size={15} style={{ color: 'var(--gold-primary)' }} /> Request Direct Invoice ($99/mo)
               </button>
             </div>
 
-            <div style={{ marginTop: '16px', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            <div style={{ marginTop: '18px', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
               Note: <strong>Rolex Submariner (126610LN)</strong> is completely free for all guests to inspect.
-            </div>
-          </div>
-
-          {/* Frosted Silhouette Preview Underneath */}
-          <div style={{
-            filter: 'blur(8px)',
-            opacity: 0.35,
-            pointerEvents: 'none',
-            userSelect: 'none',
-            maxHeight: '420px',
-            overflow: 'hidden'
-          }}>
-            <div className="responsive-two-col">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div className="glass-card" style={{ padding: '22px 24px', height: '240px' }}></div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div className="glass-card" style={{ padding: '24px', height: '240px' }}></div>
-              </div>
             </div>
           </div>
         </div>
@@ -325,10 +338,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
         <div className="responsive-two-col">
         
         {/* LEFT COLUMN: Price History, Provenance Matrix, Real Scraped Lots */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Price History Area Chart */}
-          <div className="glass-card" style={{ padding: '22px 24px' }}>
+          <div className="glass-card" style={{ padding: '24px 28px', background: '#FFFFFF' }}>
             <div className="responsive-chart-header" style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -339,12 +352,12 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             }}>
               <div>
                 <h3 style={{
-                  fontSize: '0.98rem',
-                  fontWeight: 600,
+                  fontSize: '1.05rem',
+                  fontWeight: 700,
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  color: '#FFF'
+                  color: 'var(--text-main)'
                 }}>
                   <TrendingUp size={16} style={{ color: 'var(--gold-primary)' }} />
                   Secondary Market Price Trajectory (12-Month Baseline)
@@ -358,7 +371,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <div style={{
                 display: 'flex',
                 gap: '6px',
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: '#F1F5F9',
                 padding: '4px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-hairline)'
@@ -373,7 +386,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                       fontSize: '0.74rem',
                       fontFamily: 'var(--font-mono)',
                       cursor: 'pointer',
-                      touchAction: 'manipulation'
+                      border: timeframe === tf ? '1px solid var(--border-subtle)' : 'none',
+                      background: timeframe === tf ? '#FFFFFF' : 'transparent',
+                      color: timeframe === tf ? 'var(--text-main)' : 'var(--text-secondary)',
+                      fontWeight: timeframe === tf ? 700 : 500
                     }}
                   >
                     {tf}
@@ -382,40 +398,41 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               </div>
             </div>
 
-            {/* Recharts Area Chart */}
+            {/* Recharts Area Chart in Light Theme */}
             <div style={{ height: '280px', width: '100%', marginTop: '8px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={filteredHistory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.32} />
-                      <stop offset="95%" stopColor="#D4AF37" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="#B48228" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#B48228" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.04)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.05)" vertical={false} />
                   <XAxis 
                     dataKey="date" 
-                    stroke="#475569" 
+                    stroke="#94A3B8" 
                     tick={{ fill: '#64748B', fontSize: 11, fontFamily: 'var(--font-mono)' }} 
-                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.06)' }} 
+                    axisLine={{ stroke: 'rgba(0, 0, 0, 0.08)' }} 
                     tickLine={false}
                   />
                   <YAxis 
                     domain={['dataMin - 1500', 'dataMax + 1500']} 
-                    stroke="#475569" 
+                    stroke="#94A3B8" 
                     tick={{ fill: '#64748B', fontSize: 11, fontFamily: 'var(--font-mono)' }} 
                     tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} 
-                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.06)' }} 
+                    axisLine={{ stroke: 'rgba(0, 0, 0, 0.08)' }} 
                     tickLine={false}
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#0A0E17', 
-                      borderColor: 'rgba(212, 175, 55, 0.4)', 
+                      backgroundColor: '#FFFFFF', 
+                      borderColor: 'rgba(180, 130, 40, 0.4)', 
                       borderRadius: '8px', 
-                      color: '#FFF',
+                      color: '#0F172A',
                       fontSize: '0.80rem',
-                      fontFamily: 'var(--font-mono)'
+                      fontFamily: 'var(--font-mono)',
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
                     }}
                     formatter={(val: number) => [`$${formatUSD(val)}`, 'Consensus Value']}
                     labelFormatter={(label) => `Date: ${label}`}
@@ -423,8 +440,8 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                   <Area 
                     type="monotone" 
                     dataKey="price" 
-                    stroke="#D4AF37" 
-                    strokeWidth={2} 
+                    stroke="#996515" 
+                    strokeWidth={2.5} 
                     fillOpacity={1} 
                     fill="url(#goldGradient)" 
                   />
@@ -434,18 +451,18 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
           </div>
 
           {/* Dynamic Condition & Provenance Multiplier */}
-          <div className="glass-card" style={{ padding: '22px 24px' }}>
+          <div className="glass-card" style={{ padding: '24px 28px', background: '#FFFFFF' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sliders size={17} style={{ color: 'var(--gold-primary)' }} />
-                <h3 style={{ fontSize: '0.98rem', fontWeight: 600, color: '#FFF' }}>
-                  Interactive Appraisal & Condition Multipliers
+                <h3 style={{ fontSize: '1.02rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  Interactive Appraisal &amp; Condition Multipliers
                 </h3>
               </div>
               <span className="badge badge-subtle">DEALER PRICING ENGINE</span>
             </div>
 
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+            <p style={{ fontSize: '0.80rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
               Dealers apply strict condition adjustments when calculating client cash buy-in offers. Toggle below to view instantaneous valuation impact:
             </p>
 
@@ -456,26 +473,26 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             }}>
               {/* Provenance Box/Papers */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                padding: '12px',
-                borderRadius: '10px',
+                background: '#F8FAFC',
+                padding: '14px',
+                borderRadius: '12px',
                 border: '1px solid var(--border-hairline)'
               }}>
-                <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
-                  BOX & PAPERS PROVENANCE
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 600 }}>
+                  BOX &amp; PAPERS PROVENANCE
                 </div>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <button 
                     onClick={() => setHasBoxPapers(true)}
                     className={`btn-ghost ${hasBoxPapers ? 'active' : ''}`}
-                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '8px 4px', minHeight: '38px', cursor: 'pointer', touchAction: 'manipulation' }}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '8px 4px', minHeight: '38px', cursor: 'pointer' }}
                   >
                     Full Set (+8%)
                   </button>
                   <button 
                     onClick={() => setHasBoxPapers(false)}
                     className={`btn-ghost ${!hasBoxPapers ? 'active' : ''}`}
-                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '8px 4px', minHeight: '38px', cursor: 'pointer', touchAction: 'manipulation' }}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', padding: '8px 4px', minHeight: '38px', cursor: 'pointer' }}
                   >
                     Naked (-10%)
                   </button>
@@ -484,12 +501,12 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
               {/* Condition Grade */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                padding: '12px',
-                borderRadius: '10px',
+                background: '#F8FAFC',
+                padding: '14px',
+                borderRadius: '12px',
                 border: '1px solid var(--border-hairline)'
               }}>
-                <div style={{ fontSize: '0.70rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 600 }}>
                   CONDITION GRADE
                 </div>
                 <div style={{ display: 'flex', gap: '6px' }}>
@@ -498,7 +515,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                       key={grade}
                       onClick={() => setConditionGrade(grade)}
                       className={`btn-ghost ${conditionGrade === grade ? 'active' : ''}`}
-                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.72rem', padding: '8px 2px', minHeight: '38px', cursor: 'pointer', touchAction: 'manipulation' }}
+                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.72rem', padding: '8px 2px', minHeight: '38px', cursor: 'pointer' }}
                     >
                       {grade}
                     </button>
@@ -508,26 +525,26 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
               {/* Dynamic Recalculated Impact */}
               <div style={{
-                background: 'rgba(212, 175, 55, 0.05)',
-                padding: '12px 16px',
-                borderRadius: '10px',
-                border: '1px solid var(--border-gold-subtle)'
+                background: 'rgba(5, 150, 105, 0.06)',
+                padding: '14px 18px',
+                borderRadius: '12px',
+                border: '1.5px solid var(--emerald-border)'
               }}>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-gold)', fontWeight: 600, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 700, textTransform: 'uppercase' }}>
                   ADJUSTED DEALER BUY OFFER
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '2px 0' }}>
                   ${formatUSD(valuation.dealerCashOffer)}
                 </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
-                  Target Profit: <strong style={{ color: '#FFF' }}>${formatUSD(valuation.grossSpread)}</strong> ({dealerTargetMargin}%)
+                <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
+                  Target Margin: <strong style={{ color: 'var(--text-main)' }}>${formatUSD(valuation.grossSpread)}</strong> ({dealerTargetMargin}%)
                 </div>
               </div>
             </div>
           </div>
 
           {/* Real Verified Chrono24 Active Listings Feed */}
-          <div className="glass-card" style={{ padding: '22px 24px' }}>
+          <div className="glass-card" style={{ padding: '24px 28px', background: '#FFFFFF' }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -538,12 +555,12 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             }}>
               <div>
                 <h3 style={{
-                  fontSize: '0.98rem',
-                  fontWeight: 600,
+                  fontSize: '1.02rem',
+                  fontWeight: 700,
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  color: '#FFF'
+                  color: 'var(--text-main)'
                 }}>
                   <Scale size={16} style={{ color: 'var(--gold-primary)' }} />
                   Multi-Venue Order Book &amp; Realized Sales
@@ -559,15 +576,15 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
             {/* Mobile Scroll Hint */}
             <div style={{
-              fontSize: '0.66rem',
+              fontSize: '0.68rem',
               color: 'var(--text-muted)',
-              marginBottom: '8px',
+              marginBottom: '10px',
               display: 'flex',
               alignItems: 'center',
               gap: '6px'
             }}>
               <span style={{ color: 'var(--gold-primary)' }}>↔</span>
-              <span>Swipe table horizontally to inspect all columns</span>
+              <span>Swipe table horizontally to inspect all lot details</span>
             </div>
 
             {/* Table Container with Controlled Overflow */}
@@ -575,32 +592,33 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               width: '100%',
               overflowX: 'auto',
               WebkitOverflowScrolling: 'touch',
-              borderRadius: '8px',
+              borderRadius: '10px',
               border: '1px solid var(--border-hairline)'
             }}>
               <table style={{ minWidth: '480px', width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                 <thead>
                   <tr style={{
-                    borderBottom: '1px solid var(--border-hairline)',
+                    background: '#F8FAFC',
+                    borderBottom: '1px solid var(--border-subtle)',
                     textAlign: 'left',
                     color: 'var(--text-muted)',
                     fontSize: '0.68rem',
                     textTransform: 'uppercase'
                   }}>
-                    <th style={{ padding: '8px 10px' }}>LOT / ID</th>
-                    <th style={{ padding: '8px 10px' }}>VENUE / SOURCE</th>
-                    <th style={{ padding: '8px 10px' }}>CONDITION</th>
-                    <th style={{ padding: '8px 10px' }}>PROVENANCE</th>
-                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>PRICE / HAMMER</th>
+                    <th style={{ padding: '10px 12px' }}>LOT / ID</th>
+                    <th style={{ padding: '10px 12px' }}>VENUE / SOURCE</th>
+                    <th style={{ padding: '10px 12px' }}>CONDITION</th>
+                    <th style={{ padding: '10px 12px' }}>PROVENANCE</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'right' }}>PRICE / HAMMER</th>
                   </tr>
                 </thead>
                 <tbody>
                   {watch.recentSales.map((sale) => (
-                    <tr key={sale.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.03)' }}>
-                      <td style={{ padding: '10px 10px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                    <tr key={sale.id} style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.04)' }}>
+                      <td style={{ padding: '12px 12px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
                         #{sale.id}
                       </td>
-                      <td style={{ padding: '10px 10px' }}>
+                      <td style={{ padding: '12px 12px' }}>
                         <span 
                           className={sale.source.includes('eBay') ? 'badge badge-emerald' : sale.source.includes('Dealer') ? 'badge badge-gold' : 'badge badge-subtle'} 
                           style={{ fontSize: '0.65rem' }}
@@ -608,19 +626,19 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                           {sale.source}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 10px', color: '#FFF' }}>
+                      <td style={{ padding: '12px 12px', color: 'var(--text-main)', fontWeight: 500 }}>
                         {sale.condition}
                       </td>
-                      <td style={{ padding: '10px 10px' }}>
+                      <td style={{ padding: '12px 12px' }}>
                         {sale.boxAndPapers ? (
-                          <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem' }}>
+                          <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', fontWeight: 600 }}>
                             <CheckCircle2 size={12} /> Full Set
                           </span>
                         ) : (
                           <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem' }}>Watch Only</span>
                         )}
                       </td>
-                      <td className="tabular-nums" style={{ padding: '10px 10px', textAlign: 'right', fontWeight: 700, color: 'var(--gold-light)' }}>
+                      <td className="tabular-nums" style={{ padding: '12px 12px', textAlign: 'right', fontWeight: 700, color: 'var(--text-main)' }}>
                         ${formatUSD(sale.soldPrice)}
                       </td>
                     </tr>
@@ -633,18 +651,18 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
         </div>
 
         {/* RIGHT COLUMN: AI Intelligence, Dealer Clustering, Live Arbitrage Radar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* AI Investment & Liquidity Analysis */}
           <div className="glass-card" style={{
-            padding: '24px',
-            border: '1px solid var(--border-gold-subtle)',
-            background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.06) 0%, rgba(14, 19, 29, 0.95) 100%)'
+            padding: '26px 28px',
+            border: '1.5px solid var(--border-gold-subtle)',
+            background: '#FFFFFF'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={18} style={{ color: 'var(--gold-primary)' }} />
-                <span className="serif-heading" style={{ fontWeight: 700, letterSpacing: '0.04em', fontSize: '0.85rem', color: '#FFF' }}>
+                <span className="serif-heading" style={{ fontWeight: 800, letterSpacing: '0.04em', fontSize: '0.90rem', color: 'var(--text-main)' }}>
                   AI VALUATION ENGINE
                 </span>
               </div>
@@ -654,57 +672,57 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             </div>
 
             {/* Score & Rating Pill */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '14px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '16px 0' }}>
               <div style={{
-                width: '74px',
-                height: '74px',
+                width: '76px',
+                height: '76px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(212, 175, 55, 0.18) 0%, rgba(6, 8, 13, 0.95) 75%)',
+                background: 'rgba(161, 116, 36, 0.08)',
                 border: '2px solid var(--gold-primary)',
-                boxShadow: '0 0 20px rgba(212, 175, 55, 0.2)',
+                boxShadow: '0 4px 16px rgba(161, 116, 36, 0.15)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0
               }}>
-                <span className="tabular-nums" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFF', lineHeight: 1 }}>
+                <span className="tabular-nums" style={{ fontSize: '1.7rem', fontWeight: 800, color: 'var(--gold-primary)', lineHeight: 1 }}>
                   {watch.aiAnalysis.opportunityScore}
                 </span>
-                <span style={{ fontSize: '0.60rem', color: 'var(--gold-light)', letterSpacing: '0.05em' }}>/ 10</span>
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>/ 10</span>
               </div>
 
               <div>
                 <span className="badge badge-emerald" style={{ marginBottom: '6px' }}>
                   {watch.aiAnalysis.recommendation}
                 </span>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                <div style={{ fontSize: '0.80rem', color: 'var(--text-secondary)' }}>
                   Liquidity Score: <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{watch.aiAnalysis.liquidityScore}/100</strong>
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                  Price Stability: <strong style={{ color: 'var(--text-gold)' }}>{watch.aiAnalysis.stabilityRating}</strong>
+                <div style={{ fontSize: '0.80rem', color: 'var(--text-secondary)' }}>
+                  Price Stability: <strong style={{ color: 'var(--gold-primary)' }}>{watch.aiAnalysis.stabilityRating}</strong>
                 </div>
               </div>
             </div>
 
             {/* Synthesis */}
-            <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '12px', marginTop: '12px' }}>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.06em' }}>
+            <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '14px', marginTop: '14px' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.06em', fontWeight: 600 }}>
                 EXECUTIVE INTELLIGENCE SYNTHESIS
               </div>
-              <p style={{ fontSize: '0.80rem', lineHeight: '1.5', color: 'var(--text-main)', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+              <p style={{ fontSize: '0.82rem', lineHeight: '1.6', color: 'var(--text-secondary)', wordBreak: 'break-word' }}>
                 {watch.aiAnalysis.summary}
               </p>
             </div>
 
             {/* Value Drivers */}
-            <div style={{ marginTop: '14px' }}>
-              <div style={{ fontSize: '0.70rem', color: 'var(--emerald-gain)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                <TrendingUp size={12} /> KEY VALUE CATALYSTS
+            <div style={{ marginTop: '16px' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <TrendingUp size={13} /> KEY VALUE CATALYSTS
               </div>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {watch.aiAnalysis.catalysts.map((cat, idx) => (
-                  <li key={idx} style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '6px', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                  <li key={idx} style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
                     <span style={{ color: 'var(--gold-primary)', flexShrink: 0 }}>▸</span>
                     <span>{cat}</span>
                   </li>
@@ -715,12 +733,12 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
           {/* Chrono24 Dealer Clustering & Consensus Radar */}
           {watch.dealerMetrics && (
-            <div className="glass-card" style={{ padding: '22px 24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div className="glass-card" style={{ padding: '24px 28px', background: '#FFFFFF' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Building2 size={16} style={{ color: 'var(--gold-primary)' }} />
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: 600, color: '#FFF' }}>
-                    Dealer Clustering & Provenance Radar
+                  <h4 style={{ fontSize: '0.90rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                    Dealer Clustering &amp; Provenance Radar
                   </h4>
                 </div>
                 <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>CHRONO24 CONSENSUS</span>
@@ -729,25 +747,25 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '10px',
+                gap: '12px',
                 marginBottom: '14px'
               }}>
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-hairline)' }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Professional Dealers</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold-light)' }}>
+                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-hairline)' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Professional Dealers</div>
+                  <div className="tabular-nums" style={{ fontSize: '1.30rem', fontWeight: 800, color: 'var(--text-main)' }}>
                     {watch.dealerMetrics.dealerListingsCount} lots
                   </div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
                     {Math.round((watch.dealerMetrics.dealerListingsCount / (watch.dealerMetrics.totalActiveListings || 1)) * 100)}% Institutional
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-hairline)' }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Private Sellers</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFF' }}>
+                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-hairline)' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Private Sellers</div>
+                  <div className="tabular-nums" style={{ fontSize: '1.30rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
                     {watch.dealerMetrics.privateListingsCount} lots
                   </div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--emerald-gain)' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 500 }}>
                     Arbitrage Source
                   </div>
                 </div>
@@ -755,9 +773,9 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
               {/* Retail MSRP comparison */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                padding: '10px 14px',
-                borderRadius: '8px',
+                background: '#F8FAFC',
+                padding: '12px 16px',
+                borderRadius: '10px',
                 border: '1px solid var(--border-hairline)',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -765,11 +783,11 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                 flexWrap: 'wrap',
                 gap: '6px'
               }}>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Premium Over Boutiques (MSRP):</span>
+                <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)' }}>Premium Over Boutiques (MSRP):</span>
                 <span className="tabular-nums" style={{
                   color: valuation.premiumOverRetail >= 0 ? 'var(--emerald-gain)' : 'var(--crimson-drop)',
                   fontWeight: 700,
-                  fontSize: '0.82rem'
+                  fontSize: '0.84rem'
                 }}>
                   +{valuation.premiumOverRetail}% (${formatUSD(retailMSRP)} retail)
                 </span>
@@ -780,18 +798,18 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
           {/* Arbitrage Feed for this Specific Reference */}
           {watch.dealerMetrics?.arbitrageDeals && watch.dealerMetrics.arbitrageDeals.length > 0 && (
             <div className="glass-card" style={{
-              padding: '22px 24px',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, rgba(14, 19, 29, 0.95) 100%)'
+              padding: '24px 28px',
+              border: '1.5px solid var(--emerald-border)',
+              background: '#FFFFFF'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <span style={{ fontSize: '0.74rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <span style={{ fontSize: '0.76rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Target size={14} /> LIVE ARBITRAGE OPPORTUNITIES ({watch.dealerMetrics.arbitrageDeals.length})
                 </span>
-                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Priced &lt; Buy-In</span>
+                <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Priced &lt; Buy-In</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {watch.dealerMetrics.arbitrageDeals.slice(0, 3).map((deal) => (
                   <div 
                     key={deal.id}
@@ -801,23 +819,23 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                       alignItems: 'center',
                       flexWrap: 'wrap',
                       gap: '8px',
-                      padding: '10px 12px',
-                      background: 'rgba(16, 185, 129, 0.05)',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(16, 185, 129, 0.18)',
+                      padding: '12px 14px',
+                      background: 'rgba(5, 150, 105, 0.04)',
+                      borderRadius: '10px',
+                      border: '1px solid var(--emerald-border)',
                       fontSize: '0.78rem'
                     }}
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span className="tabular-nums" style={{ color: '#FFF', fontWeight: 700 }}>
+                        <span className="tabular-nums" style={{ color: 'var(--text-main)', fontWeight: 800 }}>
                           ${formatUSD(deal.price)}
                         </span>
                         <span className="badge badge-subtle" style={{ fontSize: '0.60rem', padding: '1px 5px' }}>
                           {deal.location}
                         </span>
                       </div>
-                      <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 600 }}>
+                      <div style={{ fontSize: '0.70rem', color: 'var(--emerald-gain)', fontWeight: 600 }}>
                         Save ${formatUSD(deal.estimated_profit_dollars)} ({deal.discount_from_cmv_pct}% off CMV)
                       </div>
                     </div>
@@ -827,17 +845,11 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                         href={deal.url} 
                         target="_blank" 
                         rel="noopener noreferrer"
+                        className="btn-primary"
                         style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          color: 'var(--gold-light)',
-                          textDecoration: 'none',
                           fontSize: '0.72rem',
-                          fontWeight: 600,
-                          padding: '5px 10px',
+                          padding: '6px 12px',
                           borderRadius: '6px',
-                          background: 'rgba(212, 175, 55, 0.1)',
                           marginLeft: 'auto'
                         }}
                       >
