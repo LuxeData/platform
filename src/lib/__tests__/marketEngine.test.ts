@@ -249,3 +249,65 @@ describe('Market Engine — Full Live Engine Hydration', () => {
     expect(MACRO_METRICS.arbitrageCount).toBeGreaterThan(0);
   });
 });
+
+describe('Market Engine — Dynamic Runtime Calculation Wiring', () => {
+  const engine = getLiveMarketEngine();
+
+  it('computes consensus market value dynamically via calculateTrimmedMean', () => {
+    for (const watch of engine.watches) {
+      expect(watch.dealerMetrics).toBeDefined();
+      expect(watch.dealerMetrics!.consensusMarketValue).toBeGreaterThan(0);
+      expect(watch.currentAskingAvg).toBe(watch.dealerMetrics!.consensusMarketValue);
+    }
+  });
+
+  it('dynamically computes dealer buy-in and spread with 20% margin rule', () => {
+    for (const watch of engine.watches) {
+      expect(watch.dealerMetrics).toBeDefined();
+      const expected = calculateDealerBuyIn(watch.dealerMetrics!.consensusMarketValue, 20);
+      expect(watch.dealerMetrics!.dealerBuyInPrice).toBe(expected.buyIn);
+      expect(watch.aiAnalysis.spreadDollars).toBe(expected.spread);
+      expect(watch.aiAnalysis.currentSpread).toBe(20);
+    }
+  });
+
+  it('computes arbitrage deal spreads dynamically at runtime', () => {
+    for (const deal of engine.allArbitrageListings) {
+      const watch = engine.watches.find(w => w.reference === deal.reference);
+      expect(watch).toBeDefined();
+      if (!watch || !watch.dealerMetrics) continue;
+
+      const expectedSpread = calculateArbitrageSpread(deal.price, watch.dealerMetrics.consensusMarketValue);
+      expect(deal.estimated_profit_dollars).toBe(expectedSpread.discountDollars);
+      expect(deal.discount_from_cmv_pct).toBe(expectedSpread.discountPct);
+    }
+  });
+
+  it('maintains strict descending profit rank in allArbitrageListings', () => {
+    const deals = engine.allArbitrageListings;
+    expect(deals.length).toBeGreaterThan(0);
+    for (let i = 0; i < deals.length - 1; i++) {
+      expect(deals[i].estimated_profit_dollars!).toBeGreaterThanOrEqual(deals[i + 1].estimated_profit_dollars!);
+    }
+  });
+
+  it('dynamically computes market premium percentage over MSRP from dynamic CMV', () => {
+    for (const watch of engine.watches) {
+      expect(watch.dealerMetrics).toBeDefined();
+      const cmv = watch.dealerMetrics!.consensusMarketValue;
+      const msrp = watch.dealerMetrics!.retailMSRP;
+      const expectedPremium = msrp > 0 ? Math.round(((cmv - msrp) / msrp) * 1000) / 10 : 0;
+      expect(watch.dealerMetrics!.marketPremiumPct).toBe(expectedPremium);
+    }
+  });
+
+  it('verifies multiVenue.chrono24 transparent ingestion status', () => {
+    for (const watch of engine.watches) {
+      expect(watch.multiVenue).toBeDefined();
+      expect(watch.multiVenue!.chrono24.lastUpdated).toBe('Chrono24 Verified Ingestion');
+      expect(watch.multiVenue!.chrono24.price).toBe(watch.dealerMetrics!.consensusMarketValue);
+    }
+  });
+});
+
+
