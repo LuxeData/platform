@@ -199,8 +199,12 @@ export default function Home() {
                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     MONITORED SECONDARY CAPITAL
                   </span>
-                  <span className="badge badge-gold badge-glimmer">
-                    <span className="pulse-indicator-gold" style={{ width: '5px', height: '5px', marginRight: '4px' }}></span> LIVE FEED
+                  <span
+                    className="badge badge-gold badge-glimmer"
+                    title={`Data Ingestion Timestamp: ${MACRO_METRICS.lastScrapedAt}`}
+                    style={{ cursor: 'help' }}
+                  >
+                    <span className="pulse-indicator-gold" style={{ width: '5px', height: '5px', marginRight: '4px' }}></span> SYNTHESIS BENCHMARK ACTIVE
                   </span>
                 </div>
                 <div style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--gold-dark)' }}>
@@ -444,7 +448,7 @@ export default function Home() {
 
             <div className="footer-status-row" style={{ marginTop: '10px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px', alignItems: 'center' }}>
               <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span className="pulse-indicator"></span> CONSENSUS ENGINE ONLINE • 24MS LATENCY
+                <span className="pulse-indicator"></span> CONSENSUS ENGINE ACTIVE • 281 LOTS INGESTED
               </span>
               <span>© 2026 LuxeData Technologies Inc. All rights reserved.</span>
             </div>

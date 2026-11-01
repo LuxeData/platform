@@ -37,6 +37,9 @@ jobs:
       - name: Next.js ESLint Code Quality
         run: npm run lint
 
+      - name: Unit Tests (Vitest Automated Suite)
+        run: npm test
+
   # -------------------------------------------------------------
   # Job 2: Next.js Production Build Gate
   # -------------------------------------------------------------
@@ -120,11 +123,15 @@ jobs:
       - name: Verify All CI Jobs Succeeded
         run: |
           if [ "${{ needs.typecheck-and-lint.result }}" != "success" ]; then
-            echo "❌ TypeScript or Linting failed."
+            echo "❌ TypeScript, Linting, or Unit Tests failed."
             exit 1
           fi
           if [ "${{ needs.production-build-gate.result }}" != "success" ]; then
             echo "❌ Production Next.js build failed."
+            exit 1
+          fi
+          if [ "${{ needs.security-audit.result }}" != "success" ]; then
+            echo "❌ Security scanning or secret detection failed."
             exit 1
           fi
           echo "🎉 All CI checks passed! Pull Request is eligible to merge."

@@ -925,3 +925,59 @@ body {
 .spinner {
   animation: spin 0.85s linear infinite;
 }
+
+/* Responsive Two-Column Legal Layout (Mobile Overflow Remediation) */
+.legal-two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.legal-two-column-layout > * {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .legal-two-column-layout {
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 899px) {
+  .legal-two-column-layout aside {
+    position: static !important;
+  }
+}
+
+/* Elegant Light-Mode Luxury Skeleton Shimmer Loader */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(241, 245, 249, 0.9) 20%,
+    rgba(255, 255, 255, 0.95) 35%,
+    rgba(180, 130, 40, 0.08) 50%,
+    rgba(255, 255, 255, 0.95) 65%,
+    rgba(241, 245, 249, 0.9) 80%
+  );
+  background-size: 300% 100%;
+  animation: skeleton-shimmer 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background: #F1F5F9;
+  }
+}
+
