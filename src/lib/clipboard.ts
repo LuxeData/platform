@@ -4,10 +4,12 @@
 export async function copyToClipboard(text: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
+  const nav = typeof navigator !== 'undefined' ? navigator : (typeof window !== 'undefined' ? (window as any).navigator : undefined);
+
   // 1. Try modern navigator.clipboard API if available
-  if (navigator?.clipboard?.writeText) {
+  if (nav?.clipboard && typeof nav.clipboard.writeText === 'function') {
     try {
-      await navigator.clipboard.writeText(text);
+      await nav.clipboard.writeText(text);
       return true;
     } catch (err) {
       console.warn('[LuxeData Clipboard] navigator.clipboard.writeText failed, attempting execCommand fallback:', err);
