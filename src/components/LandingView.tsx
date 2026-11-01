@@ -6,27 +6,31 @@ import { WatchModel } from '../types/watch';
 import { MacroMetrics } from '../lib/marketEngine';
 import { formatUSD } from '../lib/format';
 import { MechanicalBackground } from './MechanicalBackground';
+import { InteractiveTiltCard } from './InteractiveTiltCard';
+import { AnimatedCounter } from './AnimatedCounter';
+import { ScrollReveal } from './ScrollReveal';
+import { ParallaxWrapper } from './ParallaxWrapper';
 import { 
   ShieldCheck, 
   TrendingUp, 
-  TrendingDown,
+  TrendingDown, 
   ArrowRight, 
   Calculator, 
   Target, 
   Building2, 
   Scale, 
   ExternalLink,
-  Sparkles,
-  ArrowUpRight,
-  Sliders,
-  CheckCircle2,
-  Lock,
-  Layers,
-  Store,
-  ChevronRight,
-  Zap,
-  BarChart3,
-  Info
+  Sparkles, 
+  ArrowUpRight, 
+  Sliders, 
+  CheckCircle2, 
+  Lock, 
+  Layers, 
+  Store, 
+  ChevronRight, 
+  Zap, 
+  BarChart3, 
+  Info 
 } from 'lucide-react';
 import { WatchCard } from './WatchCard';
 
@@ -68,18 +72,23 @@ export const LandingView: React.FC<LandingViewProps> = ({
         <MechanicalBackground />
 
         {/* HERO VALUE PROP: Crystal-clear single-sentence explanation right at the very top. No fluff. */}
-        <div style={{
-          zIndex: 1,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'rgba(161, 116, 36, 0.08)',
-          border: '1px solid var(--border-gold-subtle)',
-          borderRadius: '999px',
-          padding: '8px 20px',
-          maxWidth: '820px',
-          boxShadow: '0 2px 8px rgba(161, 116, 36, 0.08)'
-        }}>
+        <div 
+          className="animate-reveal-up stagger-1 badge-glimmer"
+          style={{
+            zIndex: 1,
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(161, 116, 36, 0.08)',
+            border: '1px solid var(--border-gold-subtle)',
+            borderRadius: '999px',
+            padding: '8px 20px',
+            maxWidth: '820px',
+            boxShadow: '0 4px 14px rgba(161, 116, 36, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+          }}
+        >
           <Sparkles size={14} style={{ color: 'var(--gold-primary)', flexShrink: 0 }} />
           <span style={{
             fontSize: 'clamp(0.78rem, 1.2vw, 0.86rem)',
@@ -93,17 +102,23 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
 
         {/* Master Logo Mark */}
-        <div style={{
-          zIndex: 1,
-          position: 'relative',
-          filter: 'drop-shadow(0 4px 16px rgba(161, 116, 36, 0.2))'
-        }}>
-          <Logo size={68} />
+        <div 
+          className="animate-fade-scale stagger-2"
+          style={{
+            zIndex: 1,
+            position: 'relative',
+            filter: 'drop-shadow(0 6px 20px rgba(161, 116, 36, 0.25))'
+          }}
+        >
+          <Logo size={70} />
         </div>
 
         {/* Status Pill Badge */}
-        <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <span className="badge badge-gold" style={{ padding: '6px 16px', fontSize: '0.72rem' }}>
+        <div 
+          className="animate-reveal-up stagger-3"
+          style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}
+        >
+          <span className="badge badge-gold badge-glimmer" style={{ padding: '6px 16px', fontSize: '0.72rem', boxShadow: '0 2px 8px rgba(161, 116, 36, 0.12)' }}>
             <span className="pulse-indicator"></span>
             TRI-VENUE CONSENSUS • CHRONO24 + EBAY + WATCHCHARTS
           </span>
@@ -113,7 +128,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
 
         {/* Main Headline */}
-        <div style={{ zIndex: 1, maxWidth: '920px' }}>
+        <div 
+          className="animate-reveal-up stagger-4"
+          style={{ zIndex: 1, maxWidth: '920px' }}
+        >
           <h1 className="serif-heading" style={{
             fontSize: 'clamp(2.2rem, 4.0vw, 3.5rem)',
             fontWeight: 800,
@@ -139,15 +157,18 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
 
         {/* Primary Call-to-Action Buttons */}
-        <div style={{ zIndex: 1, display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}>
+        <div 
+          className="animate-reveal-up stagger-5"
+          style={{ zIndex: 1, display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}
+        >
           <button
             onClick={() => onEnterTerminal()}
             className="btn-primary"
             style={{
-              padding: '14px 32px',
+              padding: '14px 34px',
               fontSize: '0.96rem',
               borderRadius: '10px',
-              boxShadow: '0 4px 18px rgba(15, 23, 42, 0.16)'
+              boxShadow: '0 6px 20px rgba(15, 23, 42, 0.18)'
             }}
           >
             Launch Market Terminal <ArrowRight size={17} />
@@ -169,7 +190,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
 
         {/* Micro Provenance Assurance */}
-        <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '18px', color: 'var(--text-muted)', fontSize: '0.76rem', marginTop: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div 
+          className="animate-reveal-up stagger-6"
+          style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '18px', color: 'var(--text-muted)', fontSize: '0.76rem', marginTop: '14px', flexWrap: 'wrap', justifyContent: 'center' }}
+        >
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <CheckCircle2 size={14} style={{ color: 'var(--gold-primary)' }} /> Live Chrono24 Ingestion
           </span>
@@ -184,183 +208,210 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
       </section>
 
-      {/* 2. FLOATING INSTITUTIONAL COMMAND DOCK: Crisp Light Theme Strip */}
+      {/* 2. FLOATING INSTITUTIONAL COMMAND DOCK: Crisp Light Theme Strip with S-Tier Elevation */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
-        <div 
-          className="border-beam-card responsive-command-dock" 
-          style={{
-            padding: '28px 32px',
-            background: '#FFFFFF',
-            border: '1px solid var(--border-subtle)'
-          }}
-        >
-          {/* Metric 1: Luxe 5 Secondary Index */}
-          <div className="responsive-dock-item">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
-                LUXE 5 BENCHMARK INDEX
-              </span>
-              <span className={macro.luxeIndexChangePct >= 0 ? 'badge badge-emerald' : 'badge badge-crimson'} style={{ fontSize: '0.62rem' }}>
-                {macro.luxeIndexChangePct >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />} {macro.luxeIndexChangePct >= 0 ? `+${macro.luxeIndexChangePct}` : `${macro.luxeIndexChangePct}`}% 30D
-              </span>
+        <ScrollReveal direction="up" distance={24} duration={700}>
+          <div 
+            className="border-beam-card responsive-command-dock" 
+            style={{
+              padding: '28px 32px',
+              background: '#FFFFFF',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: '0 10px 32px -4px rgba(15, 23, 42, 0.08), inset 0 1px 0 #FFFFFF'
+            }}
+          >
+            {/* Metric 1: Luxe 5 Secondary Index */}
+            <div className="responsive-dock-item">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
+                  LUXE 5 BENCHMARK INDEX
+                </span>
+                <span className={macro.luxeIndexChangePct >= 0 ? 'badge badge-emerald' : 'badge badge-crimson'} style={{ fontSize: '0.62rem' }}>
+                  {macro.luxeIndexChangePct >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />} {macro.luxeIndexChangePct >= 0 ? `+${macro.luxeIndexChangePct}` : `${macro.luxeIndexChangePct}`}% 30D
+                </span>
+              </div>
+              <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <AnimatedCounter value={macro.luxeIndexValue} prefix="$" />
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Secondary basket: Rolex, AP &amp; Patek
+              </div>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              ${formatUSD(macro.luxeIndexValue)}
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Secondary basket: Rolex, AP &amp; Patek
-            </div>
-          </div>
 
-          {/* Metric 2: Monitored Capital */}
-          <div className="responsive-dock-item">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
-                MONITORED SECONDARY CAPITAL
-              </span>
-              <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>LIVE SYNC</span>
+            {/* Metric 2: Monitored Capital */}
+            <div className="responsive-dock-item">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
+                  MONITORED SECONDARY CAPITAL
+                </span>
+                <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>
+                  <span className="pulse-indicator-gold" style={{ width: '5px', height: '5px', marginRight: '4px' }}></span> LIVE SYNC
+                </span>
+              </div>
+              <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
+                <AnimatedCounter value={macro.totalCatalogValue / 1000000} prefix="$" suffix="M+" decimals={1} />
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                {macro.totalTrackedListings} active Chrono24 listings
+              </div>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
-              ${(macro.totalCatalogValue / 1000000).toFixed(1)}M+
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              {macro.totalTrackedListings} active Chrono24 listings
-            </div>
-          </div>
 
-          {/* Metric 3: Institutional Buy-In Spread */}
-          <div className="responsive-dock-item">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
-                DEALER BUY-IN SPREAD
-              </span>
-              <span className="badge badge-subtle" style={{ fontSize: '0.62rem' }}>BENCHMARK</span>
+            {/* Metric 3: Institutional Buy-In Spread */}
+            <div className="responsive-dock-item">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
+                  DEALER BUY-IN SPREAD
+                </span>
+                <span className="badge badge-subtle" style={{ fontSize: '0.62rem' }}>BENCHMARK</span>
+              </div>
+              <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
+                <AnimatedCounter value={macro.averageDealerSpreadPct} suffix="%" decimals={1} />
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Standard wholesale buy-in margin
+              </div>
             </div>
-            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
-              {macro.averageDealerSpreadPct.toFixed(1)}%
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Standard wholesale buy-in margin
-            </div>
-          </div>
 
-          {/* Metric 4: Verified Arbitrage Deals */}
-          <div className="responsive-dock-item">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700 }}>
-                ARBITRAGE SIGNALS
-              </span>
-              <span className="badge badge-emerald" style={{ fontSize: '0.62rem' }}>SUB-WHOLESALE</span>
-            </div>
-            <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              {macro.arbitrageCount} Active
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--emerald-gain)', marginTop: '4px', fontWeight: 500 }}>
-              Priced &lt; Dealer Buy-In Floor
+            {/* Metric 4: Verified Arbitrage Deals */}
+            <div className="responsive-dock-item">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700 }}>
+                  ARBITRAGE SIGNALS
+                </span>
+                <span className="badge badge-emerald" style={{ fontSize: '0.62rem' }}>SUB-WHOLESALE</span>
+              </div>
+              <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <AnimatedCounter value={macro.arbitrageCount} suffix=" Active" />
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--emerald-gain)', marginTop: '4px', fontWeight: 500 }}>
+                Priced &lt; Dealer Buy-In Floor
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
-      {/* 3. PRODUCT-FIRST BENCHMARK SPOTLIGHT: Physical Watch Takes Center Stage */}
+      {/* 3. PRODUCT-FIRST BENCHMARK SPOTLIGHT: Physical Watch Takes Center Stage with Interactive 3D Tilt */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 40px auto' }}>
-          <span className="badge badge-gold" style={{ marginBottom: '10px' }}>PHYSICAL ASSET BENCHMARKS</span>
-          <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 2.8vw, 2.5rem)', fontWeight: 800, color: 'var(--text-main)' }}>
-            The 5 Benchmark Secondary References
-          </h2>
-          <p style={{ fontSize: '0.90rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6' }}>
-            Direct consensus market pricing and defensible cash buy-in floors across the most actively traded stainless steel references.
-          </p>
-        </div>
+        <ScrollReveal direction="up" distance={20} duration={600}>
+          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 40px auto' }}>
+            <span className="badge badge-gold badge-glimmer" style={{ marginBottom: '10px' }}>PHYSICAL ASSET BENCHMARKS</span>
+            <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 2.8vw, 2.5rem)', fontWeight: 800, color: 'var(--text-main)' }}>
+              The 5 Benchmark Secondary References
+            </h2>
+            <p style={{ fontSize: '0.90rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6' }}>
+              Direct consensus market pricing and defensible cash buy-in floors across the most actively traded stainless steel references.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Interactive Reference Switcher */}
-        <div className="mobile-tabs-container" style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '12px',
-          marginBottom: '32px',
-          padding: '4px 0'
-        }}>
-          {watches.map((w) => {
-            const isSelected = w.reference === activeBenchmarkRef;
-            return (
-              <button
-                key={w.reference}
-                onClick={() => setActiveBenchmarkRef(w.reference)}
-                style={{
-                  background: isSelected ? '#FFFFFF' : '#F1F5F9',
-                  border: isSelected ? '2px solid var(--gold-primary)' : '1px solid var(--border-hairline)',
-                  color: isSelected ? 'var(--text-main)' : 'var(--text-secondary)',
-                  padding: '10px 18px',
-                  borderRadius: '12px',
-                  fontSize: '0.82rem',
-                  fontWeight: isSelected ? 700 : 500,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isSelected ? '0 4px 14px rgba(161, 116, 36, 0.15)' : 'none'
-                }}
-              >
-                <span>{w.brand}</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', opacity: 0.85 }}>{w.reference}</span>
-              </button>
-            );
-          })}
-        </div>
+        <ScrollReveal direction="up" delay={70} distance={16} duration={550}>
+          <div className="mobile-tabs-container" style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '12px',
+            marginBottom: '32px',
+            padding: '4px 0'
+          }}>
+            {watches.map((w) => {
+              const isSelected = w.reference === activeBenchmarkRef;
+              return (
+                <button
+                  key={w.reference}
+                  onClick={() => setActiveBenchmarkRef(w.reference)}
+                  style={{
+                    background: isSelected ? '#FFFFFF' : '#F1F5F9',
+                    border: isSelected ? '2px solid var(--gold-primary)' : '1px solid var(--border-hairline)',
+                    color: isSelected ? 'var(--text-main)' : 'var(--text-secondary)',
+                    padding: '10px 18px',
+                    borderRadius: '12px',
+                    fontSize: '0.82rem',
+                    fontWeight: isSelected ? 700 : 500,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: isSelected 
+                      ? '0 4px 14px rgba(161, 116, 36, 0.18), inset 0 1px 0 #FFFFFF' 
+                      : 'inset 0 1px 0 rgba(255, 255, 255, 0.7)',
+                    transform: isSelected ? 'translateY(-1px)' : 'none'
+                  }}
+                >
+                  <span>{w.brand}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', opacity: 0.85 }}>{w.reference}</span>
+                </button>
+              );
+            })}
+          </div>
+        </ScrollReveal>
 
-        {/* Featured Benchmark Stage: Watch Photo Takes Center Stage (Radical Data Minimalism) */}
+        {/* Featured Benchmark Stage: Interactive 3D Perspective Tilt Showcase with Parallax */}
         {spotlightWatch && (
-          <div 
-            className="border-beam-card responsive-split-showcase" 
-            style={{
-              padding: '44px 40px',
-              background: '#FFFFFF',
-              border: '1px solid var(--border-subtle)',
-              boxShadow: '0 12px 40px rgba(15, 23, 42, 0.06)'
-            }}
-          >
-            {/* Left: High-Resolution Product Photograph (Center Stage) */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: '#F8F9FA',
-              borderRadius: '18px',
-              padding: '24px',
-              border: '1px solid var(--border-hairline)',
-              position: 'relative'
-            }}>
-              {spotlightWatch.imageUrl ? (
-                <div style={{ position: 'relative', width: '280px', height: '320px', maxWidth: '100%' }}>
-                  <Image
-                    src={spotlightWatch.imageUrl}
-                    alt={`${spotlightWatch.brand} ${spotlightWatch.model}`}
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 280px, 320px"
-                    style={{
-                      objectFit: 'contain',
-                      filter: 'drop-shadow(0 14px 28px rgba(15, 23, 42, 0.15))',
-                      transition: 'transform 0.3s ease'
-                    }}
-                  />
-                </div>
-              ) : (
+          <ScrollReveal direction="scale" delay={130} duration={650}>
+            <InteractiveTiltCard
+              maxTilt={2.8}
+              glareOpacity={0.14}
+              className="border-beam-card responsive-split-showcase" 
+              style={{
+                padding: '44px 40px',
+                background: '#FFFFFF',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: 'var(--shadow-spotlight)',
+                borderRadius: '20px'
+              }}
+            >
+              {/* Left: High-Resolution Product Photograph (Studio Showcase with Parallax Depth) */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'radial-gradient(circle at 50% 35%, #FFFFFF 0%, #F8FAFC 85%)',
+                borderRadius: '18px',
+                padding: '24px',
+                border: '1px solid var(--border-hairline)',
+                position: 'relative',
+                boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.03)',
+                transformStyle: 'preserve-3d'
+              }}>
+                {spotlightWatch.imageUrl ? (
+                  <ParallaxWrapper speed={0.05} maxOffset={18}>
+                    <div style={{
+                      position: 'relative',
+                      width: '280px',
+                      height: '320px',
+                      maxWidth: '100%',
+                      transform: 'translateZ(26px)',
+                      transformStyle: 'preserve-3d'
+                    }}>
+                      <Image
+                        src={spotlightWatch.imageUrl}
+                        alt={`${spotlightWatch.brand} ${spotlightWatch.model}`}
+                        fill
+                        priority
+                        sizes="(max-width: 768px) 280px, 320px"
+                        style={{
+                          objectFit: 'contain',
+                          filter: 'drop-shadow(0 16px 32px rgba(15, 23, 42, 0.16))',
+                          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}
+                      />
+                    </div>
+                  </ParallaxWrapper>
+                ) : (
                 <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Logo size={80} />
                 </div>
               )}
 
               <div style={{ marginTop: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem' }}>
+                <span className="badge badge-gold badge-glimmer" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem' }}>
                   REF: {spotlightWatch.reference}
                 </span>
                 <span className="badge badge-subtle" style={{ fontSize: '0.68rem' }}>
@@ -396,13 +447,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   background: 'rgba(5, 150, 105, 0.05)',
                   border: '1.5px solid var(--emerald-border)',
                   borderRadius: '12px',
-                  padding: '18px 20px'
+                  padding: '18px 20px',
+                  boxShadow: '0 4px 14px rgba(5, 150, 105, 0.06), inset 0 1px 0 #FFFFFF'
                 }}>
                   <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                     CASH BUY-IN FLOOR (-20%)
                   </div>
-                  <div className="tabular-nums" style={{ fontSize: 'clamp(1.6rem, 2.6vw, 2.0rem)', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
-                    ${formatUSD(spotlightWatch.recentSoldAvg)}
+                  <div style={{ fontSize: 'clamp(1.6rem, 2.6vw, 2.0rem)', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
+                    <AnimatedCounter value={spotlightWatch.recentSoldAvg} prefix="$" />
                   </div>
                   <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
                     Immediate wholesale liquidity floor
@@ -414,13 +466,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   background: 'rgba(161, 116, 36, 0.05)',
                   border: '1.5px solid var(--border-gold-subtle)',
                   borderRadius: '12px',
-                  padding: '18px 20px'
+                  padding: '18px 20px',
+                  boxShadow: '0 4px 14px rgba(161, 116, 36, 0.06), inset 0 1px 0 #FFFFFF'
                 }}>
                   <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                     CONSENSUS MARKET VALUE
                   </div>
-                  <div className="tabular-nums" style={{ fontSize: 'clamp(1.6rem, 2.6vw, 2.0rem)', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
-                    ${formatUSD(spotlightWatch.currentAskingAvg)}
+                  <div style={{ fontSize: 'clamp(1.6rem, 2.6vw, 2.0rem)', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
+                    <AnimatedCounter value={spotlightWatch.currentAskingAvg} prefix="$" />
                   </div>
                   <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
                     10% trimmed mean of dealer asks
@@ -439,60 +492,72 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          </InteractiveTiltCard>
+        </ScrollReveal>
+      )}
       </section>
 
       {/* 4. RADICAL MINIMALISM WATCH GALLERY: 5 Cards with Physical Product First */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
-          <div>
-            <span className="badge badge-gold" style={{ marginBottom: '8px' }}>CURATED HOROLOGICAL INDEX</span>
-            <h2 className="serif-heading" style={{ fontSize: 'clamp(1.6rem, 2.4vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>
-              Core Secondary Watch Catalog
-            </h2>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Photo and model take center stage. Hover or click to disclose deep analytics.
-            </p>
+        <ScrollReveal direction="up" distance={18} duration={600}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
+            <div>
+              <span className="badge badge-gold badge-glimmer" style={{ marginBottom: '8px' }}>CURATED HOROLOGICAL INDEX</span>
+              <h2 className="serif-heading" style={{ fontSize: 'clamp(1.6rem, 2.4vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>
+                Core Secondary Watch Catalog
+              </h2>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Photo and model take center stage. Hover or click to disclose deep analytics.
+              </p>
+            </div>
+
+            <button
+              onClick={() => onEnterTerminal()}
+              className="btn-ghost"
+              style={{ fontSize: '0.82rem', padding: '10px 18px', color: 'var(--gold-primary)', fontWeight: 600 }}
+            >
+              Open Market Terminal <ArrowRight size={15} />
+            </button>
           </div>
+        </ScrollReveal>
 
-          <button
-            onClick={() => onEnterTerminal()}
-            className="btn-ghost"
-            style={{ fontSize: '0.82rem', padding: '10px 18px', color: 'var(--gold-primary)', fontWeight: 600 }}
-          >
-            Open Market Terminal <ArrowRight size={15} />
-          </button>
-        </div>
-
-        {/* 5 Minimalist Watch Cards */}
+        {/* 5 Minimalist Watch Cards with Choreographed Stagger Reveal */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '20px'
         }}>
-          {watches.map((w) => (
-            <WatchCard
+          {watches.map((w, index) => (
+            <ScrollReveal
               key={w.reference}
-              watch={w}
-              isSelected={spotlightWatch.reference === w.reference}
-              onSelect={(selected) => onEnterTerminal(selected)}
-            />
+              direction="up"
+              delay={index * 80}
+              distance={26}
+              duration={650}
+            >
+              <WatchCard
+                watch={w}
+                isSelected={spotlightWatch.reference === w.reference}
+                onSelect={(selected) => onEnterTerminal(selected)}
+              />
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* 5. THREE DEALER VALUE PILLARS (Clean, Authoritative White Cards) */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
-        <div style={{ textAlign: 'center', maxWidth: '740px', margin: '0 auto 40px auto' }}>
-          <span className="badge badge-gold" style={{ marginBottom: '10px' }}>BUILT FOR SECONDARY SPECIALISTS</span>
-          <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 2.6vw, 2.4rem)', fontWeight: 800, color: 'var(--text-main)' }}>
-            Three Critical Advantages for Watch Desks
-          </h2>
-          <p style={{ fontSize: '0.90rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
-            Engineered directly from dealer interviews in the New York Diamond District and European trade desks.
-          </p>
-        </div>
+        <ScrollReveal direction="up" distance={20} duration={600}>
+          <div style={{ textAlign: 'center', maxWidth: '740px', margin: '0 auto 40px auto' }}>
+            <span className="badge badge-gold" style={{ marginBottom: '10px' }}>BUILT FOR SECONDARY SPECIALISTS</span>
+            <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 2.6vw, 2.4rem)', fontWeight: 800, color: 'var(--text-main)' }}>
+              Three Critical Advantages for Watch Desks
+            </h2>
+            <p style={{ fontSize: '0.90rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+              Engineered directly from dealer interviews in the New York Diamond District and European trade desks.
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div style={{
           display: 'grid',
@@ -500,264 +565,288 @@ export const LandingView: React.FC<LandingViewProps> = ({
           gap: '28px'
         }}>
           {/* Pillar 1 */}
-          <div className="border-beam-card" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#FFFFFF' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: 'rgba(161, 116, 36, 0.08)',
-              border: '1px solid var(--border-gold-subtle)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--gold-primary)'
-            }}>
-              <Scale size={24} />
-            </div>
-            <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              10% Trimmed Mean Consensus
-            </h3>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-              Chrono24 asking prices are notoriously skewed by speculative dreamers. Our algorithm isolates verified company listings, eliminates top/bottom 10% outlier asks, and delivers the true <strong>Consensus Market Value (CMV)</strong>.
-            </p>
-            <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--emerald-gain)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-              <CheckCircle2 size={15} /> Eliminates high &amp; low market distortion
-            </div>
-          </div>
+          <ScrollReveal direction="up" delay={0} distance={24} duration={650}>
+            <InteractiveTiltCard maxTilt={3} glareOpacity={0.12} className="border-beam-card" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#FFFFFF', height: '100%' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: 'rgba(161, 116, 36, 0.08)',
+                border: '1px solid var(--border-gold-subtle)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--gold-primary)'
+              }}>
+                <Scale size={24} />
+              </div>
+              <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                10% Trimmed Mean Consensus
+              </h3>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
+                Chrono24 asking prices are notoriously skewed by speculative dreamers. Our algorithm isolates verified company listings, eliminates top/bottom 10% outlier asks, and delivers the true <strong>Consensus Market Value (CMV)</strong>.
+              </p>
+              <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--emerald-gain)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                <CheckCircle2 size={15} /> Eliminates high &amp; low market distortion
+              </div>
+            </InteractiveTiltCard>
+          </ScrollReveal>
 
           {/* Pillar 2 */}
-          <div className="border-beam-card" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#FFFFFF', border: '1.5px solid var(--border-gold)' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: 'rgba(5, 150, 105, 0.08)',
-              border: '1px solid var(--emerald-border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--emerald-gain)'
-            }}>
-              <Calculator size={24} />
-            </div>
-            <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              Scientific 20% Buy-In Defense
-            </h3>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-              When walk-in clients overvalue their pre-owned piece based on raw retail asks, generate a <strong>LuxeData Appraisal Certificate</strong> showing condition multipliers, turnover days, and mathematical justification for your 20% wholesale offer.
-            </p>
-            <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-              <CheckCircle2 size={15} /> Defends dealer gross margins in negotiations
-            </div>
-          </div>
+          <ScrollReveal direction="up" delay={110} distance={24} duration={650}>
+            <InteractiveTiltCard maxTilt={3} glareOpacity={0.12} className="border-beam-card" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#FFFFFF', border: '1.5px solid var(--border-gold)', height: '100%' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: 'rgba(5, 150, 105, 0.08)',
+                border: '1px solid var(--emerald-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--emerald-gain)'
+              }}>
+                <Calculator size={24} />
+              </div>
+              <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                Scientific 20% Buy-In Defense
+              </h3>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
+                When walk-in clients overvalue their pre-owned piece based on raw retail asks, generate a <strong>LuxeData Appraisal Certificate</strong> showing condition multipliers, turnover days, and mathematical justification for your 20% wholesale offer.
+              </p>
+              <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                <CheckCircle2 size={15} /> Defends dealer gross margins in negotiations
+              </div>
+            </InteractiveTiltCard>
+          </ScrollReveal>
 
           {/* Pillar 3 */}
-          <div className="border-beam-card" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#FFFFFF' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: 'rgba(2, 132, 199, 0.08)',
-              border: '1px solid rgba(2, 132, 199, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#0284C7'
-            }}>
-              <Target size={24} />
-            </div>
-            <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              Sub-Wholesale Arbitrage Scanner
-            </h3>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-              Our automated engine monitors global dealer &amp; private lots 24/7, instantly surfacing opportunities trading <strong>below the dealer buy-in floor</strong> with direct Chrono24 links for rapid capital deployment.
-            </p>
-            <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: '#0284C7', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-              <CheckCircle2 size={15} /> 31 live opportunities active now
-            </div>
-          </div>
+          <ScrollReveal direction="up" delay={220} distance={24} duration={650}>
+            <InteractiveTiltCard maxTilt={3} glareOpacity={0.12} className="border-beam-card" style={{ padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#FFFFFF', height: '100%' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: 'rgba(2, 132, 199, 0.08)',
+                border: '1px solid rgba(2, 132, 199, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#0284C7'
+              }}>
+                <Target size={24} />
+              </div>
+              <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                Sub-Wholesale Arbitrage Scanner
+              </h3>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
+                Our automated engine monitors global dealer &amp; private lots 24/7, instantly surfacing opportunities trading <strong>below the dealer buy-in floor</strong> with direct Chrono24 links for rapid capital deployment.
+              </p>
+              <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: '#0284C7', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                <CheckCircle2 size={15} /> 31 live opportunities active now
+              </div>
+            </InteractiveTiltCard>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* 6. LIVE ARBITRAGE SHOWCASE: Physical Product First with Direct Link Proof */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '28px' }}>
-          <div>
-            <span className="badge badge-emerald" style={{ marginBottom: '8px' }}>LIVE RADAR SAMPLES</span>
-            <h2 className="serif-heading" style={{ fontSize: 'clamp(1.6rem, 2.3vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>
-              Real Arbitrage Lots Currently Active on Chrono24
-            </h2>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              Actual secondary market lots priced below our institutional buy-in baseline.
-            </p>
+        <ScrollReveal direction="up" distance={20} duration={600}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '28px' }}>
+            <div>
+              <span className="badge badge-emerald" style={{ marginBottom: '8px' }}>LIVE RADAR SAMPLES</span>
+              <h2 className="serif-heading" style={{ fontSize: 'clamp(1.6rem, 2.3vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>
+                Real Arbitrage Lots Currently Active on Chrono24
+              </h2>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Actual secondary market lots priced below our institutional buy-in baseline.
+              </p>
+            </div>
+
+            <button
+              onClick={() => onNavigateTab('arbitrage')}
+              className="btn-ghost"
+              style={{ fontSize: '0.82rem', padding: '10px 18px', color: 'var(--gold-primary)', fontWeight: 600 }}
+            >
+              View All 31 Arbitrage Deals <ArrowRight size={15} />
+            </button>
           </div>
+        </ScrollReveal>
 
-          <button
-            onClick={() => onNavigateTab('arbitrage')}
-            className="btn-ghost"
-            style={{ fontSize: '0.82rem', padding: '10px 18px', color: 'var(--gold-primary)', fontWeight: 600 }}
-          >
-            View All 31 Arbitrage Deals <ArrowRight size={15} />
-          </button>
-        </div>
-
-        {/* 3 Real Lots Cards */}
+        {/* 3 Real Lots Cards with Staggered Scroll Reveal */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '24px'
         }}>
-          {watches.slice(0, 3).map((w) => {
+          {watches.slice(0, 3).map((w, index) => {
             const topDeal = w.dealerMetrics?.arbitrageDeals?.[0];
             if (!topDeal) return null;
 
             return (
-              <div
+              <ScrollReveal
                 key={topDeal.id}
-                className="border-beam-card"
-                style={{
-                  padding: '24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  background: '#FFFFFF',
-                  border: '1.5px solid var(--emerald-border)'
-                }}
+                direction="up"
+                delay={index * 100}
+                distance={24}
+                duration={650}
               >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <span className="badge badge-subtle">{w.brand}</span>
-                    <span className="badge badge-emerald tabular-nums" style={{ fontWeight: 700 }}>
-                      Save ${formatUSD(topDeal.estimated_profit_dollars)} (-{topDeal.discount_from_cmv_pct}%)
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '14px' }}>
-                    {w.imageUrl && (
-                      <div style={{
-                        width: '70px',
-                        height: '70px',
-                        background: '#F8FAFC',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        position: 'relative'
-                      }}>
-                        <Image
-                          src={w.imageUrl}
-                          alt={w.model}
-                          fill
-                          sizes="70px"
-                          style={{ objectFit: 'contain', padding: '5px' }}
-                        />
-                      </div>
-                    )}
-
-                    <div>
-                      <h4 className="serif-heading" style={{ fontSize: '1.10rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '2px' }}>
-                        {w.model}
-                      </h4>
-                      <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
-                        Ref: <strong style={{ color: 'var(--gold-primary)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong> • {topDeal.location}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pricing Box */}
-                  <div style={{
-                    background: '#F8FAFC',
-                    padding: '14px',
-                    borderRadius: '10px',
-                    border: '1px solid var(--border-hairline)',
-                    marginBottom: '14px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Asking Price:</span>
-                      <span className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                        ${formatUSD(topDeal.price)}
+                <InteractiveTiltCard
+                  maxTilt={3.5}
+                  glareOpacity={0.15}
+                  className="border-beam-card"
+                  style={{
+                    padding: '24px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    background: '#FFFFFF',
+                    border: '1.5px solid var(--emerald-border)',
+                    height: '100%'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span className="badge badge-subtle">{w.brand}</span>
+                      <span className="badge badge-emerald" style={{ fontWeight: 700 }}>
+                        Save <AnimatedCounter value={topDeal.estimated_profit_dollars || 0} prefix="$" /> (-{topDeal.discount_from_cmv_pct}%)
                       </span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      <span>CMV: ${formatUSD(w.currentAskingAvg)}</span>
-                      <span style={{ color: 'var(--emerald-gain)', fontWeight: 600 }}>Floor: ${formatUSD(w.recentSoldAvg)}</span>
+
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '14px' }}>
+                      {w.imageUrl && (
+                        <div style={{
+                          width: '70px',
+                          height: '70px',
+                          background: '#F8FAFC',
+                          borderRadius: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          position: 'relative'
+                        }}>
+                          <Image
+                            src={w.imageUrl}
+                            alt={w.model}
+                            fill
+                            sizes="70px"
+                            style={{ objectFit: 'contain', padding: '5px' }}
+                          />
+                        </div>
+                      )}
+
+                      <div>
+                        <h4 className="serif-heading" style={{ fontSize: '1.10rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '2px' }}>
+                          {w.model}
+                        </h4>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+                          Ref: <strong style={{ color: 'var(--gold-primary)', fontFamily: 'var(--font-mono)' }}>{w.reference}</strong> • {topDeal.location}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pricing Box */}
+                    <div style={{
+                      background: '#F8FAFC',
+                      padding: '14px',
+                      borderRadius: '10px',
+                      border: '1px solid var(--border-hairline)',
+                      marginBottom: '14px',
+                      boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.02)'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                        <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Asking Price:</span>
+                        <span className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                          ${formatUSD(topDeal.price)}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                        <span>CMV: ${formatUSD(w.currentAskingAvg)}</span>
+                        <span style={{ color: 'var(--emerald-gain)', fontWeight: 600 }}>Floor: ${formatUSD(w.recentSoldAvg)}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  borderTop: '1px solid var(--border-hairline)',
-                  paddingTop: '12px'
-                }}>
-                  <span className={topDeal.is_private ? 'badge badge-subtle' : 'badge badge-gold'} style={{ fontSize: '0.66rem' }}>
-                    {topDeal.seller_type}
-                  </span>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderTop: '1px solid var(--border-hairline)',
+                    paddingTop: '12px'
+                  }}>
+                    <span className={topDeal.is_private ? 'badge badge-subtle' : 'badge badge-gold'} style={{ fontSize: '0.66rem' }}>
+                      {topDeal.seller_type}
+                    </span>
 
-                  {topDeal.url && (
-                    <a
-                      href={topDeal.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary"
-                      style={{ fontSize: '0.76rem', padding: '8px 16px' }}
-                    >
-                      Inspect on Chrono24 <ArrowUpRight size={13} />
-                    </a>
-                  )}
-                </div>
-              </div>
+                    {topDeal.url && (
+                      <a
+                        href={topDeal.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary"
+                        style={{ fontSize: '0.76rem', padding: '8px 16px' }}
+                      >
+                        Inspect on Chrono24 <ArrowUpRight size={13} />
+                      </a>
+                    )}
+                  </div>
+                </InteractiveTiltCard>
+              </ScrollReveal>
             );
           })}
         </div>
       </section>
 
-      {/* 7. BOTTOM CALL TO ACTION: Get Started */}
+      {/* 7. BOTTOM CALL TO ACTION: Get Started with Elevated Presence */}
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
-        <div 
-          className="border-beam-card" 
-          style={{
-            padding: '56px 36px',
-            textAlign: 'center',
-            background: '#FFFFFF',
-            border: '1.5px solid var(--border-gold)',
-            boxShadow: '0 16px 48px rgba(161, 116, 36, 0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px'
-          }}
-        >
-          <div style={{ filter: 'drop-shadow(0 4px 16px rgba(161, 116, 36, 0.25))' }}>
-            <Logo size={56} />
-          </div>
-          <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 3.2vw, 2.6rem)', fontWeight: 800, color: 'var(--text-main)', maxWidth: '720px' }}>
-            Equip Your Dealership with Institutional Certainty
-          </h2>
-          <p style={{ fontSize: '0.94rem', color: 'var(--text-secondary)', maxWidth: '640px', lineHeight: '1.65' }}>
-            Stop negotiating on speculative consumer asking prices. Join boutique watch dealers defending their buy-in margins with certified 10% trimmed mean intelligence.
-          </p>
+        <ScrollReveal direction="scale" distance={16} duration={700}>
+          <InteractiveTiltCard 
+            maxTilt={2}
+            glareOpacity={0.12}
+            className="border-beam-card" 
+            style={{
+              padding: '56px 36px',
+              textAlign: 'center',
+              background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%)',
+              border: '1.5px solid var(--border-gold)',
+              boxShadow: 'var(--shadow-spotlight)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '20px',
+              borderRadius: '24px'
+            }}
+          >
+            <div style={{ filter: 'drop-shadow(0 6px 20px rgba(161, 116, 36, 0.3))' }}>
+              <Logo size={60} />
+            </div>
+            <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 3.2vw, 2.6rem)', fontWeight: 800, color: 'var(--text-main)', maxWidth: '720px' }}>
+              Equip Your Dealership with Institutional Certainty
+            </h2>
+            <p style={{ fontSize: '0.94rem', color: 'var(--text-secondary)', maxWidth: '640px', lineHeight: '1.65' }}>
+              Stop negotiating on speculative consumer asking prices. Join boutique watch dealers defending their buy-in margins with certified 10% trimmed mean intelligence.
+            </p>
 
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
-            <button
-              onClick={() => onEnterTerminal()}
-              className="btn-primary"
-              style={{ padding: '14px 34px', fontSize: '0.96rem', borderRadius: '10px' }}
-            >
-              Open Market Terminal <ArrowRight size={16} />
-            </button>
-            <button
-              onClick={onOpenAuth}
-              className="btn-ghost"
-              style={{ padding: '14px 28px', fontSize: '0.96rem', color: 'var(--text-main)', borderRadius: '10px' }}
-            >
-              Create Dealer Account
-            </button>
-          </div>
-        </div>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
+              <button
+                onClick={() => onEnterTerminal()}
+                className="btn-primary"
+                style={{ padding: '14px 34px', fontSize: '0.96rem', borderRadius: '10px' }}
+              >
+                Open Market Terminal <ArrowRight size={16} />
+              </button>
+              <button
+                onClick={onOpenAuth}
+                className="btn-ghost"
+                style={{ padding: '14px 28px', fontSize: '0.96rem', color: 'var(--text-main)', borderRadius: '10px' }}
+              >
+                Create Dealer Account
+              </button>
+            </div>
+          </InteractiveTiltCard>
+        </ScrollReveal>
       </section>
 
     </div>

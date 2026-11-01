@@ -9,6 +9,9 @@ import { ArbitrageScanner } from '../components/ArbitrageScanner';
 import { AuthModal } from '../components/AuthModal';
 import { LegalView } from '../components/LegalView';
 import { Logo } from '../components/Logo';
+import { InteractiveTiltCard } from '../components/InteractiveTiltCard';
+import { AnimatedCounter } from '../components/AnimatedCounter';
+import { ScrollToTopButton } from '../components/ScrollToTopButton';
 import Link from 'next/link';
 import { getActiveUserSession } from '../lib/supabaseClient';
 import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
@@ -124,42 +127,48 @@ export default function Home() {
 
         {/* VIEW 0: WELCOME & COMPANY LANDING GATEWAY */}
         {activeTab === 'overview' && (
-          <LandingView
-            watches={filteredWatches.length > 0 ? filteredWatches : WATCH_MODELS}
-            macro={MACRO_METRICS}
-            onEnterTerminal={handleEnterTerminal}
-            onOpenAuth={() => setIsAuthOpen(true)}
-            onNavigateTab={setActiveTab}
-          />
+          <div key="overview" className="view-transition-container">
+            <LandingView
+              watches={filteredWatches.length > 0 ? filteredWatches : WATCH_MODELS}
+              macro={MACRO_METRICS}
+              onEnterTerminal={handleEnterTerminal}
+              onOpenAuth={() => setIsAuthOpen(true)}
+              onNavigateTab={setActiveTab}
+            />
+          </div>
         )}
         
         {/* VIEW 1: DEALER APPRAISAL TERMINAL */}
         {activeTab === 'appraisal' && (
-          <DealerAppraisalTerminal 
-            watches={WATCH_MODELS} 
-            onSelectWatch={setSelectedWatch} 
-            user={user} 
-            onOpenAuth={() => setIsAuthOpen(true)}
-          />
+          <div key="appraisal" className="view-transition-container">
+            <DealerAppraisalTerminal 
+              watches={WATCH_MODELS} 
+              onSelectWatch={setSelectedWatch} 
+              user={user} 
+              onOpenAuth={() => setIsAuthOpen(true)}
+            />
+          </div>
         )}
 
         {/* VIEW 2: ARBITRAGE RADAR */}
         {activeTab === 'arbitrage' && (
-          <ArbitrageScanner 
-            watches={WATCH_MODELS} 
-            onSelectWatch={(w) => { 
-              setSelectedWatch(w); 
-              setActiveTab('terminal'); 
-            }} 
-            user={user}
-            onOpenAuth={() => setIsAuthOpen(true)}
-          />
+          <div key="arbitrage" className="view-transition-container">
+            <ArbitrageScanner 
+              watches={WATCH_MODELS} 
+              onSelectWatch={(w) => { 
+                setSelectedWatch(w); 
+                setActiveTab('terminal'); 
+              }} 
+              user={user}
+              onOpenAuth={() => setIsAuthOpen(true)}
+            />
+          </div>
         )}
 
         {/* VIEW 3: MARKET TERMINAL */}
         {activeTab === 'terminal' && (
-          <>
-            {/* Real Macro Intelligence Strip (Derived from Scraped Chrono24 Ingestion) */}
+          <div key="terminal" className="view-transition-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Real Macro Intelligence Strip with S-Tier Elevation & Animated Counters */}
             <section style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -167,7 +176,7 @@ export default function Home() {
             }}>
               
               {/* Metric 1: Luxe 5 Secondary Basket Index */}
-              <div className="glass-card" style={{ padding: '18px 20px' }}>
+              <InteractiveTiltCard maxTilt={3} glareOpacity={0.12} className="glass-card" style={{ padding: '18px 20px', background: '#FFFFFF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     LUXE 5 BENCHMARK INDEX
@@ -176,50 +185,52 @@ export default function Home() {
                     {MACRO_METRICS.luxeIndexChangePct >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />} {MACRO_METRICS.luxeIndexChangePct >= 0 ? `+${MACRO_METRICS.luxeIndexChangePct}` : `${MACRO_METRICS.luxeIndexChangePct}`}% 30D
                   </span>
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                  ${formatUSD(MACRO_METRICS.luxeIndexValue)}
+                <div style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <AnimatedCounter value={MACRO_METRICS.luxeIndexValue} prefix="$" />
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                   Secondary basket: Rolex (3), Patek 5711, AP 15500
                 </div>
-              </div>
+              </InteractiveTiltCard>
 
               {/* Metric 2: Monitored Secondary Liquidity */}
-              <div className="glass-card" style={{ padding: '18px 20px' }}>
+              <InteractiveTiltCard maxTilt={3} glareOpacity={0.12} className="glass-card" style={{ padding: '18px 20px', background: '#FFFFFF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     MONITORED SECONDARY CAPITAL
                   </span>
-                  <span className="badge badge-gold">
-                    <span className="pulse-indicator"></span> LIVE FEED
+                  <span className="badge badge-gold badge-glimmer">
+                    <span className="pulse-indicator-gold" style={{ width: '5px', height: '5px', marginRight: '4px' }}></span> LIVE FEED
                   </span>
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--gold-dark)' }}>
-                  ${(MACRO_METRICS.totalCatalogValue / 1000000).toFixed(1)}M+
+                <div style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--gold-dark)' }}>
+                  <AnimatedCounter value={MACRO_METRICS.totalCatalogValue / 1000000} prefix="$" suffix="M+" decimals={1} />
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                   {MACRO_METRICS.totalTrackedListings} active lots across professional dealers & private sellers
                 </div>
-              </div>
+              </InteractiveTiltCard>
 
               {/* Metric 3: Institutional Dealer Spread */}
-              <div className="glass-card" style={{ padding: '18px 20px' }}>
+              <InteractiveTiltCard maxTilt={3} glareOpacity={0.12} className="glass-card" style={{ padding: '18px 20px', background: '#FFFFFF' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     DEALER CONSENSUS SPREAD
                   </span>
                   <span className="badge badge-subtle">PRO STANDARD</span>
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
-                  {MACRO_METRICS.averageDealerSpreadPct.toFixed(1)}%
+                <div style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--emerald-gain)' }}>
+                  <AnimatedCounter value={MACRO_METRICS.averageDealerSpreadPct} suffix="%" decimals={1} />
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                   Consensus retail asking vs. dealer cash buy-in floor
                 </div>
-              </div>
+              </InteractiveTiltCard>
 
               {/* Metric 4: Top Arbitrage Signal */}
-              <div 
+              <InteractiveTiltCard 
+                maxTilt={3} 
+                glareOpacity={0.15}
                 onClick={() => {
                   const targetWatch = WATCH_MODELS.find(w => w.reference === MACRO_METRICS.topArbitrageDeal.reference);
                   if (targetWatch) setSelectedWatch(targetWatch);
@@ -236,7 +247,7 @@ export default function Home() {
                     TOP ARBITRAGE SIGNAL
                   </span>
                   <span className="badge badge-emerald">
-                    SAVE ${formatUSD(MACRO_METRICS.topArbitrageDeal.profitDollars)}
+                    SAVE <AnimatedCounter value={MACRO_METRICS.topArbitrageDeal.profitDollars} prefix="$" />
                   </span>
                 </div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -246,7 +257,7 @@ export default function Home() {
                   <span>{MACRO_METRICS.topArbitrageDeal.discountPct}% below dealer consensus</span>
                   <ArrowUpRight size={12} style={{ color: 'var(--gold-dark)' }} />
                 </div>
-              </div>
+              </InteractiveTiltCard>
             </section>
 
             {/* Benchmark Reference Quick Selector (Pinned at Top for Zero-Friction Switching) */}
@@ -270,7 +281,8 @@ export default function Home() {
             <section className="glass-card" style={{
               padding: '28px 32px',
               background: 'linear-gradient(135deg, rgba(180, 130, 40, 0.05) 0%, #FFFFFF 100%)',
-              border: '1px solid var(--border-gold-subtle)'
+              border: '1px solid var(--border-gold-subtle)',
+              boxShadow: 'var(--shadow-card)'
             }}>
               <div style={{
                 display: 'flex',
@@ -281,7 +293,7 @@ export default function Home() {
               }}>
                 <div style={{ maxWidth: '780px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                    <span className="badge badge-gold">B2B DEALER INTEGRATION</span>
+                    <span className="badge badge-gold badge-glimmer">B2B DEALER INTEGRATION</span>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>REST API &amp; INVENTORY FEEDS</span>
                   </div>
                   <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '6px', color: 'var(--text-main)' }}>
@@ -303,12 +315,12 @@ export default function Home() {
                 </div>
               </div>
             </section>
-          </>
+          </div>
         )}
 
         {/* VIEW 5: INSTITUTIONAL LEGAL & GOVERNANCE */}
         {activeTab === 'legal' && (
-          <div style={{ marginTop: '10px' }}>
+          <div key="legal" className="view-transition-container" style={{ marginTop: '10px' }}>
             <LegalView 
               initialDoc={legalDoc}
               onBackToTerminal={() => {
@@ -448,6 +460,9 @@ export default function Home() {
         onAuthenticated={handleAuthenticated}
         onSignOut={handleSignOut}
       />
+
+      {/* Swiss Luxury Floating Scroll To Top Control */}
+      <ScrollToTopButton />
 
     </div>
   );

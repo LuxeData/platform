@@ -5,6 +5,8 @@ import { WatchModel } from '../types/watch';
 import { TrendingUp, TrendingDown, ChevronRight, Sparkles } from 'lucide-react';
 import { formatUSD } from '../lib/format';
 import { Logo } from './Logo';
+import { InteractiveTiltCard } from './InteractiveTiltCard';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface WatchCardProps {
   watch: WatchModel;
@@ -17,14 +19,16 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
   const isGain = watch.thirtyDayChangePct >= 0;
 
   return (
-    <div 
+    <InteractiveTiltCard
+      maxTilt={4}
+      glareOpacity={0.18}
       onClick={() => onSelect(watch)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      active={isSelected}
       className={`glass-card-interactive ${isSelected ? 'glass-card-active' : ''}`}
       style={{
         padding: '22px',
-        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -36,10 +40,11 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           : isHovered 
             ? '1.5px solid var(--border-gold)' 
             : '1px solid var(--border-subtle)',
-        boxShadow: isSelected || isHovered 
-          ? '0 14px 34px -4px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.03)' 
-          : 'var(--shadow-card)',
-        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+        boxShadow: isSelected 
+          ? '0 0 0 1px var(--border-gold), 0 18px 42px -6px rgba(15, 23, 42, 0.12), 0 6px 18px rgba(161, 116, 36, 0.14)'
+          : isHovered 
+            ? 'var(--shadow-card-hover)' 
+            : 'var(--shadow-card)',
         cursor: 'pointer'
       }}
     >
@@ -47,14 +52,14 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
         {/* Top Badges */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <span className="badge badge-subtle">{watch.brand}</span>
-          <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem' }}>
+          <span className="badge badge-gold badge-glimmer" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem' }}>
             REF: {watch.reference}
           </span>
         </div>
 
-        {/* Studio Product Photograph (Physical Watch Takes Center Stage) */}
+        {/* Studio Product Photograph (Physical Watch with 3D Depth) */}
         <div style={{
-          background: '#F8FAFC',
+          background: 'radial-gradient(circle at 50% 40%, #FFFFFF 0%, #F8FAFC 80%)',
           borderRadius: '12px',
           padding: '16px',
           display: 'flex',
@@ -63,10 +68,19 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           marginBottom: '16px',
           height: '190px',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          border: '1px solid var(--border-hairline)',
+          transformStyle: 'preserve-3d'
         }}>
           {watch.imageUrl ? (
-            <div style={{ position: 'relative', width: '100%', height: '160px' }}>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '160px',
+              transform: isHovered ? 'translateY(-6px) scale(1.06) translateZ(32px)' : 'translateY(0) scale(1) translateZ(0)',
+              transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+              transformStyle: 'preserve-3d'
+            }}>
               <Image
                 src={watch.imageUrl}
                 alt={`${watch.brand} ${watch.model}`}
@@ -74,9 +88,10 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
                 sizes="(max-width: 768px) 100vw, 240px"
                 style={{
                   objectFit: 'contain',
-                  filter: 'drop-shadow(0 8px 18px rgba(15, 23, 42, 0.12))',
-                  transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                  transition: 'transform 0.3s ease'
+                  filter: isHovered 
+                    ? 'drop-shadow(0 14px 22px rgba(15, 23, 42, 0.18))' 
+                    : 'drop-shadow(0 6px 14px rgba(15, 23, 42, 0.10))',
+                  transition: 'filter 0.35s ease'
                 }}
               />
             </div>
@@ -107,22 +122,23 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           padding: '12px 14px',
           borderRadius: '10px',
           border: '1px solid var(--border-hairline)',
-          marginBottom: '10px'
+          marginBottom: '10px',
+          boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.02)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
             <span style={{ fontSize: '0.66rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
               CASH BUY-IN (-20%)
             </span>
-            <span className="tabular-nums" style={{ fontSize: '1.30rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
-              ${formatUSD(watch.recentSoldAvg)}
-            </span>
+            <div style={{ fontSize: '1.30rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
+              <AnimatedCounter value={watch.recentSoldAvg} prefix="$" />
+            </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
             <span style={{ color: 'var(--text-muted)' }}>Consensus:</span>
-            <span className="tabular-nums" style={{ color: 'var(--text-main)', fontWeight: 700 }}>
-              ${formatUSD(watch.currentAskingAvg)}
-            </span>
+            <div style={{ color: 'var(--text-main)', fontWeight: 700 }}>
+              <AnimatedCounter value={watch.currentAskingAvg} prefix="$" />
+            </div>
           </div>
         </div>
       </div>
@@ -134,7 +150,7 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           overflow: 'hidden',
           maxHeight: isHovered ? '40px' : '0px',
           opacity: isHovered ? 1 : 0,
-          transition: 'all 0.25s ease',
+          transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -172,12 +188,13 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           marginTop: '4px',
           color: isHovered || isSelected ? 'var(--gold-primary)' : 'var(--text-muted)',
           fontSize: '0.70rem',
-          fontWeight: 600
+          fontWeight: 600,
+          transition: 'color 0.2s ease'
         }}>
           <span>{isSelected ? 'Active Terminal View' : isHovered ? 'Inspect Full Order Book' : 'Inspect Details'}</span>
-          <ChevronRight size={13} style={{ transform: isHovered ? 'translateX(2px)' : 'none', transition: 'transform 0.2s ease' }} />
+          <ChevronRight size={13} style={{ transform: isHovered ? 'translateX(3px)' : 'none', transition: 'transform 0.2s ease' }} />
         </div>
       </div>
-    </div>
+    </InteractiveTiltCard>
   );
 };

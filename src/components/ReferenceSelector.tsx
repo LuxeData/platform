@@ -5,6 +5,8 @@ import { WatchModel, UserSession } from '../types/watch';
 import { TrendingUp, ArrowUpRight, Target, Lock, Crown } from 'lucide-react';
 import { formatUSD } from '../lib/format';
 import { Logo } from './Logo';
+import { InteractiveTiltCard } from './InteractiveTiltCard';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface ReferenceSelectorProps {
   watches: WatchModel[];
@@ -56,8 +58,10 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
           const arbCount = w.dealerMetrics?.arbitrageCount || 0;
 
           return (
-            <div
+            <InteractiveTiltCard
               key={w.reference}
+              maxTilt={3.5}
+              glareOpacity={0.15}
               onClick={() => onSelectWatch(w)}
               className={`glass-card-interactive ${isSelected ? 'glass-card-active' : ''}`}
               style={{
@@ -67,8 +71,9 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                 borderRadius: '14px',
                 background: '#FFFFFF',
                 border: isSelected ? '2px solid var(--border-gold)' : '1px solid var(--border-subtle)',
-                boxShadow: isSelected ? '0 8px 24px rgba(161, 116, 36, 0.14)' : 'var(--shadow-card)',
-                transition: 'all 0.2s ease'
+                boxShadow: isSelected ? '0 0 0 1px var(--border-gold), 0 12px 28px rgba(161, 116, 36, 0.16)' : 'var(--shadow-card)',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                cursor: 'pointer'
               }}
             >
               {isSelected && (
@@ -84,7 +89,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
 
               {/* Watch Thumbnail (Physical Product Focus) */}
               <div style={{
-                background: '#F8FAFC',
+                background: 'radial-gradient(circle at 50% 40%, #FFFFFF 0%, #F8FAFC 80%)',
                 borderRadius: '10px',
                 padding: '8px',
                 display: 'flex',
@@ -92,7 +97,8 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                 justifyContent: 'center',
                 marginBottom: '10px',
                 height: '75px',
-                position: 'relative'
+                position: 'relative',
+                boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.02)'
               }}>
                 {w.imageUrl ? (
                   <div style={{ position: 'relative', width: '100%', height: '65px' }}>
@@ -103,7 +109,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                       sizes="120px"
                       style={{
                         objectFit: 'contain',
-                        filter: 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.12))'
+                        filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12))'
                       }}
                     />
                   </div>
@@ -123,7 +129,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                   {w.brand.toUpperCase()}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span className="badge badge-gold" style={{ fontSize: '0.60rem', padding: '1px 6px', fontFamily: 'var(--font-mono)' }}>
+                  <span className="badge badge-gold badge-glimmer" style={{ fontSize: '0.60rem', padding: '1px 6px', fontFamily: 'var(--font-mono)' }}>
                     {w.reference}
                   </span>
                   {w.reference === '126610LN' ? (
@@ -167,12 +173,12 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                   <div style={{ fontSize: '0.60rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', fontWeight: 700 }}>
                     Buy-In (-20%)
                   </div>
-                  <div className="tabular-nums" style={{
+                  <div style={{
                     fontSize: '1.05rem',
                     fontWeight: 800,
                     color: 'var(--emerald-gain)'
                   }}>
-                    ${formatUSD(w.recentSoldAvg)}
+                    <AnimatedCounter value={w.recentSoldAvg} prefix="$" />
                   </div>
                 </div>
 
@@ -180,12 +186,12 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                   <div style={{ fontSize: '0.60rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                     Consensus
                   </div>
-                  <div className="tabular-nums" style={{
+                  <div style={{
                     fontSize: '0.85rem',
                     fontWeight: 700,
                     color: 'var(--text-main)'
                   }}>
-                    ${formatUSD(w.currentAskingAvg)}
+                    <AnimatedCounter value={w.currentAskingAvg} prefix="$" />
                   </div>
                 </div>
               </div>
@@ -210,7 +216,7 @@ export const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({
                   {w.thirtyDayChangePct >= 0 ? `+${w.thirtyDayChangePct}` : `${w.thirtyDayChangePct}`}%
                 </span>
               </div>
-            </div>
+            </InteractiveTiltCard>
           );
         })}
       </div>

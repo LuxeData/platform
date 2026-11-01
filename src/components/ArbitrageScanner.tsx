@@ -4,6 +4,9 @@ import Image from 'next/image';
 import { WatchModel, ArbitrageListing, UserSession } from '../types/watch';
 import { Logo } from './Logo';
 import { formatUSD } from '../lib/format';
+import { InteractiveTiltCard } from './InteractiveTiltCard';
+import { AnimatedCounter } from './AnimatedCounter';
+import { ScrollReveal } from './ScrollReveal';
 import { 
   Target, 
   ExternalLink, 
@@ -79,8 +82,8 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                 <h2 className="serif-heading" style={{ fontSize: '1.40rem', fontWeight: 800, color: 'var(--text-main)' }}>
                   Live Secondary Arbitrage Radar
                 </h2>
-                <span className="badge badge-emerald" style={{ fontFamily: 'var(--font-mono)' }}>
-                  {filteredDeals.length} LIVE SIGNALS
+                <span className="badge badge-emerald badge-glimmer" style={{ fontFamily: 'var(--font-mono)' }}>
+                  <AnimatedCounter value={filteredDeals.length} suffix=" LIVE SIGNALS" />
                 </span>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.80rem', marginTop: '2px' }}>
@@ -112,28 +115,38 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
 
         return (
           <>
-            {/* Unlocked / Free Deals */}
+            {/* Unlocked / Free Deals with 3D Physics */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '20px' }}>
-              {freeDeals.map(deal => (
-                <div 
+              {freeDeals.map((deal, idx) => (
+                <ScrollReveal
                   key={deal.id}
-                  className="glass-card-interactive" 
-                  style={{ 
-                    padding: '22px', 
-                    border: '1px solid var(--border-subtle)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    position: 'relative',
-                    background: '#FFFFFF',
-                    borderRadius: '16px'
-                  }}
+                  direction="up"
+                  delay={Math.min(idx * 70, 280)}
+                  distance={20}
+                  duration={600}
                 >
+                  <InteractiveTiltCard 
+                    maxTilt={3.5}
+                    glareOpacity={0.15}
+                    className="glass-card-interactive" 
+                    style={{ 
+                      padding: '22px', 
+                      border: '1.5px solid var(--emerald-border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      position: 'relative',
+                      background: '#FFFFFF',
+                      borderRadius: '16px',
+                      boxShadow: 'var(--shadow-card)',
+                      height: '100%'
+                    }}
+                  >
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <span className="badge badge-subtle">{deal.brand}</span>
-                      <span className="badge badge-emerald tabular-nums" style={{ fontWeight: 700 }}>
-                        Save ${formatUSD(deal.estimated_profit_dollars)} (-{deal.discount_from_cmv_pct}%)
+                      <span className="badge badge-emerald" style={{ fontWeight: 700 }}>
+                        Save <AnimatedCounter value={deal.estimated_profit_dollars || 0} prefix="$" /> (-{deal.discount_from_cmv_pct}%)
                       </span>
                     </div>
 
@@ -143,21 +156,22 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                         <div style={{
                           width: '64px',
                           height: '64px',
-                          background: '#F8FAFC',
+                          background: 'radial-gradient(circle at 50% 40%, #FFFFFF 0%, #F8FAFC 80%)',
                           borderRadius: '10px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
                           border: '1px solid var(--border-hairline)',
-                          position: 'relative'
+                          position: 'relative',
+                          boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.02)'
                         }}>
                           <Image
                             src={deal.watchModelObj.imageUrl}
                             alt={deal.model}
                             fill
                             sizes="64px"
-                            style={{ objectFit: 'contain', padding: '4px' }}
+                            style={{ objectFit: 'contain', padding: '4px', filter: 'drop-shadow(0 4px 8px rgba(15, 23, 42, 0.12))' }}
                           />
                         </div>
                       )}
@@ -178,7 +192,8 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                       padding: '12px 14px',
                       borderRadius: '10px',
                       border: '1px solid var(--border-hairline)',
-                      marginBottom: '12px'
+                      marginBottom: '12px',
+                      boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.02)'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
                         <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Asking Price:</span>
@@ -220,13 +235,15 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                       </a>
                     )}
                   </div>
-                </div>
-              ))}
-            </div>
+                </InteractiveTiltCard>
+              </ScrollReveal>
+            ))}
+          </div>
 
-            {/* Pro Gate Lock Card (Shown to Free / Guest users) */}
-            {!isPro && lockedDeals.length > 0 && (
-              <div style={{ position: 'relative', marginTop: '24px' }}>
+          {/* Pro Gate Lock Card (Shown to Free / Guest users) */}
+          {!isPro && lockedDeals.length > 0 && (
+            <div style={{ position: 'relative', marginTop: '24px' }}>
+              <ScrollReveal direction="scale" distance={16} duration={600}>
                 <div className="glass-card" style={{
                   padding: '40px 24px',
                   border: '1.5px solid var(--border-gold)',
@@ -278,8 +295,9 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                     </button>
                   </div>
                 </div>
+              </ScrollReveal>
 
-                {/* Blurred Preview Grid of Locked Deals */}
+              {/* Blurred Preview Grid of Locked Deals */}
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
