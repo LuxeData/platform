@@ -48,7 +48,7 @@ interface WatchDetailViewProps {
 }
 
 export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, onOpenAuth }) => {
-  const [timeframe, setTimeframe] = useState<'30D' | '90D' | '1Y' | 'ALL'>('1Y');
+  const [timeframe, setTimeframe] = useState<'3M' | '6M' | '1Y' | 'ALL'>('1Y');
   
   // Interactive valuation condition and provenance toggles
   const [hasBoxPapers, setHasBoxPapers] = useState<boolean>(true);
@@ -90,8 +90,9 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
   // Filter price history by timeframe
   const filteredHistory = React.useMemo(() => {
     const hist = watch.priceHistory || [];
-    if (timeframe === '30D') return hist.slice(-3);
-    if (timeframe === '90D') return hist.slice(-6);
+    if (timeframe === '3M') return hist.slice(-3);
+    if (timeframe === '6M') return hist.slice(-6);
+    if (timeframe === '1Y') return hist.slice(-12);
     return hist;
   }, [watch.priceHistory, timeframe]);
 
@@ -197,10 +198,10 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               </div>
             </div>
 
-            {/* Dealer Cash Buy-In Floor (-20%) */}
+            {/* Dealer Cash Buy-In Floor (-Margin%) */}
             <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '24px' }}>
               <div style={{ fontSize: '0.66rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
-                Dealer Buy-In Offer (-20%)
+                Dealer Buy-In Offer (-{dealerTargetMargin}%)
               </div>
               <div style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
                 {isLocked ? (
@@ -212,7 +213,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                 )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                {isLocked ? 'Reserved for Pro partners' : 'Wholesale acquisition target'}
+                {isLocked ? 'Reserved for Pro partners' : `${dealerTargetMargin}% target buy margin`}
               </div>
             </div>
 
@@ -224,14 +225,14 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <div style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                 {isLocked ? (
                   <span style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
-                    <Lock size={15} /> 20.0% MARGIN
+                    <Lock size={15} /> {dealerTargetMargin}% MARGIN
                   </span>
                 ) : (
                   <AnimatedCounter value={valuation.grossSpread} prefix="+$" />
                 )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                {isLocked ? 'Protected buy formula' : '20.0% standard margin'}
+                {isLocked ? 'Protected buy formula' : `${dealerTargetMargin}% target margin`}
               </div>
             </div>
           </div>
@@ -383,7 +384,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                 borderRadius: '8px',
                 border: '1px solid var(--border-hairline)'
               }}>
-                {(['30D', '90D', '1Y', 'ALL'] as const).map((tf) => (
+                {(['3M', '6M', '1Y', 'ALL'] as const).map((tf) => (
                   <button
                     key={tf}
                     onClick={() => setTimeframe(tf)}
@@ -528,6 +529,46 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Interactive Dealer Target Margin */}
+              <div style={{
+                background: '#F8FAFC',
+                padding: '14px',
+                borderRadius: '12px',
+                border: '1px solid var(--border-hairline)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                    TARGET MARGIN
+                  </span>
+                  <span style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--gold-primary)' }}>
+                    {dealerTargetMargin}%
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                  {[12, 15, 20, 25].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() => setDealerTargetMargin(pct)}
+                      className={`btn-ghost ${dealerTargetMargin === pct ? 'active' : ''}`}
+                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.72rem', padding: '8px 2px', minHeight: '38px', cursor: 'pointer' }}
+                    >
+                      {pct}%
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="35"
+                  step="1"
+                  value={dealerTargetMargin}
+                  onChange={(e) => setDealerTargetMargin(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: 'var(--gold-primary)', cursor: 'pointer' }}
+                  title={`Target Margin: ${dealerTargetMargin}%`}
+                />
               </div>
 
               {/* Dynamic Recalculated Impact */}
@@ -796,7 +837,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                   fontWeight: 700,
                   fontSize: '0.84rem'
                 }}>
-                  +{valuation.premiumOverRetail}% (${formatUSD(retailMSRP)} retail)
+                  {valuation.premiumOverRetail > 0 ? `+${valuation.premiumOverRetail}%` : `${valuation.premiumOverRetail}%`} (${formatUSD(retailMSRP)} retail)
                 </span>
               </div>
             </div>

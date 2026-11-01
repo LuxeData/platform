@@ -5,6 +5,7 @@ import { WatchModel, UserSession } from '../types/watch';
 import { Logo } from './Logo';
 import { formatUSD } from '../lib/format';
 import { saveAppraisalToDb } from '../lib/supabaseClient';
+import { copyToClipboard } from '../lib/clipboard';
 import { InteractiveTiltCard } from './InteractiveTiltCard';
 import { AnimatedCounter } from './AnimatedCounter';
 import { 
@@ -25,7 +26,8 @@ import {
   BookmarkCheck,
   Database,
   Lock,
-  Crown
+  Crown,
+  Loader2
 } from 'lucide-react';
 
 interface DealerAppraisalTerminalProps {
@@ -44,10 +46,27 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
   const [copied, setCopied] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const isUserPro = user?.tier === 'pro';
+
+  const effectiveRef = useMemo(() => {
+    if (!isUserPro && selectedRef !== '126610LN') {
+      return '126610LN';
+    }
+    return selectedRef;
+  }, [isUserPro, selectedRef]);
+
+  React.useEffect(() => {
+    if (!isUserPro && selectedRef !== '126610LN') {
+      setSelectedRef('126610LN');
+    }
+  }, [isUserPro, selectedRef]);
 
   const activeWatch = useMemo(() => {
-    return watches.find(w => w.reference.toUpperCase() === selectedRef.toUpperCase()) || watches[0];
-  }, [watches, selectedRef]);
+    const found = watches.find(w => w.reference.toUpperCase() === effectiveRef.toUpperCase());
+    return found || watches.find(w => w.reference === '126610LN') || watches[0];
+  }, [watches, effectiveRef]);
 
   // Pricing calculation algorithms
   const valuation = useMemo(() => {
@@ -79,7 +98,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
 
     // Projected dealer profit
     const projectedProfit = adjustedCMV - maxBuyOffer;
-    const projectedROI = Math.round((projectedProfit / maxBuyOffer) * 100);
+    const projectedROI = maxBuyOffer > 0 ? Math.round((projectedProfit / maxBuyOffer) * 100) : 0;
 
     // Estimated liquidity days
     let daysToSell = 7;
@@ -100,12 +119,14 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
     };
   }, [activeWatch, condition, hasBox, hasPapers, dealerMarginPct]);
 
-  const handleCopyQuote = () => {
+  const handleCopyQuote = async () => {
     if (!valuation || !activeWatch) return;
     const text = `--- LUXEDATA DEALER APPRAISAL ---\nModel: ${activeWatch.brand} ${activeWatch.model} (Ref: ${activeWatch.reference})\nCondition: ${condition} | Provenance: ${hasBox && hasPapers ? 'Full Set' : 'Incomplete'}\nConsensus Retail Value (CMV): $${formatUSD(valuation.adjustedCMV)}\nCash Buy-In Offer: $${formatUSD(valuation.maxBuyOffer)}\nTarget Margin: ${dealerMarginPct}%\nVerified via LuxeData Chrono24 Intelligence Feed.`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handlePrint = () => {
@@ -119,8 +140,9 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
     }
     if (!valuation || !activeWatch) return;
     setIsSaving(true);
+    setSaveError(null);
     try {
-      await saveAppraisalToDb({
+      const res = await saveAppraisalToDb({
         dealerEmail: user?.email,
         dealershipName: user?.dealership,
         reference: activeWatch.reference,
@@ -135,10 +157,17 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
         dealerMarginPct,
         clientName: user?.name ? `${user.name} Appraisal` : 'Walk-In Client'
       });
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 3000);
-    } catch (e) {
+      if (res && res.success) {
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 3000);
+      } else {
+        setSaveError(res?.error || 'Failed to record appraisal in database ledger.');
+        setTimeout(() => setSaveError(null), 4000);
+      }
+    } catch (e: any) {
       console.warn('Appraisal save error:', e);
+      setSaveError(e?.message || 'Network error while recording appraisal.');
+      setTimeout(() => setSaveError(null), 4000);
     } finally {
       setIsSaving(false);
     }
@@ -176,11 +205,12 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               onClick={handleSaveToLedger}
               disabled={isSaving}
               className="btn-ghost"
+              title={saveError || (savedSuccess ? 'Appraisal logged to database ledger' : 'Save appraisal to institutional database')}
               style={{
                 fontSize: '0.78rem',
                 padding: '9px 16px',
-                borderColor: savedSuccess ? 'var(--emerald-gain)' : undefined,
-                color: savedSuccess ? 'var(--emerald-gain)' : undefined
+                borderColor: savedSuccess ? 'var(--emerald-gain)' : saveError ? 'var(--crimson-drop)' : undefined,
+                color: savedSuccess ? 'var(--emerald-gain)' : saveError ? 'var(--crimson-drop)' : undefined
               }}
             >
               {savedSuccess ? (
@@ -188,9 +218,18 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                   <CheckCircle2 size={14} style={{ color: 'var(--emerald-gain)' }} />
                   <span>Saved to Ledger</span>
                 </>
+              ) : saveError ? (
+                <>
+                  <AlertTriangle size={14} style={{ color: 'var(--crimson-drop)' }} />
+                  <span>Save Failed</span>
+                </>
               ) : (
                 <>
-                  <Database size={14} style={{ color: 'var(--gold-primary)' }} />
+                  {isSaving ? (
+                    <Loader2 size={14} className="spinner" style={{ color: 'var(--gold-primary)' }} />
+                  ) : (
+                    <Database size={14} style={{ color: 'var(--gold-primary)' }} />
+                  )}
                   <span>{isSaving ? 'Logging to DB...' : 'Save to DB Ledger'}</span>
                 </>
               )}
@@ -237,13 +276,19 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
               {watches.map(w => {
                 const isProRef = w.reference !== '126610LN';
-                const isUserPro = user?.tier === 'pro';
 
                 return (
                   <button
                     key={w.reference}
-                    onClick={() => setSelectedRef(w.reference)}
-                    className={`btn-ghost ${selectedRef.toUpperCase() === w.reference.toUpperCase() ? 'active' : ''}`}
+                    onClick={() => {
+                      if (isProRef && !isUserPro) {
+                        onOpenAuth?.();
+                        return;
+                      }
+                      setSelectedRef(w.reference);
+                    }}
+                    className={`btn-ghost ${effectiveRef.toUpperCase() === w.reference.toUpperCase() ? 'active' : ''}`}
+                    title={isProRef && !isUserPro ? 'Rolex Daytona, Royal Oak, and Nautilus valuation models require an active Pro Desk session.' : undefined}
                     style={{
                       fontSize: '0.76rem',
                       padding: '8px 8px',
@@ -251,7 +296,9 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                       justifyContent: 'center',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px'
+                      gap: '6px',
+                      cursor: 'pointer',
+                      opacity: (isProRef && !isUserPro) ? 0.75 : 1
                     }}
                   >
                     <span>{w.reference}</span>

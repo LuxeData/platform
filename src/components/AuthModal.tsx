@@ -1,7 +1,8 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
+import { copyToClipboard } from '../lib/clipboard';
 import { 
   signInWithSupabase, 
   signUpWithSupabase, 
@@ -60,6 +61,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [copiedInvoice, setCopiedInvoice] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -199,30 +211,41 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     onClose();
   };
 
-  const handleCopyInvoiceInstructions = () => {
-    navigator.clipboard.writeText(
+  const handleCopyInvoiceInstructions = async () => {
+    const success = await copyToClipboard(
       `LuxeData Pro Terminal Invoice Request — $1,188/yr (Direct Wire / ACH). Dealership: ${user?.dealership || 'Horology Desk'} — Email: ${user?.email || 'dealer@luxedata.io'}`
     );
-    setCopiedInvoice(true);
-    setTimeout(() => setCopiedInvoice(false), 2500);
+    if (success) {
+      setCopiedInvoice(true);
+      setTimeout(() => setCopiedInvoice(false), 2500);
+    }
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(15, 23, 42, 0.45)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '20px'
-    }}>
+    <div 
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(15, 23, 42, 0.45)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '20px'
+      }}
+    >
       <div 
         className="glass-card animate-modal-spring" 
         style={{
@@ -329,7 +352,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </span>
                 </div>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.55', marginBottom: '14px' }}>
-                  Unlocks all Holy Trinity order books (AP Royal Oak, Patek Nautilus, Rolex Daytona), 31 live arbitrage signals, and unlimited certified PDF appraisal slips.
+                  Unlocks all Holy Trinity order books (AP Royal Oak, Patek Nautilus, Rolex Daytona), all live arbitrage signals, and unlimited certified PDF appraisal slips.
                 </p>
 
                 <button
@@ -858,7 +881,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     className="btn-primary"
                     style={{ flex: 1, padding: '10px', fontSize: '0.78rem' }}
                   >
-                    {isLoading ? 'Dispatching...' : 'Send Reset Link'}
+                    {isLoading ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <Loader2 size={14} className="spinner" /> Dispatching...
+                      </span>
+                    ) : (
+                      'Send Reset Link'
+                    )}
                   </button>
                 </div>
               </form>

@@ -643,7 +643,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 Our automated engine monitors global dealer &amp; private lots 24/7, instantly surfacing opportunities trading <strong>below the dealer buy-in floor</strong> with direct Chrono24 links for rapid capital deployment.
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: '#0284C7', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-                <CheckCircle2 size={15} /> 31 live opportunities active now
+                <CheckCircle2 size={15} /> {macro.arbitrageCount} live opportunities active now
               </div>
             </InteractiveTiltCard>
           </ScrollReveal>
@@ -669,7 +669,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               className="btn-ghost"
               style={{ fontSize: '0.82rem', padding: '10px 18px', color: 'var(--gold-primary)', fontWeight: 600 }}
             >
-              View All 31 Arbitrage Deals <ArrowRight size={15} />
+              View All {macro.arbitrageCount} Arbitrage Deals <ArrowRight size={15} />
             </button>
           </div>
         </ScrollReveal>
