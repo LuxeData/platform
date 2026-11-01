@@ -1,6 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserSession } from '../types/watch';
 
+// Ensure WebSocket constructor exists for @supabase/realtime-js in headless environments (e.g. Node < 22)
+if (typeof globalThis !== 'undefined' && typeof (globalThis as any).WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class MockWebSocket {
+    constructor() {}
+    close() {}
+    send() {}
+  };
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
