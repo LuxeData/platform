@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { WatchModel, ArbitrageListing, UserSession } from '../types/watch';
 import { Logo } from './Logo';
 import { formatUSD } from '../lib/format';
@@ -56,13 +57,13 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       {/* Header Banner */}
       <div className="glass-card" style={{
-        padding: '22px 28px',
-        border: '1px solid rgba(16, 185, 129, 0.35)',
-        background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(14, 19, 29, 0.95) 100%)'
+        padding: '24px 28px',
+        border: '1.5px solid var(--emerald-border)',
+        background: '#FFFFFF'
       }}>
         <div style={{
           display: 'flex',
@@ -71,18 +72,18 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
           flexWrap: 'wrap',
           gap: '16px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <Logo size={38} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Logo size={40} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 className="serif-heading" style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFF' }}>
+                <h2 className="serif-heading" style={{ fontSize: '1.40rem', fontWeight: 800, color: 'var(--text-main)' }}>
                   Live Secondary Arbitrage Radar
                 </h2>
                 <span className="badge badge-emerald" style={{ fontFamily: 'var(--font-mono)' }}>
                   {filteredDeals.length} LIVE SIGNALS
                 </span>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '2px' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.80rem', marginTop: '2px' }}>
                 Active Chrono24 listings trading below institutional dealer buy-in (-20% CMV baseline)
               </p>
             </div>
@@ -94,7 +95,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                 key={b}
                 onClick={() => setSelectedBrand(b)}
                 className={`btn-ghost ${selectedBrand === b ? 'active' : ''}`}
-                style={{ fontSize: '0.72rem', padding: '6px 12px' }}
+                style={{ fontSize: '0.74rem', padding: '7px 14px' }}
               >
                 {b}
               </button>
@@ -112,38 +113,68 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
         return (
           <>
             {/* Unlocked / Free Deals */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '20px' }}>
               {freeDeals.map(deal => (
                 <div 
                   key={deal.id}
-                  className="glass-card" 
+                  className="glass-card-interactive" 
                   style={{ 
-                    padding: '20px', 
+                    padding: '22px', 
                     border: '1px solid var(--border-subtle)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    position: 'relative'
+                    position: 'relative',
+                    background: '#FFFFFF',
+                    borderRadius: '16px'
                   }}
                 >
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <span className="badge badge-subtle">{deal.brand}</span>
                       <span className="badge badge-emerald tabular-nums" style={{ fontWeight: 700 }}>
                         Save ${formatUSD(deal.estimated_profit_dollars)} (-{deal.discount_from_cmv_pct}%)
                       </span>
                     </div>
 
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFF', marginBottom: '4px' }}>
-                      {deal.model}
-                    </h3>
-                    <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                      Ref: <strong style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>{deal.reference}</strong> • {deal.condition} • {deal.location}
-                    </p>
+                    {/* Product Photo & Title */}
+                    <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '14px' }}>
+                      {deal.watchModelObj?.imageUrl && (
+                        <div style={{
+                          width: '64px',
+                          height: '64px',
+                          background: '#F8FAFC',
+                          borderRadius: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          border: '1px solid var(--border-hairline)',
+                          position: 'relative'
+                        }}>
+                          <Image
+                            src={deal.watchModelObj.imageUrl}
+                            alt={deal.model}
+                            fill
+                            sizes="64px"
+                            style={{ objectFit: 'contain', padding: '4px' }}
+                          />
+                        </div>
+                      )}
+
+                      <div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '2px' }}>
+                          {deal.model}
+                        </h3>
+                        <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+                          Ref: <strong style={{ color: 'var(--gold-primary)', fontFamily: 'var(--font-mono)' }}>{deal.reference}</strong> • {deal.location}
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Price Comparison Block */}
                     <div style={{
-                      background: 'rgba(255, 255, 255, 0.02)',
+                      background: '#F8FAFC',
                       padding: '12px 14px',
                       borderRadius: '10px',
                       border: '1px solid var(--border-hairline)',
@@ -151,17 +182,17 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
                         <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Asking Price:</span>
-                        <span className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFF' }}>
+                        <span className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)' }}>
                           ${formatUSD(deal.price)}
                         </span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        <span>Retail CMV: <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>${formatUSD(deal.cmv)}</strong></span>
-                        <span>Buy-In Floor: <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${formatUSD(deal.buyIn)}</strong></span>
+                        <span>CMV: <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>${formatUSD(deal.cmv)}</strong></span>
+                        <span>Floor: <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${formatUSD(deal.buyIn)}</strong></span>
                       </div>
                     </div>
 
-                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '14px', lineHeight: '1.4' }}>
+                    <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '14px', lineHeight: '1.45' }}>
                       &ldquo;{deal.snippet}&rdquo;
                     </p>
                   </div>
@@ -183,7 +214,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="btn-primary"
-                        style={{ fontSize: '0.74rem', padding: '6px 14px' }}
+                        style={{ fontSize: '0.74rem', padding: '7px 14px', borderRadius: '8px' }}
                       >
                         Inspect on Chrono24 <ArrowUpRight size={13} />
                       </a>
@@ -195,25 +226,25 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
 
             {/* Pro Gate Lock Card (Shown to Free / Guest users) */}
             {!isPro && lockedDeals.length > 0 && (
-              <div style={{ position: 'relative', marginTop: '20px' }}>
+              <div style={{ position: 'relative', marginTop: '24px' }}>
                 <div className="glass-card" style={{
-                  padding: '36px 24px',
-                  border: '1px solid var(--border-gold)',
-                  background: 'radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.14) 0%, rgba(10, 14, 23, 0.98) 75%)',
-                  borderRadius: '16px',
+                  padding: '40px 24px',
+                  border: '1.5px solid var(--border-gold)',
+                  background: '#FFFFFF',
+                  borderRadius: '18px',
                   textAlign: 'center',
-                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 24px rgba(212, 175, 55, 0.12)',
+                  boxShadow: '0 16px 40px rgba(161, 116, 36, 0.1)',
                   marginBottom: '18px'
                 }}>
                   <div style={{
                     display: 'inline-flex',
-                    padding: '14px',
+                    padding: '16px',
                     borderRadius: '50%',
-                    background: 'rgba(212, 175, 55, 0.12)',
-                    border: '1px solid var(--border-gold)',
-                    marginBottom: '14px'
+                    background: 'rgba(161, 116, 36, 0.08)',
+                    border: '1.5px solid var(--border-gold)',
+                    marginBottom: '16px'
                   }}>
-                    <Lock size={28} style={{ color: 'var(--gold-light)' }} />
+                    <Lock size={28} style={{ color: 'var(--gold-primary)' }} />
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -221,11 +252,11 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                     <span className="badge badge-emerald">{lockedDeals.length} SUB-WHOLESALE SIGNALS LOCKED</span>
                   </div>
 
-                  <h3 className="serif-heading" style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF', marginBottom: '8px' }}>
+                  <h3 className="serif-heading" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
                     Unlock All {filteredDeals.length} Sub-Wholesale Arbitrage Deals
                   </h3>
 
-                  <p style={{ maxWidth: '540px', margin: '0 auto 20px auto', fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                  <p style={{ maxWidth: '540px', margin: '0 auto 20px auto', fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
                     Active Chrono24 private listings trading up to <strong>$20,000+ below dealer consensus</strong> across Daytona, Royal Oak, and Nautilus are exclusively available to verified Pro desks.
                   </p>
 
@@ -233,7 +264,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                     <button
                       onClick={onOpenAuth}
                       className="btn-primary"
-                      style={{ padding: '10px 24px', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      style={{ padding: '12px 26px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <ShieldCheck size={16} /> Sign In with Registered Desk
                     </button>
@@ -241,9 +272,9 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                     <button
                       onClick={onOpenAuth}
                       className="btn-ghost"
-                      style={{ padding: '10px 20px', fontSize: '0.86rem', border: '1px solid var(--border-gold-subtle)', color: 'var(--gold-light)' }}
+                      style={{ padding: '12px 22px', fontSize: '0.88rem', border: '1px solid var(--border-medium)', color: 'var(--text-main)' }}
                     >
-                      <Crown size={14} /> Request Pro Invoice ($99/mo)
+                      <Crown size={14} style={{ color: 'var(--gold-primary)' }} /> Request Pro Invoice ($99/mo)
                     </button>
                   </div>
                 </div>
@@ -251,8 +282,8 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                 {/* Blurred Preview Grid of Locked Deals */}
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                  gap: '16px',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
+                  gap: '20px',
                   filter: 'blur(7px)',
                   opacity: 0.25,
                   pointerEvents: 'none',
@@ -261,7 +292,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                   overflow: 'hidden'
                 }}>
                   {lockedDeals.slice(0, 3).map(deal => (
-                    <div key={`locked-${deal.id}`} className="glass-card" style={{ padding: '20px', height: '220px' }} />
+                    <div key={`locked-${deal.id}`} className="glass-card" style={{ padding: '22px', height: '220px', background: '#FFFFFF' }} />
                   ))}
                 </div>
               </div>

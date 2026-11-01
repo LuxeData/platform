@@ -14,7 +14,7 @@ export const Logo: React.FC<LogoProps> = ({ size = 38, className = '' }) => {
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: 'drop-shadow(0 0 16px rgba(212, 175, 55, 0.35))' }}
+      style={{ filter: 'drop-shadow(0 2px 6px rgba(15, 23, 42, 0.12))' }}
     >
       <defs>
         {/* Luxury Brushed Champagne Gold Gradients */}

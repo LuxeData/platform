@@ -49,7 +49,7 @@ export function LegalView({
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, #06080D 70%)',
+      background: '#F8F9FA',
       color: 'var(--text-main)',
       fontFamily: 'var(--font-sans)',
       paddingBottom: '80px'
@@ -60,9 +60,9 @@ export function LegalView({
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: 'rgba(11, 15, 23, 0.92)',
+        background: 'rgba(255, 255, 255, 0.94)',
         backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--border-hairline)',
+        borderBottom: '1px solid var(--border-subtle)',
         padding: '16px 24px'
       }}>
         <div style={{
@@ -88,7 +88,7 @@ export function LegalView({
                   fontWeight: 600,
                   textDecoration: 'none',
                   padding: '6px 14px',
-                  background: 'rgba(212, 175, 55, 0.08)',
+                  background: 'rgba(161, 116, 36, 0.08)',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-gold-subtle)'
                 }}
@@ -107,7 +107,7 @@ export function LegalView({
                   fontWeight: 600,
                   cursor: 'pointer',
                   padding: '6px 14px',
-                  background: 'rgba(212, 175, 55, 0.08)',
+                  background: 'rgba(161, 116, 36, 0.08)',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-gold-subtle)'
                 }}
@@ -119,11 +119,11 @@ export function LegalView({
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Logo size={28} />
               <div>
-                <span className="serif-heading" style={{ fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.05em' }}>
+                <span className="serif-heading" style={{ fontSize: '0.95rem', fontWeight: 800, letterSpacing: '0.05em', color: 'var(--text-main)' }}>
                   LUXE<span className="gold-gradient-text">DATA</span>
                 </span>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginLeft: '8px' }}>
-                  / Legal & Compliance
+                  / Legal &amp; Compliance
                 </span>
               </div>
             </div>
@@ -132,7 +132,7 @@ export function LegalView({
           {/* Document Switcher Tabs */}
           <div style={{
             display: 'flex',
-            background: 'rgba(14, 19, 29, 0.8)',
+            background: '#F1F5F9',
             padding: '4px',
             borderRadius: 'var(--radius-sm)',
             border: '1px solid var(--border-hairline)',
@@ -151,8 +151,8 @@ export function LegalView({
                 fontSize: '0.82rem',
                 fontWeight: 600,
                 transition: 'all 0.2s ease',
-                background: activeDoc === 'terms' ? 'var(--gold-primary)' : 'transparent',
-                color: activeDoc === 'terms' ? '#000' : 'var(--text-secondary)'
+                background: activeDoc === 'terms' ? '#0F172A' : 'transparent',
+                color: activeDoc === 'terms' ? '#FFFFFF' : 'var(--text-secondary)'
               }}
             >
               <FileText size={15} /> Terms of Service
@@ -171,8 +171,8 @@ export function LegalView({
                 fontSize: '0.82rem',
                 fontWeight: 600,
                 transition: 'all 0.2s ease',
-                background: activeDoc === 'privacy' ? 'var(--gold-primary)' : 'transparent',
-                color: activeDoc === 'privacy' ? '#000' : 'var(--text-secondary)'
+                background: activeDoc === 'privacy' ? '#0F172A' : 'transparent',
+                color: activeDoc === 'privacy' ? '#FFFFFF' : 'var(--text-secondary)'
               }}
             >
               <Lock size={15} /> Privacy Policy
@@ -188,12 +188,13 @@ export function LegalView({
                 alignItems: 'center',
                 gap: '6px',
                 padding: '8px 14px',
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: '#FFFFFF',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 color: 'var(--text-secondary)',
                 fontSize: '0.76rem',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                fontWeight: 500
               }}
               title="Print legal documentation"
             >
@@ -208,26 +209,16 @@ export function LegalView({
         
         {/* Document Hero & Metadata Banner */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(20, 27, 41, 0.7) 0%, rgba(11, 15, 23, 0.95) 100%)',
-          border: '1px solid var(--border-gold-subtle)',
+          background: '#FFFFFF',
+          border: '1.5px solid var(--border-gold-subtle)',
           borderRadius: 'var(--radius-lg)',
           padding: '36px 40px',
           marginBottom: '32px',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)'
         }}>
-          {/* Subtle Ambient Gold Accent */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            width: '280px',
-            height: '280px',
-            background: 'radial-gradient(circle, rgba(212, 175, 55, 0.09) 0%, transparent 70%)',
-            pointerEvents: 'none'
-          }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px', flexWrap: 'wrap' }}>
             <span className="badge badge-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               <Scale size={12} /> SILICON VALLEY ENTERPRISE GRADE
             </span>
@@ -240,15 +231,15 @@ export function LegalView({
             </span>
           </div>
 
-          <h1 className="serif-heading" style={{ fontSize: '2.2rem', fontWeight: 700, color: '#FFF', marginBottom: '10px', letterSpacing: '0.02em' }}>
+          <h1 className="serif-heading" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '10px', letterSpacing: '0.01em' }}>
             {currentDoc.title}
           </h1>
 
-          <p style={{ color: 'var(--gold-champagne)', fontSize: '1.0rem', marginBottom: '16px', fontWeight: 500 }}>
+          <p style={{ color: 'var(--gold-primary)', fontSize: '1.0rem', marginBottom: '16px', fontWeight: 600 }}>
             {currentDoc.subtitle}
           </p>
 
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.86rem', lineHeight: '1.65', maxWidth: '960px', marginBottom: '24px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.65', maxWidth: '960px', marginBottom: '24px' }}>
             {currentDoc.summary}
           </p>
 
@@ -265,7 +256,7 @@ export function LegalView({
               alignItems: 'center',
               gap: '8px',
               padding: '6px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: '#F8FAFC',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-hairline)',
               fontSize: '0.74rem',
@@ -280,11 +271,12 @@ export function LegalView({
               alignItems: 'center',
               gap: '8px',
               padding: '6px 14px',
-              background: 'rgba(16, 185, 129, 0.04)',
+              background: 'rgba(5, 150, 105, 0.06)',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--emerald-border)',
               fontSize: '0.74rem',
-              color: 'var(--emerald-gain)'
+              color: 'var(--emerald-gain)',
+              fontWeight: 600
             }}>
               <ShieldCheck size={14} />
               <span>AES-256 HSM Encryption at Rest</span>
@@ -295,14 +287,14 @@ export function LegalView({
               alignItems: 'center',
               gap: '8px',
               padding: '6px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: '#F8FAFC',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-hairline)',
               fontSize: '0.74rem',
               color: 'var(--text-secondary)'
             }}>
               <Globe2 size={14} color="var(--gold-primary)" />
-              <span>GDPR (EU) & CCPA/CPRA Compliant</span>
+              <span>GDPR (EU) &amp; CCPA/CPRA Compliant</span>
             </div>
 
             <div style={{
@@ -310,7 +302,7 @@ export function LegalView({
               alignItems: 'center',
               gap: '8px',
               padding: '6px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: '#F8FAFC',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-hairline)',
               fontSize: '0.74rem',
@@ -329,11 +321,11 @@ export function LegalView({
           <aside style={{
             position: 'sticky',
             top: '84px',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-hairline)',
+            background: '#FFFFFF',
+            border: '1px solid var(--border-subtle)',
             borderRadius: 'var(--radius-md)',
             padding: '20px',
-            backdropFilter: 'blur(10px)'
+            boxShadow: 'var(--shadow-card)'
           }}>
             <div style={{
               display: 'flex',
@@ -349,7 +341,7 @@ export function LegalView({
               <Layers size={14} /> Section Index
             </div>
 
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {currentDoc.sections.map((section) => (
                 <button
                   key={section.id}
@@ -369,15 +361,15 @@ export function LegalView({
                     transition: 'all 0.15s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
-                    e.currentTarget.style.color = '#FFF';
+                    e.currentTarget.style.background = '#F1F5F9';
+                    e.currentTarget.style.color = 'var(--text-main)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'none';
                     e.currentTarget.style.color = 'var(--text-secondary)';
                   }}
                 >
-                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--gold-dark)', fontSize: '0.72rem', minWidth: '28px' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--gold-primary)', fontSize: '0.72rem', minWidth: '28px', fontWeight: 600 }}>
                     {section.number}
                   </span>
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -391,11 +383,11 @@ export function LegalView({
               marginTop: '24px',
               paddingTop: '16px',
               borderTop: '1px solid var(--border-hairline)',
-              fontSize: '0.70rem',
+              fontSize: '0.72rem',
               color: 'var(--text-muted)'
             }}>
               Direct inquiries to{' '}
-              <a href="mailto:legal@luxedata.io" style={{ color: 'var(--gold-primary)', textDecoration: 'none' }}>
+              <a href="mailto:legal@luxedata.io" style={{ color: 'var(--gold-primary)', textDecoration: 'none', fontWeight: 600 }}>
                 legal@luxedata.io
               </a>
             </div>
@@ -413,17 +405,18 @@ export function LegalView({
                   id={section.id}
                   style={{
                     background: isDisclaimer 
-                      ? 'linear-gradient(180deg, rgba(244, 63, 94, 0.03) 0%, var(--bg-card) 100%)' 
+                      ? 'rgba(225, 29, 72, 0.04)' 
                       : isNoSale 
-                        ? 'linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, var(--bg-card) 100%)'
-                        : 'var(--bg-card)',
+                        ? 'rgba(5, 150, 105, 0.04)'
+                        : '#FFFFFF',
                     border: isDisclaimer 
-                      ? '1px solid rgba(244, 63, 94, 0.25)' 
+                      ? '1px solid rgba(225, 29, 72, 0.25)' 
                       : isNoSale 
                         ? '1px solid var(--emerald-border)'
-                        : '1px solid var(--border-hairline)',
+                        : '1px solid var(--border-subtle)',
                     borderRadius: 'var(--radius-md)',
-                    padding: '28px 32px'
+                    padding: '28px 32px',
+                    boxShadow: 'var(--shadow-card)'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
@@ -433,7 +426,7 @@ export function LegalView({
                       fontWeight: 700,
                       color: isDisclaimer ? 'var(--crimson-drop)' : isNoSale ? 'var(--emerald-gain)' : 'var(--gold-primary)',
                       padding: '4px 8px',
-                      background: 'rgba(255, 255, 255, 0.03)',
+                      background: '#F1F5F9',
                       borderRadius: '4px',
                       border: '1px solid var(--border-hairline)'
                     }}>
@@ -443,7 +436,7 @@ export function LegalView({
                     <h2 className="serif-heading" style={{
                       fontSize: '1.25rem',
                       fontWeight: 700,
-                      color: '#FFF',
+                      color: 'var(--text-main)',
                       letterSpacing: '0.02em',
                       display: 'flex',
                       alignItems: 'center',
@@ -460,8 +453,8 @@ export function LegalView({
                       <p
                         key={idx}
                         style={{
-                          color: isDisclaimer ? '#E2E8F0' : 'var(--text-secondary)',
-                          fontSize: '0.86rem',
+                          color: isDisclaimer ? '#9F1239' : 'var(--text-secondary)',
+                          fontSize: '0.88rem',
                           lineHeight: '1.75',
                           letterSpacing: '0.01em'
                         }}
@@ -482,4 +475,3 @@ export function LegalView({
     </div>
   );
 }
-
