@@ -224,16 +224,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       padding: '20px'
     }}>
       <div 
-        className="glass-card" 
+        className="glass-card animate-modal-spring" 
         style={{
           width: '100%',
           maxWidth: '490px',
           padding: '36px',
           border: '1.5px solid var(--border-gold)',
-          background: '#FFFFFF',
+          background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%)',
           position: 'relative',
           borderRadius: '18px',
-          boxShadow: '0 24px 64px rgba(15, 23, 42, 0.18)'
+          boxShadow: 'var(--shadow-modal)'
         }}
       >
         {/* Close Button */}

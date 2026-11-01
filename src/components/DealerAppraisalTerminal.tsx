@@ -5,6 +5,8 @@ import { WatchModel, UserSession } from '../types/watch';
 import { Logo } from './Logo';
 import { formatUSD } from '../lib/format';
 import { saveAppraisalToDb } from '../lib/supabaseClient';
+import { InteractiveTiltCard } from './InteractiveTiltCard';
+import { AnimatedCounter } from './AnimatedCounter';
 import { 
   Calculator, 
   DollarSign, 
@@ -370,24 +372,28 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               step={1}
               value={dealerMarginPct}
               onChange={(e) => setDealerMarginPct(Number(e.target.value))}
-              style={{ width: '100%', accentColor: 'var(--gold-primary)', cursor: 'pointer' }}
+              className="luxury-range-slider"
+              style={{ cursor: 'pointer' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '6px' }}>
               <span>12% (Thin Margin / Quick Flip)</span>
-              <span>20% (Bayam Interview Baseline)</span>
+              <span style={{ color: 'var(--gold-primary)', fontWeight: 600 }}>20% (Bayam Interview Baseline)</span>
               <span>30% (Exotic Pieces)</span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: High-End Client Appraisal Sheet */}
-        <div 
+        {/* Right Column: High-End Client Appraisal Sheet with 3D Depth & Foil Sheen */}
+        <InteractiveTiltCard 
+          maxTilt={2.5}
+          glareOpacity={0.14}
           className="glass-card" 
           style={{ 
             padding: '32px', 
             border: '1.5px solid var(--border-gold)', 
-            background: '#FFFFFF',
-            boxShadow: '0 8px 32px rgba(161, 116, 36, 0.08)',
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%)',
+            boxShadow: 'var(--shadow-spotlight)',
+            borderRadius: '18px',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
@@ -405,9 +411,9 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               marginBottom: '20px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <Logo size={40} />
+                <Logo size={42} />
                 <div>
-                  <div className="serif-heading" style={{ fontSize: '1.10rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '0.04em' }}>
+                  <div className="serif-heading" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '0.04em' }}>
                     LUXEDATA APPRAISAL CERTIFICATE
                   </div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
@@ -416,7 +422,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span className="badge badge-emerald" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span className="badge badge-emerald badge-glimmer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                   <ShieldCheck size={12} /> VERIFIED DATA
                 </span>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
@@ -431,7 +437,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                 <div style={{
                   width: '90px',
                   height: '90px',
-                  background: '#F8FAFC',
+                  background: 'radial-gradient(circle at 50% 40%, #FFFFFF 0%, #F8FAFC 80%)',
                   borderRadius: '12px',
                   padding: '6px',
                   border: '1px solid var(--border-hairline)',
@@ -439,14 +445,15 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  position: 'relative'
+                  position: 'relative',
+                  boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.03)'
                 }}>
                   <Image
                     src={activeWatch.imageUrl}
                     alt={activeWatch.model}
                     fill
                     sizes="90px"
-                    style={{ objectFit: 'contain', padding: '6px' }}
+                    style={{ objectFit: 'contain', padding: '6px', filter: 'drop-shadow(0 6px 12px rgba(15, 23, 42, 0.12))' }}
                   />
                 </div>
               )}
@@ -468,12 +475,18 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             <div className="responsive-price-pair" style={{ marginBottom: '20px' }}>
               
               {/* Client Cash Buy Offer */}
-              <div style={{ background: 'rgba(5, 150, 105, 0.06)', padding: '18px', borderRadius: '12px', border: '1.5px solid var(--emerald-border)' }}>
+              <div style={{ 
+                background: 'rgba(5, 150, 105, 0.06)', 
+                padding: '18px', 
+                borderRadius: '12px', 
+                border: '1.5px solid var(--emerald-border)',
+                boxShadow: '0 4px 14px rgba(5, 150, 105, 0.08), inset 0 1px 0 #FFFFFF'
+              }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   RECOMMENDED CASH BUY OFFER
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
-                  ${formatUSD(valuation.maxBuyOffer)}
+                <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
+                  <AnimatedCounter value={valuation.maxBuyOffer} prefix="$" />
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                   Immediate dealer wire payout (-{dealerMarginPct}% spread)
@@ -481,12 +494,18 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               </div>
 
               {/* Retail Consensus Market Value */}
-              <div style={{ background: '#F8FAFC', padding: '18px', borderRadius: '12px', border: '1.5px solid var(--border-gold-subtle)' }}>
+              <div style={{ 
+                background: '#F8FAFC', 
+                padding: '18px', 
+                borderRadius: '12px', 
+                border: '1.5px solid var(--border-gold-subtle)',
+                boxShadow: '0 4px 14px rgba(161, 116, 36, 0.06), inset 0 1px 0 #FFFFFF'
+              }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   TRI-VENUE RETAIL VALUE (CMV)
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
-                  ${formatUSD(valuation.adjustedCMV)}
+                <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
+                  <AnimatedCounter value={valuation.adjustedCMV} prefix="$" />
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                   Calibrated across Chrono24, eBay, &amp; WatchCharts
@@ -495,15 +514,15 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
             </div>
 
             {/* Negotiation Justification Metrics */}
-            <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-hairline)', marginBottom: '20px' }}>
+            <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-hairline)', marginBottom: '20px', boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.02)' }}>
               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px', fontWeight: 600 }}>
                 Dealer Valuation Breakdown (Proof for Client)
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
                 <div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Projected Dealer Profit</div>
-                  <div className="tabular-nums" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
-                    +${formatUSD(valuation.projectedProfit)}
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
+                    <AnimatedCounter value={valuation.projectedProfit} prefix="+$" />
                   </div>
                   <div className="tabular-nums" style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>{valuation.projectedROI}% ROI</div>
                 </div>
@@ -536,7 +555,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
               <ShieldCheck size={14} /> Backed by LuxeData Tri-Venue Algorithm
             </div>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
       </div>
     </div>

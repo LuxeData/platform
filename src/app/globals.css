@@ -45,11 +45,14 @@
   --text-faint: #94A3B8;
   --text-gold: #8C5F16;
 
-  /* Refined Soft Institutional Shadows */
-  --shadow-card: 0 2px 10px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
-  --shadow-card-hover: 0 14px 34px -4px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.03);
-  --shadow-gold: 0 6px 20px rgba(161, 116, 36, 0.12);
-  --shadow-subtle: 0 1px 3px rgba(15, 23, 42, 0.04);
+  /* Physical Multi-Tiered Institutional Luxury Shadows */
+  --shadow-subtle: 0 1px 3px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.03), 0 20px 48px -6px rgba(15, 23, 42, 0.11), 0 6px 20px rgba(161, 116, 36, 0.08), inset 0 1px 0 #FFFFFF;
+  --shadow-spotlight: 0 25px 60px -10px rgba(15, 23, 42, 0.13), 0 10px 24px rgba(161, 116, 36, 0.10), inset 0 1px 0 #FFFFFF;
+  --shadow-gold: 0 8px 24px rgba(161, 116, 36, 0.18);
+  --shadow-emerald: 0 8px 24px rgba(5, 150, 105, 0.18);
+  --shadow-modal: 0 25px 70px -10px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(180, 130, 40, 0.25);
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -61,6 +64,10 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -76,8 +83,8 @@ body {
 
 body {
   background-image: 
-    radial-gradient(circle at 10% 0%, rgba(180, 130, 40, 0.03) 0%, transparent 45%),
-    radial-gradient(circle at 90% 40%, rgba(5, 150, 105, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 10% 0%, rgba(180, 130, 40, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 90% 40%, rgba(5, 150, 105, 0.025) 0%, transparent 40%),
     linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 50%, #F1F5F9 100%);
   min-height: 100vh;
 }
@@ -107,31 +114,35 @@ body {
 /* Glass Card with Refined Depth */
 .glass-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-hairline);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  border-color: var(--border-subtle);
+  border-color: var(--border-medium);
   background: var(--bg-card-hover);
   box-shadow: var(--shadow-card-hover);
 }
 
 .glass-card-interactive {
   background: var(--bg-card);
-  border: 1px solid var(--border-hairline);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card-interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--border-gold-subtle);
-  box-shadow: var(--shadow-card-hover), var(--shadow-gold);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .glass-card-active {
@@ -165,6 +176,9 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .badge-gold {
@@ -193,6 +207,8 @@ body {
 
 /* Action Buttons */
 .btn-primary {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -205,15 +221,38 @@ body {
   letter-spacing: 0.01em;
   cursor: pointer;
   padding: 10px 18px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, background-color 0.2s ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  transform: skewX(-20deg);
+  transition: none;
+  pointer-events: none;
+}
+
+.btn-primary:hover::after {
+  left: 140%;
+  transition: left 0.75s ease-in-out;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  background: #1E293B;
-  border-color: #1E293B;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+  transform: translateY(-1.5px);
+  background: #4A3008;
+  border-color: #4A3008;
+  box-shadow: 0 6px 20px rgba(94, 61, 10, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.btn-primary:active {
+  transform: translateY(0.5px) scale(0.975);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.16);
 }
 
 .btn-ghost {
@@ -228,13 +267,20 @@ body {
   padding: 6px 12px;
   font-size: 0.8rem;
   font-weight: 500;
-  transition: all 0.18s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .btn-ghost:hover {
   background: #F8FAFC;
   color: var(--text-main);
   border-color: var(--border-medium);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+}
+
+.btn-ghost:active {
+  transform: scale(0.975);
 }
 
 .btn-ghost.active {
@@ -242,9 +288,10 @@ body {
   color: var(--gold-primary);
   border-color: var(--gold-primary);
   font-weight: 600;
+  box-shadow: 0 2px 6px rgba(161, 116, 36, 0.12);
 }
 
-/* Status Indicator Dot with Smooth Radar Pulse */
+/* Status Indicator Dot with Smooth Dual-Ring Radar Pulse */
 .pulse-indicator {
   position: relative;
   display: inline-block;
@@ -252,29 +299,67 @@ body {
   height: 7px;
   border-radius: 50%;
   background-color: var(--emerald-gain);
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4);
 }
 
+.pulse-indicator::before,
 .pulse-indicator::after {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
+  top: 50%;
+  left: 50%;
   border-radius: 50%;
   border: 1px solid var(--emerald-gain);
-  animation: radar-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.pulse-indicator::before {
+  width: 100%;
+  height: 100%;
+  animation: radar-pulse 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+.pulse-indicator::after {
+  width: 100%;
+  height: 100%;
+  animation: radar-pulse 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite 0.7s;
 }
 
 @keyframes radar-pulse {
   0% {
-    transform: scale(0.9);
-    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.85;
   }
   100% {
-    transform: scale(2.6);
+    transform: translate(-50%, -50%) scale(3.2);
     opacity: 0;
   }
+}
+
+/* Gold Status Indicator */
+.pulse-indicator-gold {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--gold-primary);
+  box-shadow: 0 0 8px rgba(161, 116, 36, 0.4);
+}
+
+.pulse-indicator-gold::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid var(--gold-primary);
+  transform: translate(-50%, -50%);
+  animation: radar-pulse 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  pointer-events: none;
 }
 
 /* Marquee Ticker Animation */
@@ -319,15 +404,97 @@ body {
 }
 
 .animate-rotate-slow {
-  animation: rotate-clockwise 75s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: rotate-clockwise 80s linear infinite;
+  will-change: transform;
 }
 
 .animate-rotate-reverse {
-  animation: rotate-counter-clockwise 105s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: rotate-counter-clockwise 110s linear infinite;
+  will-change: transform;
 }
 
 .animate-rotate-medium {
-  animation: rotate-clockwise 45s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: rotate-clockwise 50s linear infinite;
+  will-change: transform;
+}
+
+/* Haute Horlogerie Ambient Drift */
+@keyframes horology-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0.4deg);
+  }
+}
+
+.animate-float-subtle {
+  animation: horology-float 5s ease-in-out infinite;
+}
+
+/* S-Tier Entrance Reveals & Transitions */
+@keyframes luxury-reveal-up {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes luxury-fade-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modal-spring-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-reveal-up {
+  animation: luxury-reveal-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-scale {
+  animation: luxury-fade-scale 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-modal-spring {
+  animation: modal-spring-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger Delay Utility Classes */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 110ms; }
+.stagger-3 { animation-delay: 170ms; }
+.stagger-4 { animation-delay: 230ms; }
+.stagger-5 { animation-delay: 290ms; }
+.stagger-6 { animation-delay: 350ms; }
+
+/* Silky View Transition Container */
+.view-transition-container {
+  animation: luxury-reveal-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Subtle Light Gold Text Sweep */
@@ -344,30 +511,167 @@ body {
   background: linear-gradient(
     90deg,
     #8C5F16 0%,
-    #B48228 30%,
-    #6B4710 60%,
-    #B48228 100%
+    #D4AF37 25%,
+    #5E3D0A 50%,
+    #D4AF37 75%,
+    #8C5F16 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gold-sheen-sweep 8s linear infinite;
+  animation: gold-sheen-sweep 7s linear infinite;
+}
+
+/* Metallic Badge Glimmer */
+@keyframes badge-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.badge-glimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-glimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  animation: badge-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* Border Shimmer & Glowing Beams */
 .border-beam-card {
   position: relative;
   background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow-card);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .border-beam-card:hover {
   border-color: var(--border-gold);
-  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08), 0 0 25px rgba(161, 116, 36, 0.1);
+  box-shadow: var(--shadow-card-hover), 0 0 24px rgba(161, 116, 36, 0.12);
   transform: translateY(-2px);
+}
+
+/* Custom Haute Horlogerie Range Slider */
+.luxury-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  outline: none;
+  transition: background 0.2s ease;
+}
+
+.luxury-range-slider:hover {
+  background: #CBD5E1;
+}
+
+.luxury-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2.5px solid var(--gold-primary);
+  box-shadow: 0 2px 8px rgba(161, 116, 36, 0.3), inset 0 1px 0 #FFF;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.luxury-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(161, 116, 36, 0.45);
+}
+
+.luxury-range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2.5px solid var(--gold-primary);
+  box-shadow: 0 2px 8px rgba(161, 116, 36, 0.3), inset 0 1px 0 #FFF;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ==========================================================================
+   S-TIER SCROLL ENGINE & VIEWPORT ANIMATIONS
+   ========================================================================== */
+.scroll-reveal-container {
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.scroll-reveal-container.is-revealed {
+  will-change: auto;
+}
+
+.parallax-outer-boundary {
+  position: relative;
+}
+
+.parallax-motion-inner,
+.parallax-container {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Navbar Scrolled State */
+.navbar-header.navbar-scrolled {
+  box-shadow: 0 12px 36px -8px rgba(15, 23, 42, 0.09), 0 1px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Reduced Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ticker-marquee-track {
+    animation: none !important;
+  }
+  .pulse-indicator::before,
+  .pulse-indicator::after,
+  .pulse-indicator-gold::after {
+    display: none !important;
+  }
+  .scroll-reveal-container,
+  .parallax-container,
+  .parallax-motion-inner {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
 }
 
 /* ==========================================================================
@@ -598,10 +902,12 @@ body {
   header, footer, nav, button {
     display: none !important;
   }
-  .glass-card {
+  .glass-card,
+  .luxury-tilt-card {
     border: 1px solid #CCC !important;
     box-shadow: none !important;
     background: #FFF !important;
     color: #000 !important;
+    transform: none !important;
   }
 }

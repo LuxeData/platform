@@ -1,10 +1,11 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ArrowUpRight, ArrowDownRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn, Crown } from 'lucide-react';
 import { Logo } from './Logo';
 import { WATCH_MODELS } from '../lib/marketEngine';
 import { formatUSD } from '../lib/format';
 import { UserSession } from '../types/watch';
+import { ScrollProgressBar } from './ScrollProgressBar';
 
 interface NavbarProps {
   searchQuery: string;
@@ -27,15 +28,48 @@ export const Navbar: React.FC<NavbarProps> = ({
   user,
   onOpenAuth
 }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let rafId: number | null = null;
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 15);
+        rafId = null;
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   return (
-    <header style={{
-      borderBottom: '1px solid var(--border-subtle)',
-      background: 'rgba(255, 255, 255, 0.94)',
-      backdropFilter: 'blur(18px)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100
-    }}>
+    <header 
+      className={`navbar-header ${isScrolled ? 'navbar-scrolled' : ''}`}
+      style={{
+        borderBottom: isScrolled ? '1px solid var(--border-medium)' : '1px solid var(--border-subtle)',
+        background: isScrolled ? 'rgba(255, 255, 255, 0.98)' : 'rgba(255, 255, 255, 0.92)',
+        backdropFilter: isScrolled ? 'blur(24px)' : 'blur(16px)',
+        WebkitBackdropFilter: isScrolled ? 'blur(24px)' : 'blur(16px)',
+        boxShadow: isScrolled 
+          ? '0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 1px 0 rgba(0, 0, 0, 0.04)' 
+          : '0 1px 2px rgba(15, 23, 42, 0.02)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        transition: 'background 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+      }}
+    >
+      {/* Precision Gold Scroll Progress Indicator */}
+      <ScrollProgressBar />
       {/* Institutional Real-Time Ticker Bar */}
       <div style={{
         background: '#F8FAFC',
@@ -368,11 +402,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 padding: '7px 16px',
                 border: activeTab === 'overview' ? '1px solid var(--border-subtle)' : 'none',
                 background: activeTab === 'overview' ? '#FFFFFF' : 'transparent',
-                boxShadow: activeTab === 'overview' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                boxShadow: activeTab === 'overview' ? '0 2px 6px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)' : 'none',
                 color: activeTab === 'overview' ? 'var(--text-main)' : 'var(--text-secondary)',
                 borderRadius: '8px',
                 fontWeight: activeTab === 'overview' ? 700 : 500,
-                textAlign: 'center'
+                textAlign: 'center',
+                transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
             >
               Overview
@@ -387,11 +422,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 padding: '7px 16px',
                 border: activeTab === 'terminal' ? '1px solid var(--border-subtle)' : 'none',
                 background: activeTab === 'terminal' ? '#FFFFFF' : 'transparent',
-                boxShadow: activeTab === 'terminal' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                boxShadow: activeTab === 'terminal' ? '0 2px 6px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)' : 'none',
                 color: activeTab === 'terminal' ? 'var(--text-main)' : 'var(--text-secondary)',
                 borderRadius: '8px',
                 fontWeight: activeTab === 'terminal' ? 700 : 500,
-                textAlign: 'center'
+                textAlign: 'center',
+                transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
             >
               Market Terminal
@@ -406,11 +442,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 padding: '7px 16px',
                 border: activeTab === 'appraisal' ? '1px solid var(--border-subtle)' : 'none',
                 background: activeTab === 'appraisal' ? '#FFFFFF' : 'transparent',
-                boxShadow: activeTab === 'appraisal' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                boxShadow: activeTab === 'appraisal' ? '0 2px 6px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)' : 'none',
                 color: activeTab === 'appraisal' ? 'var(--text-main)' : 'var(--text-secondary)',
                 borderRadius: '8px',
                 fontWeight: activeTab === 'appraisal' ? 700 : 500,
-                textAlign: 'center'
+                textAlign: 'center',
+                transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
             >
               Appraisal Desk
@@ -425,14 +462,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 padding: '7px 16px',
                 border: activeTab === 'arbitrage' ? '1px solid var(--border-subtle)' : 'none',
                 background: activeTab === 'arbitrage' ? '#FFFFFF' : 'transparent',
-                boxShadow: activeTab === 'arbitrage' ? '0 1px 4px rgba(15, 23, 42, 0.08)' : 'none',
+                boxShadow: activeTab === 'arbitrage' ? '0 2px 6px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)' : 'none',
                 color: activeTab === 'arbitrage' ? 'var(--text-main)' : 'var(--text-secondary)',
                 borderRadius: '8px',
                 fontWeight: activeTab === 'arbitrage' ? 700 : 500,
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px'
+                gap: '6px',
+                transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
             >
               <span>Arbitrage</span>

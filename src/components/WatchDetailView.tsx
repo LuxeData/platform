@@ -5,6 +5,9 @@ import { WatchModel, UserSession } from '../types/watch';
 import { formatUSD } from '../lib/format';
 import { MultiVenueConsensusCard } from './MultiVenueConsensusCard';
 import { Logo } from './Logo';
+import { AnimatedCounter } from './AnimatedCounter';
+import { ParallaxWrapper } from './ParallaxWrapper';
+import { ScrollReveal } from './ScrollReveal';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -107,30 +110,32 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
           {/* Reference Meta + Watch Thumbnail */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', maxWidth: '640px' }}>
             {watch.imageUrl && (
-              <div style={{
-                width: '100px',
-                height: '100px',
-                background: '#F8FAFC',
-                borderRadius: '14px',
-                border: '1px solid var(--border-hairline)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                position: 'relative'
-              }}>
-                <Image
-                  src={watch.imageUrl}
-                  alt={watch.model}
-                  fill
-                  sizes="100px"
-                  style={{
-                    objectFit: 'contain',
-                    padding: '8px',
-                    filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))'
-                  }}
-                />
-              </div>
+              <ParallaxWrapper speed={0.04} maxOffset={8}>
+                <div style={{
+                  width: '100px',
+                  height: '100px',
+                  background: '#F8FAFC',
+                  borderRadius: '14px',
+                  border: '1px solid var(--border-hairline)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  position: 'relative'
+                }}>
+                  <Image
+                    src={watch.imageUrl}
+                    alt={watch.model}
+                    fill
+                    sizes="100px"
+                    style={{
+                      objectFit: 'contain',
+                      padding: '8px',
+                      filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))'
+                    }}
+                  />
+                </div>
+              </ParallaxWrapper>
             )}
 
             <div>
@@ -176,8 +181,8 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                 Consensus Market Value (CMV)
               </div>
-              <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                ${formatUSD(valuation.adjustedCMV)}
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <AnimatedCounter value={valuation.adjustedCMV} prefix="$" />
               </div>
               <div style={{
                 fontSize: '0.74rem',
@@ -197,13 +202,13 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <div style={{ fontSize: '0.66rem', color: 'var(--emerald-gain)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
                 Dealer Buy-In Offer (-20%)
               </div>
-              <div className="tabular-nums" style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
+              <div style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
                 {isLocked ? (
                   <span style={{ color: 'var(--gold-primary)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
                     <Lock size={15} /> PRO DESK
                   </span>
                 ) : (
-                  `$${formatUSD(valuation.dealerCashOffer)}`
+                  <AnimatedCounter value={valuation.dealerCashOffer} prefix="$" />
                 )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
@@ -216,13 +221,13 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                 Gross Dealer Spread
               </div>
-              <div className="tabular-nums" style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
+              <div style={{ fontSize: '1.60rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                 {isLocked ? (
                   <span style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '1.15rem' }}>
                     <Lock size={15} /> 20.0% MARGIN
                   </span>
                 ) : (
-                  `+$${formatUSD(valuation.grossSpread)}`
+                  <AnimatedCounter value={valuation.grossSpread} prefix="+$" />
                 )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
@@ -235,11 +240,13 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
       {/* 2. Tri-Venue Consensus Engine (Chrono24 + eBay Realized Sold + WatchCharts) */}
       {watch.multiVenue && (
-        <MultiVenueConsensusCard
-          multiVenue={watch.multiVenue}
-          watchModel={watch.model}
-          reference={watch.reference}
-        />
+        <ScrollReveal direction="up" distance={20} duration={600}>
+          <MultiVenueConsensusCard
+            multiVenue={watch.multiVenue}
+            watchModel={watch.model}
+            reference={watch.reference}
+          />
+        </ScrollReveal>
       )}
 
       {/* 3. Main Terminal Grid: Responsive Layout (Stacks on Mobile) */}
@@ -533,11 +540,11 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                 <div style={{ fontSize: '0.68rem', color: 'var(--emerald-gain)', fontWeight: 700, textTransform: 'uppercase' }}>
                   ADJUSTED DEALER BUY OFFER
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '2px 0' }}>
-                  ${formatUSD(valuation.dealerCashOffer)}
+                <div style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '2px 0' }}>
+                  <AnimatedCounter value={valuation.dealerCashOffer} prefix="$" />
                 </div>
                 <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
-                  Target Margin: <strong style={{ color: 'var(--text-main)' }}>${formatUSD(valuation.grossSpread)}</strong> ({dealerTargetMargin}%)
+                  Target Margin: <strong style={{ color: 'var(--text-main)' }}><AnimatedCounter value={valuation.grossSpread} prefix="$" /></strong> ({dealerTargetMargin}%)
                 </div>
               </div>
             </div>
@@ -797,69 +804,71 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
 
           {/* Arbitrage Feed for this Specific Reference */}
           {watch.dealerMetrics?.arbitrageDeals && watch.dealerMetrics.arbitrageDeals.length > 0 && (
-            <div className="glass-card" style={{
-              padding: '24px 28px',
-              border: '1.5px solid var(--emerald-border)',
-              background: '#FFFFFF'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <span style={{ fontSize: '0.76rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Target size={14} /> LIVE ARBITRAGE OPPORTUNITIES ({watch.dealerMetrics.arbitrageDeals.length})
-                </span>
-                <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Priced &lt; Buy-In</span>
-              </div>
+            <ScrollReveal direction="up" distance={20} duration={600}>
+              <div className="glass-card" style={{
+                padding: '24px 28px',
+                border: '1.5px solid var(--emerald-border)',
+                background: '#FFFFFF'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <span style={{ fontSize: '0.76rem', color: 'var(--emerald-gain)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Target size={14} /> LIVE ARBITRAGE OPPORTUNITIES ({watch.dealerMetrics.arbitrageDeals.length})
+                  </span>
+                  <span style={{ fontSize: '0.70rem', color: 'var(--text-muted)' }}>Priced &lt; Buy-In</span>
+                </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {watch.dealerMetrics.arbitrageDeals.slice(0, 3).map((deal) => (
-                  <div 
-                    key={deal.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '8px',
-                      padding: '12px 14px',
-                      background: 'rgba(5, 150, 105, 0.04)',
-                      borderRadius: '10px',
-                      border: '1px solid var(--emerald-border)',
-                      fontSize: '0.78rem'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span className="tabular-nums" style={{ color: 'var(--text-main)', fontWeight: 800 }}>
-                          ${formatUSD(deal.price)}
-                        </span>
-                        <span className="badge badge-subtle" style={{ fontSize: '0.60rem', padding: '1px 5px' }}>
-                          {deal.location}
-                        </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {watch.dealerMetrics.arbitrageDeals.slice(0, 3).map((deal) => (
+                    <div 
+                      key={deal.id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                        padding: '12px 14px',
+                        background: 'rgba(5, 150, 105, 0.04)',
+                        borderRadius: '10px',
+                        border: '1px solid var(--emerald-border)',
+                        fontSize: '0.78rem'
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span className="tabular-nums" style={{ color: 'var(--text-main)', fontWeight: 800 }}>
+                            ${formatUSD(deal.price)}
+                          </span>
+                          <span className="badge badge-subtle" style={{ fontSize: '0.60rem', padding: '1px 5px' }}>
+                            {deal.location}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.70rem', color: 'var(--emerald-gain)', fontWeight: 600 }}>
+                          Save ${formatUSD(deal.estimated_profit_dollars)} ({deal.discount_from_cmv_pct}% off CMV)
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.70rem', color: 'var(--emerald-gain)', fontWeight: 600 }}>
-                        Save ${formatUSD(deal.estimated_profit_dollars)} ({deal.discount_from_cmv_pct}% off CMV)
-                      </div>
+
+                      {deal.url && (
+                        <a 
+                          href={deal.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="btn-primary"
+                          style={{
+                            fontSize: '0.72rem',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            marginLeft: 'auto'
+                          }}
+                        >
+                          Inspect Lot <ArrowUpRight size={12} />
+                        </a>
+                      )}
                     </div>
-
-                    {deal.url && (
-                      <a 
-                        href={deal.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="btn-primary"
-                        style={{
-                          fontSize: '0.72rem',
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          marginLeft: 'auto'
-                        }}
-                      >
-                        Inspect Lot <ArrowUpRight size={12} />
-                      </a>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           )}
 
         </div>

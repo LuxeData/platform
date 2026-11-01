@@ -2,6 +2,8 @@
 import React from 'react';
 import { MultiVenueConsensus } from '../types/watch';
 import { formatUSD } from '../lib/format';
+import { InteractiveTiltCard } from './InteractiveTiltCard';
+import { AnimatedCounter } from './AnimatedCounter';
 import { 
   Layers, 
   ShieldCheck, 
@@ -32,10 +34,12 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
 
   return (
     <div className="glass-card" style={{
-      padding: '26px 30px',
+      padding: '28px 32px',
       border: '1.5px solid var(--border-gold-subtle)',
       background: '#FFFFFF',
-      position: 'relative'
+      position: 'relative',
+      boxShadow: 'var(--shadow-card)',
+      borderRadius: '16px'
     }}>
       {/* Header Strip */}
       <div style={{
@@ -50,7 +54,7 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span className="badge badge-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
+            <span className="badge badge-gold badge-glimmer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
               <Layers size={11} /> TRI-VENUE LIQUIDITY ENGINE
             </span>
             <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
@@ -70,8 +74,8 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
           <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
             Weighted Consolidated CMV
           </div>
-          <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            ${formatUSD(consolidatedPrice)}
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-main)' }}>
+            <AnimatedCounter value={consolidatedPrice} prefix="$" />
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--emerald-gain)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', fontWeight: 600 }}>
             <CheckCircle2 size={13} /> {multiVenue.confidenceScore}% Data Convergence
@@ -79,7 +83,7 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
         </div>
       </div>
 
-      {/* 3 Venue Cards Grid */}
+      {/* 3 Venue Cards Grid with Interactive 3D Physics */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -88,29 +92,34 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
       }}>
         
         {/* Venue 1: Chrono24 */}
-        <div style={{
-          background: '#F8FAFC',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: '12px',
-          padding: '18px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
+        <InteractiveTiltCard 
+          maxTilt={3} 
+          glareOpacity={0.12}
+          style={{
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '12px',
+            padding: '18px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--shadow-card)'
+          }}
+        >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontWeight: 800, fontSize: '0.90rem', color: 'var(--text-main)' }}>
                 Chrono24
               </span>
-              <span className="badge badge-gold" style={{ fontSize: '0.60rem' }}>
+              <span className="badge badge-gold badge-glimmer" style={{ fontSize: '0.60rem' }}>
                 {chrono24.weightPct}% WEIGHT
               </span>
             </div>
             <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
               {chrono24.venueType}
             </div>
-            <div className="tabular-nums" style={{ fontSize: '1.50rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
-              ${formatUSD(chrono24.price)}
+            <div style={{ fontSize: '1.50rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
+              <AnimatedCounter value={chrono24.price} prefix="$" />
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
               {chrono24.sampleCount} active listings tracked
@@ -119,18 +128,23 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
           <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '10px', marginTop: '14px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
             Status: <span style={{ color: 'var(--gold-primary)', fontWeight: 600 }}>{chrono24.lastUpdated}</span>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
         {/* Venue 2: eBay Sold Listings */}
-        <div style={{
-          background: '#F8FAFC',
-          border: '1.5px solid var(--emerald-border)',
-          borderRadius: '12px',
-          padding: '18px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
+        <InteractiveTiltCard 
+          maxTilt={3} 
+          glareOpacity={0.14}
+          style={{
+            background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(5, 150, 105, 0.03) 100%)',
+            border: '1.5px solid var(--emerald-border)',
+            borderRadius: '12px',
+            padding: '18px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: '0 4px 14px rgba(5, 150, 105, 0.08), inset 0 1px 0 #FFFFFF'
+          }}
+        >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontWeight: 800, fontSize: '0.90rem', color: 'var(--text-main)' }}>
@@ -143,8 +157,8 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
             <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
               {ebay.venueType}
             </div>
-            <div className="tabular-nums" style={{ fontSize: '1.50rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
-              ${formatUSD(ebay.price)}
+            <div style={{ fontSize: '1.50rem', fontWeight: 800, color: 'var(--emerald-gain)', margin: '4px 0' }}>
+              <AnimatedCounter value={ebay.price} prefix="$" />
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
               {ebay.sampleCount} completed cash sales (30D)
@@ -153,18 +167,23 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
           <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '10px', marginTop: '14px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
             Realized Gap: <strong style={{ color: 'var(--emerald-gain)' }}>-{askingVsRealizedGapPct}% vs asking</strong>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
         {/* Venue 3: WatchCharts Secondary Index */}
-        <div style={{
-          background: '#F8FAFC',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: '12px',
-          padding: '18px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
+        <InteractiveTiltCard 
+          maxTilt={3} 
+          glareOpacity={0.12}
+          style={{
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '12px',
+            padding: '18px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--shadow-card)'
+          }}
+        >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontWeight: 800, fontSize: '0.90rem', color: 'var(--text-main)' }}>
@@ -177,8 +196,8 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
             <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
               {watchcharts.venueType}
             </div>
-            <div className="tabular-nums" style={{ fontSize: '1.50rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
-              ${formatUSD(watchcharts.price)}
+            <div style={{ fontSize: '1.50rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
+              <AnimatedCounter value={watchcharts.price} prefix="$" />
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
               {watchcharts.sampleCount} composite dealer points
@@ -187,7 +206,7 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
           <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '10px', marginTop: '14px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
             Volatility Band: <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>±{venueSpreadPct}% spread</span>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
       </div>
 
@@ -201,7 +220,8 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '12px'
+        gap: '12px',
+        boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.8)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
           <Info size={15} style={{ color: 'var(--gold-primary)', flexShrink: 0 }} />
