@@ -353,14 +353,33 @@ export function getLiveMarketEngine() {
     const consensus = scrapedData.consensus;
     const stats = consensus.price_stats || {};
     const sampleListings: ScrapedListingItem[] = scrapedData.sample_listings || [];
-    const arbDeals: ArbitrageListing[] = consensus.arbitrage_opportunities || [];
+    const rawListings: ScrapedListingItem[] = scrapedData.listings || sampleListings;
+    const rawPrices: number[] = rawListings
+      .map(l => l.price)
+      .filter(p => typeof p === 'number' && !isNaN(p) && p > 0);
 
-    const cmv = Math.round(stats.consensus_market_value || 15000);
-    const buyIn = Math.round(stats.dealer_buy_in_price_20pct || (cmv * 0.8));
-    const grossSpreadDollars = cmv - buyIn;
-    const spreadPct = 20.0;
+    // Dynamically compute consensus market value from raw listing prices using 10% trimmed mean
+    const cmv = rawPrices.length > 0
+      ? Math.round(calculateTrimmedMean(rawPrices, 0.10))
+      : Math.round(stats.consensus_market_value || 15000);
+
+    // Dynamically compute institutional dealer buy-in and spread at runtime (20% margin rule)
+    const { buyIn, spread: grossSpreadDollars, marginPct: spreadPct } = calculateDealerBuyIn(cmv, 20);
+
     const retailMSRP = consensus.retail_msrp || stats.retail_msrp || 10000;
     const totalListings = consensus.total_active_listings || sampleListings.length || 50;
+
+    // Dynamically calculate arbitrage spread for deals against dynamic CMV
+    const rawArbDeals: ArbitrageListing[] = consensus.arbitrage_opportunities || [];
+    const arbDeals: ArbitrageListing[] = rawArbDeals.map(d => {
+      const spreadResult = calculateArbitrageSpread(d.price, cmv);
+      return {
+        ...d,
+        estimated_profit_dollars: spreadResult.discountDollars,
+        discount_from_cmv_pct: spreadResult.discountPct
+      };
+    });
+    const rankedArbDeals = rankArbitrageDeals(arbDeals);
 
     const mvBench = MULTI_VENUE_BENCHMARKS[refKey] || {
       ebayPrice: Math.round(cmv * 0.97),
@@ -375,10 +394,10 @@ export function getLiveMarketEngine() {
     totalEbayCount += mvBench.ebaySoldCount;
     totalWatchchartsCount += mvBench.watchchartsCount;
     totalCatalogVal += (cmv * totalListings);
-    totalArbitrageCount += arbDeals.length;
+    totalArbitrageCount += rankedArbDeals.length;
 
     // Collect arbitrage deals
-    for (const d of arbDeals) {
+    for (const d of rankedArbDeals) {
       allArbitrageListings.push({
         ...d,
         brand: cfg.brand,
@@ -405,7 +424,7 @@ export function getLiveMarketEngine() {
         weightPct: 50,
         sampleCount: totalListings,
         status: 'LIVE ASKING',
-        lastUpdated: 'Live Headless Feed',
+        lastUpdated: 'Chrono24 Verified Ingestion',
         notes: `${consensus.dealer_listings_count || Math.round(totalListings * 0.82)} verified dealer lots & ${consensus.private_listings_count || Math.round(totalListings * 0.18)} private listings.`
       },
       ebay: {
@@ -483,14 +502,16 @@ export function getLiveMarketEngine() {
       consensusMarketValue: cmv,
       dealerBuyInPrice: buyIn,
       retailMSRP: retailMSRP,
-      marketPremiumPct: stats.market_premium_over_msrp_pct || Math.round(((cmv - retailMSRP) / retailMSRP) * 100),
+      marketPremiumPct: retailMSRP > 0
+        ? Math.round(((cmv - retailMSRP) / retailMSRP) * 1000) / 10
+        : (stats.market_premium_over_msrp_pct || 0),
       totalActiveListings: totalListings,
       dealerListingsCount: consensus.dealer_listings_count || Math.round(totalListings * 0.82),
       privateListingsCount: consensus.private_listings_count || Math.round(totalListings * 0.18),
-      arbitrageCount: arbDeals.length,
+      arbitrageCount: rankedArbDeals.length,
       methodology: '10% Trimmed Mean of Professional Dealer Listings',
       spreadRule: '20% Dealer Buy-In Discount from Consensus Retail Price',
-      arbitrageDeals: arbDeals,
+      arbitrageDeals: rankedArbDeals,
       multiVenue,
       scrapedAt: consensus.updated_at || scrapedData.metadata?.scraped_at || '2026-10-29'
     };
@@ -532,9 +553,9 @@ export function getLiveMarketEngine() {
     watchModels.push(watchModel);
   }
 
-  // Find the single highest dollar profit deal across all arbitrage listings
-  allArbitrageListings.sort((a, b) => (b.estimated_profit_dollars || 0) - (a.estimated_profit_dollars || 0));
-  const topDeal = allArbitrageListings[0];
+  // Dynamically rank all arbitrage opportunities descending by dollar profit
+  const rankedAllDeals = rankArbitrageDeals(allArbitrageListings);
+  const topDeal = rankedAllDeals[0];
 
   // Calculate Luxe 5 Basket Index (Sum of all 5 CMVs)
   const luxeIndexValue = watchModels.reduce((acc, w) => acc + w.currentAskingAvg, 0);
@@ -568,7 +589,7 @@ export function getLiveMarketEngine() {
   return {
     watches: watchModels,
     macro,
-    allArbitrageListings
+    allArbitrageListings: rankedAllDeals
   };
 }
 

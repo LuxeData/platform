@@ -1,3 +1,12 @@
+// Ensure WebSocket constructor exists in headless test runners before Supabase import
+if (typeof globalThis !== 'undefined' && typeof (globalThis as any).WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class MockWebSocket {
+    constructor() {}
+    close() {}
+    send() {}
+  };
+}
+
 import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import {
   isSupabaseConfigured,

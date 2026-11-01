@@ -314,8 +314,8 @@ export function LegalView({
           </div>
         </div>
 
-        {/* Two-Column Layout: Table of Contents + Document Body */}
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '32px', alignItems: 'flex-start' }}>
+        {/* Responsive Two-Column Layout: Table of Contents + Document Body */}
+        <div className="legal-two-column-layout">
           
           {/* Sticky Left Table of Contents */}
           <aside style={{

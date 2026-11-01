@@ -22,10 +22,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
@@ -36,6 +36,9 @@ jobs:
 
       - name: Next.js ESLint Code Quality
         run: npm run lint
+
+      - name: Unit Tests (Vitest Automated Suite)
+        run: npm test
 
   # -------------------------------------------------------------
   # Job 2: Next.js Production Build Gate
@@ -51,10 +54,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Restore Next.js Cache
@@ -95,10 +98,10 @@ jobs:
           fi
           echo "✅ No sensitive credential files committed."
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
@@ -120,11 +123,15 @@ jobs:
       - name: Verify All CI Jobs Succeeded
         run: |
           if [ "${{ needs.typecheck-and-lint.result }}" != "success" ]; then
-            echo "❌ TypeScript or Linting failed."
+            echo "❌ TypeScript, Linting, or Unit Tests failed."
             exit 1
           fi
           if [ "${{ needs.production-build-gate.result }}" != "success" ]; then
             echo "❌ Production Next.js build failed."
+            exit 1
+          fi
+          if [ "${{ needs.security-audit.result }}" != "success" ]; then
+            echo "❌ Security scanning or secret detection failed."
             exit 1
           fi
           echo "🎉 All CI checks passed! Pull Request is eligible to merge."

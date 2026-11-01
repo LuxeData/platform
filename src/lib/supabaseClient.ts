@@ -1,6 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserSession } from '../types/watch';
 
+// Ensure WebSocket constructor exists for @supabase/realtime-js in headless environments (e.g. Node < 22)
+if (typeof globalThis !== 'undefined' && typeof (globalThis as any).WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class MockWebSocket {
+    constructor() {}
+    close() {}
+    send() {}
+  };
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -277,116 +286,6 @@ export async function getActiveUserSession(): Promise<UserSession | null> {
     console.warn('Failed to recover active Supabase session:', err);
     return null;
   }
-}
-
-/**
- * @deprecated Legacy helper superseded by signUpWithSupabase and signInWithSupabase.
- */
-export async function verifyOrRegisterDealer(lead: {
-  email: string;
-  dealership?: string;
-  role?: 'dealer' | 'collector';
-}): Promise<{ success: boolean; user: UserSession; isNew: boolean; error?: string }> {
-  try {
-    const cleanEmail = lead.email.trim().toLowerCase();
-    const cleanDealership = lead.dealership?.trim() || 'Independent Horology Desk';
-    const cleanRole = lead.role || 'dealer';
-
-    if (!isSupabaseConfigured) {
-      return {
-        success: true,
-        user: {
-          name: cleanDealership,
-          email: cleanEmail,
-          dealership: cleanDealership,
-          role: cleanRole,
-          tier: 'free'
-        },
-        isNew: false
-      };
-    }
-
-    // 1. Check if dealer exists in Supabase
-    const { data: existing } = await supabase
-      .from('dealer_leads')
-      .select('*')
-      .ilike('email', cleanEmail)
-      .maybeSingle();
-
-    if (existing) {
-      const isProRole = ['pro', 'partner', 'admin', 'vip'].includes(existing.role?.toLowerCase());
-      const sessionUser: UserSession = {
-        name: existing.dealership_name || 'Verified Member',
-        email: existing.email,
-        dealership: existing.dealership_name || 'Independent Horology Desk',
-        role: existing.role || 'dealer',
-        tier: isProRole ? 'pro' : 'free'
-      };
-      return { success: true, user: sessionUser, isNew: false };
-    }
-
-    // 2. If new user, register them in dealer_leads
-    const { data: inserted, error: insertError } = await supabase
-      .from('dealer_leads')
-      .insert([
-        {
-          email: cleanEmail,
-          dealership_name: cleanDealership,
-          role: cleanRole,
-          created_at: new Date().toISOString()
-        }
-      ])
-      .select()
-      .single();
-
-    if (insertError) {
-      return {
-        success: true,
-        user: {
-          name: cleanDealership,
-          email: cleanEmail,
-          dealership: cleanDealership,
-          role: cleanRole,
-          tier: 'free'
-        },
-        isNew: true
-      };
-    }
-
-    const sessionUser: UserSession = {
-      name: inserted.dealership_name || cleanDealership,
-      email: inserted.email,
-      dealership: inserted.dealership_name || cleanDealership,
-      role: inserted.role || cleanRole,
-      tier: 'free'
-    };
-
-    return { success: true, user: sessionUser, isNew: true };
-  } catch (err: any) {
-    return {
-      success: false,
-      user: {
-        name: lead.dealership || 'Guest Member',
-        email: lead.email,
-        dealership: lead.dealership || 'Independent Horology Desk',
-        role: 'dealer',
-        tier: 'free'
-      },
-      isNew: false,
-      error: err.message
-    };
-  }
-}
-
-/**
- * @deprecated Legacy helper superseded by signUpWithSupabase.
- */
-export async function registerDealerLead(lead: {
-  email: string;
-  dealership: string;
-  role: 'dealer' | 'collector';
-}) {
-  return verifyOrRegisterDealer(lead);
 }
 
 /**

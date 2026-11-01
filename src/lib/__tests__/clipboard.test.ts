@@ -1,10 +1,24 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { copyToClipboard } from '../clipboard';
 
 describe('Clipboard Utility (copyToClipboard)', () => {
   let mockTextarea: any;
   let appendedElements: any[] = [];
-  const originalClipboardDesc = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
+  let originalNavigatorDesc: PropertyDescriptor | undefined;
+
+  beforeAll(() => {
+    originalNavigatorDesc = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  });
+
+  afterAll(() => {
+    if (originalNavigatorDesc) {
+      Object.defineProperty(globalThis, 'navigator', originalNavigatorDesc);
+    } else {
+      delete (globalThis as any).navigator;
+    }
+    delete (globalThis as any).window;
+    delete (globalThis as any).document;
+  });
 
   beforeEach(() => {
     appendedElements = [];
@@ -18,6 +32,7 @@ describe('Clipboard Utility (copyToClipboard)', () => {
     };
 
     (globalThis as any).window = globalThis;
+
     (globalThis as any).document = {
       createElement: vi.fn().mockImplementation((tag: string) => {
         if (tag === 'textarea') return mockTextarea;
@@ -37,9 +52,11 @@ describe('Clipboard Utility (copyToClipboard)', () => {
       execCommand: vi.fn().mockReturnValue(true)
     };
 
-    Object.defineProperty(navigator, 'clipboard', {
+    Object.defineProperty(globalThis, 'navigator', {
       value: {
-        writeText: vi.fn().mockResolvedValue(undefined)
+        clipboard: {
+          writeText: vi.fn().mockResolvedValue(undefined)
+        }
       },
       writable: true,
       configurable: true
@@ -48,17 +65,14 @@ describe('Clipboard Utility (copyToClipboard)', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    if (originalClipboardDesc) {
-      Object.defineProperty(navigator, 'clipboard', originalClipboardDesc);
-    } else {
-      delete (navigator as any).clipboard;
-    }
   });
 
   it('uses modern navigator.clipboard.writeText when available', async () => {
     const writeTextMock = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: writeTextMock },
+    Object.defineProperty(globalThis, 'navigator', {
+      value: {
+        clipboard: { writeText: writeTextMock }
+      },
       writable: true,
       configurable: true
     });
@@ -69,9 +83,12 @@ describe('Clipboard Utility (copyToClipboard)', () => {
   });
 
   it('falls back to document.execCommand when navigator.clipboard throws', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     const writeTextMock = vi.fn().mockRejectedValue(new Error('Permission denied'));
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: writeTextMock },
+    Object.defineProperty(globalThis, 'navigator', {
+      value: {
+        clipboard: { writeText: writeTextMock }
+      },
       writable: true,
       configurable: true
     });
@@ -88,8 +105,8 @@ describe('Clipboard Utility (copyToClipboard)', () => {
   });
 
   it('falls back to document.execCommand when navigator.clipboard is undefined', async () => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: undefined,
+    Object.defineProperty(globalThis, 'navigator', {
+      value: {},
       writable: true,
       configurable: true
     });
@@ -103,8 +120,9 @@ describe('Clipboard Utility (copyToClipboard)', () => {
   });
 
   it('cleans up textarea DOM element in finally block even if document.execCommand throws an exception', async () => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: undefined,
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    Object.defineProperty(globalThis, 'navigator', {
+      value: {},
       writable: true,
       configurable: true
     });
