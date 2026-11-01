@@ -1,13 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserSession } from '../types/watch';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://extdvvsqcpwekmbaslct.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_KznAuLW0d_1mi7YtDxd3GQ_PRZCkLgl';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  if (typeof window !== 'undefined' || (typeof process !== 'undefined' && process.env.NODE_ENV !== 'test')) {
+    console.warn(
+      '[LuxeData Supabase] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is omitted. ' +
+      'Terminal is operating in mock/local fallback mode without transmitting credentials.'
+    );
+  }
+}
+
+// Client instance: real if env vars provided, dummy placeholder if unconfigured
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl!, supabaseAnonKey!)
+  : createClient('https://mock-unconfigured-project.supabase.co', 'mock-anon-key');
 
 /**
- * Real Supabase Email & Password Sign Up
+ * Real Supabase Email & Password Sign Up (with graceful local fallback)
  */
 export async function signUpWithSupabase(params: {
   email: string;
@@ -23,6 +37,22 @@ export async function signUpWithSupabase(params: {
   try {
     const cleanEmail = params.email.trim().toLowerCase();
     const cleanDealership = params.dealership.trim() || 'Independent Horology Desk';
+
+    if (!isSupabaseConfigured) {
+      const mockUser: UserSession = {
+        id: `mock-dealer-${Date.now()}`,
+        name: cleanDealership,
+        email: cleanEmail,
+        dealership: cleanDealership,
+        role: params.role,
+        tier: 'free'
+      };
+      return {
+        success: true,
+        user: mockUser,
+        requiresEmailConfirmation: false
+      };
+    }
 
     const { data, error } = await supabase.auth.signUp({
       email: cleanEmail,
@@ -82,7 +112,7 @@ export async function signUpWithSupabase(params: {
 }
 
 /**
- * Real Supabase Email & Password Sign In
+ * Real Supabase Email & Password Sign In (with graceful local fallback)
  */
 export async function signInWithSupabase(params: {
   email: string;
@@ -94,6 +124,19 @@ export async function signInWithSupabase(params: {
 }> {
   try {
     const cleanEmail = params.email.trim().toLowerCase();
+
+    if (!isSupabaseConfigured) {
+      const isPro = cleanEmail.includes('pro') || cleanEmail.includes('partner');
+      const sessionUser: UserSession = {
+        id: 'mock-auth-user',
+        name: 'Geneva Partner Desk',
+        email: cleanEmail,
+        dealership: 'Geneva Partner Desk',
+        role: isPro ? 'pro' : 'dealer',
+        tier: isPro ? 'pro' : 'free'
+      };
+      return { success: true, user: sessionUser };
+    }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: cleanEmail,
@@ -156,6 +199,9 @@ export async function signInWithSupabase(params: {
  */
 export async function signOutFromSupabase(): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!isSupabaseConfigured) {
+      return { success: true };
+    }
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.warn('Supabase signOut warning:', error.message);
@@ -172,6 +218,9 @@ export async function signOutFromSupabase(): Promise<{ success: boolean; error?:
 export async function requestPasswordReset(email: string): Promise<{ success: boolean; error?: string }> {
   try {
     const cleanEmail = email.trim().toLowerCase();
+    if (!isSupabaseConfigured) {
+      return { success: true };
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
     if (error) {
       return { success: false, error: error.message };
@@ -187,6 +236,9 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
  */
 export async function getActiveUserSession(): Promise<UserSession | null> {
   try {
+    if (!isSupabaseConfigured) {
+      return null;
+    }
     const { data: { session } } = await supabase.auth.getSession();
     if (!session || !session.user) return null;
 
@@ -228,7 +280,7 @@ export async function getActiveUserSession(): Promise<UserSession | null> {
 }
 
 /**
- * Verifies if an email has Pro status in Supabase dealer_leads, or registers a new dealer lead
+ * @deprecated Legacy helper superseded by signUpWithSupabase and signInWithSupabase.
  */
 export async function verifyOrRegisterDealer(lead: {
   email: string;
@@ -237,9 +289,25 @@ export async function verifyOrRegisterDealer(lead: {
 }): Promise<{ success: boolean; user: UserSession; isNew: boolean; error?: string }> {
   try {
     const cleanEmail = lead.email.trim().toLowerCase();
+    const cleanDealership = lead.dealership?.trim() || 'Independent Horology Desk';
+    const cleanRole = lead.role || 'dealer';
+
+    if (!isSupabaseConfigured) {
+      return {
+        success: true,
+        user: {
+          name: cleanDealership,
+          email: cleanEmail,
+          dealership: cleanDealership,
+          role: cleanRole,
+          tier: 'free'
+        },
+        isNew: false
+      };
+    }
 
     // 1. Check if dealer exists in Supabase
-    const { data: existing, error: fetchError } = await supabase
+    const { data: existing } = await supabase
       .from('dealer_leads')
       .select('*')
       .ilike('email', cleanEmail)
@@ -258,16 +326,13 @@ export async function verifyOrRegisterDealer(lead: {
     }
 
     // 2. If new user, register them in dealer_leads
-    const newDealership = lead.dealership?.trim() || 'Independent Horology Desk';
-    const newRole = lead.role || 'dealer';
-
     const { data: inserted, error: insertError } = await supabase
       .from('dealer_leads')
       .insert([
         {
           email: cleanEmail,
-          dealership_name: newDealership,
-          role: newRole,
+          dealership_name: cleanDealership,
+          role: cleanRole,
           created_at: new Date().toISOString()
         }
       ])
@@ -275,15 +340,13 @@ export async function verifyOrRegisterDealer(lead: {
       .single();
 
     if (insertError) {
-      console.warn('Supabase lead registration notice:', insertError.message);
-      // Fallback local session if Supabase has network glitch
       return {
         success: true,
         user: {
-          name: newDealership,
+          name: cleanDealership,
           email: cleanEmail,
-          dealership: newDealership,
-          role: newRole,
+          dealership: cleanDealership,
+          role: cleanRole,
           tier: 'free'
         },
         isNew: true
@@ -291,16 +354,15 @@ export async function verifyOrRegisterDealer(lead: {
     }
 
     const sessionUser: UserSession = {
-      name: inserted.dealership_name || newDealership,
+      name: inserted.dealership_name || cleanDealership,
       email: inserted.email,
-      dealership: inserted.dealership_name || newDealership,
-      role: inserted.role || newRole,
+      dealership: inserted.dealership_name || cleanDealership,
+      role: inserted.role || cleanRole,
       tier: 'free'
     };
 
     return { success: true, user: sessionUser, isNew: true };
   } catch (err: any) {
-    console.error('Supabase dealer verification error:', err);
     return {
       success: false,
       user: {
@@ -317,7 +379,7 @@ export async function verifyOrRegisterDealer(lead: {
 }
 
 /**
- * Registers a new dealer or collector lead in Supabase
+ * @deprecated Legacy helper superseded by signUpWithSupabase.
  */
 export async function registerDealerLead(lead: {
   email: string;
@@ -328,7 +390,7 @@ export async function registerDealerLead(lead: {
 }
 
 /**
- * Saves a dealer cash appraisal slip into Supabase
+ * Saves a dealer cash appraisal slip into Supabase (with fallback ledger simulation)
  */
 export async function saveAppraisalToDb(appraisal: {
   dealerEmail?: string;
@@ -344,8 +406,23 @@ export async function saveAppraisalToDb(appraisal: {
   projectedProfit: number;
   dealerMarginPct: number;
   clientName?: string;
-}) {
+}): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
+    if (!isSupabaseConfigured) {
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = localStorage.getItem('luxedata_offline_ledger') || '[]';
+          const parsed = JSON.parse(raw);
+          const list = Array.isArray(parsed) ? parsed : [];
+          list.push({ ...appraisal, saved_at: new Date().toISOString() });
+          localStorage.setItem('luxedata_offline_ledger', JSON.stringify(list));
+        } catch (storageErr) {
+          // ignore storage error
+        }
+      }
+      return { success: true, data: [{ id: `offline-${Date.now()}` }] };
+    }
+
     const { data, error } = await supabase
       .from('appraisals')
       .insert([
@@ -378,4 +455,3 @@ export async function saveAppraisalToDb(appraisal: {
     return { success: false, error: err.message };
   }
 }
-

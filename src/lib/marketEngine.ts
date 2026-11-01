@@ -576,3 +576,64 @@ export const LIVE_DATA = getLiveMarketEngine();
 export const WATCH_MODELS = LIVE_DATA.watches;
 export const MACRO_METRICS = LIVE_DATA.macro;
 
+/**
+ * 10% Trimmed Mean Consensus Algorithm
+ * Strips top and bottom 10% outlier asks to eliminate speculative spikes and fire-sales.
+ */
+export function calculateTrimmedMean(prices: number[], trimPct = 0.10): number {
+  if (!prices || prices.length === 0) return 0;
+  const sorted = [...prices].sort((a, b) => a - b);
+  const n = sorted.length;
+  let sample = sorted;
+  const trimCount = Math.floor(n * trimPct);
+  if (trimCount > 0 && n > 2 * trimCount) {
+    sample = sorted.slice(trimCount, n - trimCount);
+  }
+  if (sample.length === 0) return 0;
+  const sum = sample.reduce((acc, val) => acc + val, 0);
+  return Math.round((sum / sample.length) * 100) / 100;
+}
+
+/**
+ * Institutional Dealer Cash Buy-In Offer Formula
+ * Buy-in = Consensus Market Value * (1 - Margin%)
+ */
+export function calculateDealerBuyIn(consensusMarketValue: number, marginPct = 20): {
+  buyIn: number;
+  spread: number;
+  marginPct: number;
+  roiPct: number;
+} {
+  const safeCMV = Math.max(0, consensusMarketValue);
+  const buyIn = Math.round(safeCMV * (1 - (marginPct / 100)));
+  const spread = safeCMV - buyIn;
+  const roiPct = buyIn > 0 ? Math.round((spread / buyIn) * 100) : 0;
+  return { buyIn, spread, marginPct, roiPct };
+}
+
+/**
+ * Sub-Wholesale Arbitrage Valuation Spread
+ * Identifies opportunities trading below the dealer buy-in floor (20% discount from CMV).
+ */
+export function calculateArbitrageSpread(price: number, consensusMarketValue: number): {
+  discountDollars: number;
+  discountPct: number;
+  isArbitrage: boolean;
+} {
+  const safeCMV = Math.max(0, consensusMarketValue);
+  const discountDollars = Math.max(0, safeCMV - price);
+  const discountPct = safeCMV > 0 && price <= safeCMV
+    ? Math.round(((safeCMV - price) / safeCMV) * 1000) / 10
+    : 0;
+  const isArbitrage = safeCMV > 0 && price < (safeCMV * 0.80);
+  return { discountDollars, discountPct, isArbitrage };
+}
+
+/**
+ * Ranks Arbitrage Opportunities by Dollar Profit Descending
+ */
+export function rankArbitrageDeals(deals: ArbitrageListing[]): ArbitrageListing[] {
+  return [...deals].sort((a, b) => (b.estimated_profit_dollars || 0) - (a.estimated_profit_dollars || 0));
+}
+
+

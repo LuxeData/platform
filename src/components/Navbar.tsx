@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ArrowUpRight, ArrowDownRight, TrendingUp, Shield, Sparkles, UserCheck, LogIn, Crown } from 'lucide-react';
 import { Logo } from './Logo';
-import { WATCH_MODELS } from '../lib/marketEngine';
+import { WATCH_MODELS, MACRO_METRICS } from '../lib/marketEngine';
 import { formatUSD } from '../lib/format';
 import { UserSession } from '../types/watch';
 import { ScrollProgressBar } from './ScrollProgressBar';
@@ -482,7 +482,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 padding: '1px 6px',
                 borderRadius: '9999px'
               }}>
-                31
+                {MACRO_METRICS.arbitrageCount}
               </span>
             </button>
           </div>
