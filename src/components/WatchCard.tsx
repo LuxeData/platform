@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { WatchModel } from '../types/watch';
-import { TrendingUp, TrendingDown, ChevronRight, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowUpRight, Sparkles } from 'lucide-react';
 import { formatUSD } from '../lib/format';
 import { Logo } from './Logo';
 import { InteractiveTiltCard } from './InteractiveTiltCard';
@@ -23,6 +23,15 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
       maxTilt={4}
       glareOpacity={0.18}
       onClick={() => onSelect(watch)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(watch);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Inspect comps and math for ${watch.brand} ${watch.model} Ref ${watch.reference}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       active={isSelected}
@@ -52,7 +61,7 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
         {/* Top Badges */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <span className="badge badge-subtle">{watch.brand}</span>
-          <span className="badge badge-gold badge-glimmer" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem' }}>
+          <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem' }}>
             REF: {watch.reference}
           </span>
         </div>
@@ -191,8 +200,8 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           fontWeight: 600,
           transition: 'color 0.2s ease'
         }}>
-          <span>{isSelected ? 'Active Terminal View' : isHovered ? 'Inspect Full Order Book' : 'Inspect Details'}</span>
-          <ChevronRight size={13} style={{ transform: isHovered ? 'translateX(3px)' : 'none', transition: 'transform 0.2s ease' }} />
+          <span>Inspect Comps &amp; Math</span>
+          <ArrowUpRight size={13} style={{ transform: isHovered ? 'translate(2px, -2px)' : 'none', transition: 'transform 0.2s ease' }} />
         </div>
       </div>
     </InteractiveTiltCard>

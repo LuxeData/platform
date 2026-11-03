@@ -906,7 +906,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               color: 'var(--text-muted)'
             }}>
               <ShieldCheck size={14} style={{ color: 'var(--gold-primary)' }} />
-              <span>Supabase Auth • TLS 1.3 Encryption • SOC 2 Type II Aligned</span>
+              <span>Encrypted dealer session • Direct secondary access</span>
             </div>
           </>
         )}

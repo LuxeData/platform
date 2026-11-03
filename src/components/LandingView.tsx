@@ -40,6 +40,7 @@ interface LandingViewProps {
   onEnterTerminal: (watch?: WatchModel) => void;
   onOpenAuth: () => void;
   onNavigateTab: (tab: 'terminal' | 'appraisal' | 'arbitrage') => void;
+  onInspectWatch?: (watch: WatchModel) => void;
 }
 
 export const LandingView: React.FC<LandingViewProps> = ({
@@ -47,7 +48,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
   macro,
   onEnterTerminal,
   onOpenAuth,
-  onNavigateTab
+  onNavigateTab,
+  onInspectWatch
 }) => {
   const [activeBenchmarkRef, setActiveBenchmarkRef] = useState<string>(watches[0]?.reference || '126610LN');
 
@@ -71,39 +73,9 @@ export const LandingView: React.FC<LandingViewProps> = ({
         {/* Dynamic Background: Rotating Swiss Movement Rings Watermark */}
         <MechanicalBackground />
 
-        {/* HERO VALUE PROP: Crystal-clear single-sentence explanation right at the very top. No fluff. */}
-        <div 
-          className="animate-reveal-up stagger-1 badge-glimmer"
-          style={{
-            zIndex: 1,
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(161, 116, 36, 0.08)',
-            border: '1px solid var(--border-gold-subtle)',
-            borderRadius: '999px',
-            padding: '8px 20px',
-            maxWidth: '820px',
-            boxShadow: '0 4px 14px rgba(161, 116, 36, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-          }}
-        >
-          <Sparkles size={14} style={{ color: 'var(--gold-primary)', flexShrink: 0 }} />
-          <span style={{
-            fontSize: 'clamp(0.78rem, 1.2vw, 0.86rem)',
-            fontWeight: 600,
-            color: 'var(--gold-dark)',
-            letterSpacing: '0.015em',
-            textAlign: 'center'
-          }}>
-            The institutional benchmark for secondary luxury watch valuation, cash buy-in floors, and cross-venue arbitrage.
-          </span>
-        </div>
-
         {/* Master Logo Mark */}
         <div 
-          className="animate-fade-scale stagger-2"
+          className="animate-fade-scale stagger-1"
           style={{
             zIndex: 1,
             position: 'relative',
@@ -113,52 +85,38 @@ export const LandingView: React.FC<LandingViewProps> = ({
           <Logo size={70} />
         </div>
 
-        {/* Status Pill Badge */}
-        <div 
-          className="animate-reveal-up stagger-3"
-          style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}
-        >
-          <span className="badge badge-gold badge-glimmer" style={{ padding: '6px 16px', fontSize: '0.72rem', boxShadow: '0 2px 8px rgba(161, 116, 36, 0.12)' }}>
-            <span className="pulse-indicator"></span>
-            TRI-VENUE CONSENSUS • CHRONO24 + EBAY + WATCHCHARTS
-          </span>
-          <span className="badge badge-subtle" style={{ padding: '6px 16px', fontSize: '0.70rem', fontFamily: 'var(--font-mono)' }}>
-            INSTITUTIONAL B2B SUITE
-          </span>
-        </div>
-
         {/* Main Headline */}
         <div 
-          className="animate-reveal-up stagger-4"
+          className="animate-reveal-up stagger-2"
           style={{ zIndex: 1, maxWidth: '920px' }}
         >
           <h1 className="serif-heading" style={{
-            fontSize: 'clamp(2.2rem, 4.0vw, 3.5rem)',
+            fontSize: 'clamp(2.2rem, 4.0vw, 3.4rem)',
             fontWeight: 800,
             lineHeight: '1.18',
             color: 'var(--text-main)',
             letterSpacing: '0.01em',
             marginBottom: '16px'
           }}>
-            Institutional Intelligence for <br />
-            <span className="gold-sheen-text">Fine Luxury Timepieces</span>
+            Wholesale Cash Floors &amp; <br />
+            <span className="gold-sheen-text">Consensus Market Comps</span>
           </h1>
 
           <p style={{
-            fontSize: 'clamp(1.0rem, 1.35vw, 1.15rem)',
+            fontSize: 'clamp(0.98rem, 1.25vw, 1.12rem)',
             lineHeight: '1.65',
             color: 'var(--text-secondary)',
-            maxWidth: '740px',
+            maxWidth: '640px',
             margin: '0 auto',
             fontWeight: 400
           }}>
-            LuxeData delivers real-time secondary market consensus pricing and defensible cash buy-in valuations across the world&apos;s most traded investment-grade watches.
+            Defensible buy-in valuations and 10% trimmed mean pricing across the secondary market&apos;s most liquid references.
           </p>
         </div>
 
         {/* Primary Call-to-Action Buttons */}
         <div 
-          className="animate-reveal-up stagger-5"
+          className="animate-reveal-up stagger-3"
           style={{ zIndex: 1, display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}
         >
           <button
@@ -171,7 +129,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               boxShadow: '0 6px 20px rgba(15, 23, 42, 0.18)'
             }}
           >
-            Launch Market Terminal <ArrowRight size={17} />
+            Open Pricing Terminal <ArrowRight size={17} />
           </button>
 
           <button
@@ -185,26 +143,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
               color: 'var(--text-main)'
             }}
           >
-            <ShieldCheck size={18} style={{ color: 'var(--gold-primary)' }} /> Dealer Client Portal
+            <ShieldCheck size={18} style={{ color: 'var(--gold-primary)' }} /> Dealer Access
           </button>
-        </div>
-
-        {/* Micro Provenance Assurance */}
-        <div 
-          className="animate-reveal-up stagger-6"
-          style={{ zIndex: 1, display: 'flex', alignItems: 'center', gap: '18px', color: 'var(--text-muted)', fontSize: '0.76rem', marginTop: '14px', flexWrap: 'wrap', justifyContent: 'center' }}
-        >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <CheckCircle2 size={14} style={{ color: 'var(--gold-primary)' }} /> Live Chrono24 Ingestion
-          </span>
-          <span>•</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <CheckCircle2 size={14} style={{ color: 'var(--emerald-gain)' }} /> Defensible 20% Dealer Margin
-          </span>
-          <span>•</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <CheckCircle2 size={14} style={{ color: 'var(--gold-primary)' }} /> 10% Trimmed Mean Consensus
-          </span>
         </div>
       </section>
 
@@ -244,9 +184,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
                   MONITORED SECONDARY CAPITAL
                 </span>
-                <span className="badge badge-gold" style={{ fontSize: '0.62rem' }}>
-                  <span className="pulse-indicator-gold" style={{ width: '5px', height: '5px', marginRight: '4px' }}></span> LIVE SYNC
-                </span>
               </div>
               <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--gold-primary)' }}>
                 <AnimatedCounter value={macro.totalCatalogValue / 1000000} prefix="$" suffix="M+" decimals={1} />
@@ -262,7 +199,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>
                   DEALER BUY-IN SPREAD
                 </span>
-                <span className="badge badge-subtle" style={{ fontSize: '0.62rem' }}>BENCHMARK</span>
               </div>
               <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--emerald-gain)' }}>
                 <AnimatedCounter value={macro.averageDealerSpreadPct} suffix="%" decimals={1} />
@@ -278,7 +214,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <span style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700 }}>
                   ARBITRAGE SIGNALS
                 </span>
-                <span className="badge badge-emerald" style={{ fontSize: '0.62rem' }}>SUB-WHOLESALE</span>
               </div>
               <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 <AnimatedCounter value={macro.arbitrageCount} suffix=" Active" />
@@ -297,7 +232,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
         {/* Section Header */}
         <ScrollReveal direction="up" distance={20} duration={600}>
           <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 40px auto' }}>
-            <span className="badge badge-gold badge-glimmer" style={{ marginBottom: '10px' }}>PHYSICAL ASSET BENCHMARKS</span>
             <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 2.8vw, 2.5rem)', fontWeight: 800, color: 'var(--text-main)' }}>
               The 5 Benchmark Secondary References
             </h2>
@@ -411,7 +345,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               )}
 
               <div style={{ marginTop: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span className="badge badge-gold badge-glimmer" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem' }}>
+                <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem' }}>
                   REF: {spotlightWatch.reference}
                 </span>
                 <span className="badge badge-subtle" style={{ fontSize: '0.68rem' }}>
@@ -482,13 +416,20 @@ export const LandingView: React.FC<LandingViewProps> = ({
               </div>
 
               {/* Action Button */}
-              <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginTop: '6px' }}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginTop: '6px', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => onEnterTerminal(spotlightWatch)}
+                  onClick={() => onInspectWatch ? onInspectWatch(spotlightWatch) : onEnterTerminal(spotlightWatch)}
                   className="btn-primary mobile-full-width"
                   style={{ padding: '14px 28px', fontSize: '0.90rem', borderRadius: '10px' }}
                 >
-                  Inspect Order Book &amp; Listings <ArrowRight size={16} />
+                  <span>Inspect Comps &amp; Math</span> <ArrowUpRight size={16} />
+                </button>
+                <button
+                  onClick={() => onEnterTerminal(spotlightWatch)}
+                  className="btn-ghost mobile-full-width"
+                  style={{ padding: '14px 24px', fontSize: '0.90rem', borderRadius: '10px' }}
+                >
+                  Open Full Terminal <ArrowRight size={16} />
                 </button>
               </div>
             </div>
@@ -502,7 +443,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
         <ScrollReveal direction="up" distance={18} duration={600}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
             <div>
-              <span className="badge badge-gold badge-glimmer" style={{ marginBottom: '8px' }}>CURATED HOROLOGICAL INDEX</span>
               <h2 className="serif-heading" style={{ fontSize: 'clamp(1.6rem, 2.4vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>
                 Core Secondary Watch Catalog
               </h2>
@@ -538,7 +478,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <WatchCard
                 watch={w}
                 isSelected={spotlightWatch.reference === w.reference}
-                onSelect={(selected) => onEnterTerminal(selected)}
+                onSelect={(selected) => onInspectWatch ? onInspectWatch(selected) : onEnterTerminal(selected)}
               />
             </ScrollReveal>
           ))}
@@ -549,7 +489,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
       <section style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '0 20px' }}>
         <ScrollReveal direction="up" distance={20} duration={600}>
           <div style={{ textAlign: 'center', maxWidth: '740px', margin: '0 auto 40px auto' }}>
-            <span className="badge badge-gold" style={{ marginBottom: '10px' }}>BUILT FOR SECONDARY SPECIALISTS</span>
             <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 2.6vw, 2.4rem)', fontWeight: 800, color: 'var(--text-main)' }}>
               Three Critical Advantages for Watch Desks
             </h2>
@@ -584,7 +523,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 10% Trimmed Mean Consensus
               </h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-                Chrono24 asking prices are notoriously skewed by speculative dreamers. Our algorithm isolates verified company listings, eliminates top/bottom 10% outlier asks, and delivers the true <strong>Consensus Market Value (CMV)</strong>.
+                Raw asking prices are inflated by speculative retail dreamers. We strip the top and bottom 10% outliers to establish true transaction-weighted market value.
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--emerald-gain)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                 <CheckCircle2 size={15} /> Eliminates high &amp; low market distortion
@@ -609,10 +548,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <Calculator size={24} />
               </div>
               <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                Scientific 20% Buy-In Defense
+                Defensible 20% Buy-In Margin
               </h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-                When walk-in clients overvalue their pre-owned piece based on raw retail asks, generate a <strong>LuxeData Appraisal Certificate</strong> showing condition multipliers, turnover days, and mathematical justification for your 20% wholesale offer.
+                Back your counter-offers with math. Justify wholesale buy-in discounts against live secondary liquidity, condition tiers, and box/papers provenance.
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                 <CheckCircle2 size={15} /> Defends dealer gross margins in negotiations
@@ -637,10 +576,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <Target size={24} />
               </div>
               <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                Sub-Wholesale Arbitrage Scanner
+                Below-Wholesale Sourcing
               </h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-                Our automated engine monitors global dealer &amp; private lots 24/7, instantly surfacing opportunities trading <strong>below the dealer buy-in floor</strong> with direct Chrono24 links for rapid capital deployment.
+                Automated screens flag listings priced below current dealer buy-in floors across global dealer and private lots.
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '12px', fontSize: '0.78rem', color: '#0284C7', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                 <CheckCircle2 size={15} /> {macro.arbitrageCount} live opportunities active now
@@ -655,7 +594,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
         <ScrollReveal direction="up" distance={20} duration={600}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '28px' }}>
             <div>
-              <span className="badge badge-emerald" style={{ marginBottom: '8px' }}>LIVE RADAR SAMPLES</span>
               <h2 className="serif-heading" style={{ fontSize: 'clamp(1.6rem, 2.3vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)' }}>
                 Real Arbitrage Lots Currently Active on Chrono24
               </h2>
@@ -823,10 +761,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <Logo size={60} />
             </div>
             <h2 className="serif-heading" style={{ fontSize: 'clamp(1.8rem, 3.2vw, 2.6rem)', fontWeight: 800, color: 'var(--text-main)', maxWidth: '720px' }}>
-              Equip Your Dealership with Institutional Certainty
+              Trade on Real Comps, Not Speculation
             </h2>
             <p style={{ fontSize: '0.94rem', color: 'var(--text-secondary)', maxWidth: '640px', lineHeight: '1.65' }}>
-              Stop negotiating on speculative consumer asking prices. Join boutique watch dealers defending their buy-in margins with certified 10% trimmed mean intelligence.
+              Stop negotiating against unverified retail asking prices. Deploy capital and buy inventory with defensible wholesale data.
             </p>
 
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
@@ -835,14 +773,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 className="btn-primary"
                 style={{ padding: '14px 34px', fontSize: '0.96rem', borderRadius: '10px' }}
               >
-                Open Market Terminal <ArrowRight size={16} />
+                Launch Terminal <ArrowRight size={16} />
               </button>
               <button
                 onClick={onOpenAuth}
                 className="btn-ghost"
                 style={{ padding: '14px 28px', fontSize: '0.96rem', color: 'var(--text-main)', borderRadius: '10px' }}
               >
-                Create Dealer Account
+                Dealer Sign In
               </button>
             </div>
           </InteractiveTiltCard>

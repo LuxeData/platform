@@ -7,6 +7,7 @@ import { WatchDetailView } from '../components/WatchDetailView';
 import { DealerAppraisalTerminal } from '../components/DealerAppraisalTerminal';
 import { ArbitrageScanner } from '../components/ArbitrageScanner';
 import { AuthModal } from '../components/AuthModal';
+import { ReferenceInspectionModal } from '../components/ReferenceInspectionModal';
 import { LegalView } from '../components/LegalView';
 import { Logo } from '../components/Logo';
 import { InteractiveTiltCard } from '../components/InteractiveTiltCard';
@@ -43,6 +44,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBrandFilter, setActiveBrandFilter] = useState('ALL');
   const [selectedWatch, setSelectedWatch] = useState<WatchModel>(WATCH_MODELS[0]);
+  const [inspectingWatch, setInspectingWatch] = useState<WatchModel | null>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<UserSession | null>(null);
 
@@ -134,6 +136,7 @@ export default function Home() {
               onEnterTerminal={handleEnterTerminal}
               onOpenAuth={() => setIsAuthOpen(true)}
               onNavigateTab={setActiveTab}
+              onInspectWatch={(w) => setInspectingWatch(w)}
             />
           </div>
         )}
@@ -361,23 +364,9 @@ export default function Home() {
                 <span className="serif-heading" style={{ fontWeight: 700, fontSize: '1.0rem', color: 'var(--text-main)', letterSpacing: '0.06em' }}>
                   LUXE<span className="gold-gradient-text">DATA</span> TECHNOLOGIES
                 </span>
-                <span className="badge badge-gold" style={{ fontSize: '0.60rem' }}>TRI-VENUE CONSENSUS</span>
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.70rem', marginTop: '4px', lineHeight: '1.5' }}>
-                Institutional Luxury Timepiece Intelligence Terminal • 10% Trimmed Mean Consensus Engine • State of Delaware Registered Entity.
-              </div>
-              
-              {/* Institutional Compliance Badges */}
-              <div style={{ display: 'flex', gap: '14px', marginTop: '12px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <ShieldCheck size={12} color="var(--emerald-gain)" /> SOC 2 Type II Aligned
-                </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <Lock size={12} color="var(--gold-primary)" /> AES-256 HSM Encrypted
-                </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <Scale size={12} color="var(--gold-primary)" /> Zero Data Brokering
-                </span>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.70rem', marginTop: '6px', lineHeight: '1.5' }}>
+                Data aggregated from Chrono24, eBay Authenticity Guarantee, and secondary dealer indices. Statistical estimates for market intelligence.
               </div>
             </div>
           </div>
@@ -447,9 +436,6 @@ export default function Home() {
             </p>
 
             <div className="footer-status-row" style={{ marginTop: '10px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'flex-end', gap: '16px', alignItems: 'center' }}>
-              <span style={{ color: 'var(--emerald-gain)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span className="pulse-indicator"></span> CONSENSUS ENGINE ACTIVE • 281 LOTS INGESTED
-              </span>
               <span>© 2026 LuxeData Technologies Inc. All rights reserved.</span>
             </div>
           </div>
@@ -463,6 +449,25 @@ export default function Home() {
         user={user}
         onAuthenticated={handleAuthenticated}
         onSignOut={handleSignOut}
+      />
+
+      {/* Quick Reference Inspection Modal */}
+      <ReferenceInspectionModal
+        watch={inspectingWatch}
+        isOpen={!!inspectingWatch}
+        onClose={() => setInspectingWatch(null)}
+        onOpenTerminal={(w) => {
+          setSelectedWatch(w);
+          setInspectingWatch(null);
+          setActiveTab('terminal');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenAppraisal={(w) => {
+          setSelectedWatch(w);
+          setInspectingWatch(null);
+          setActiveTab('appraisal');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
       {/* Swiss Luxury Floating Scroll To Top Control */}

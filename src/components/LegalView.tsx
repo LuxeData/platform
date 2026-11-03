@@ -251,20 +251,6 @@ export function LegalView({
             paddingTop: '20px',
             borderTop: '1px solid var(--border-hairline)'
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 14px',
-              background: '#F8FAFC',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border-hairline)',
-              fontSize: '0.74rem',
-              color: 'var(--text-secondary)'
-            }}>
-              <Building2 size={14} color="var(--gold-primary)" />
-              <span>Delaware C-Corp Jurisdiction</span>
-            </div>
 
             <div style={{
               display: 'flex',

@@ -11,6 +11,10 @@ interface InteractiveTiltCardProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   active?: boolean;
+  onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
+  tabIndex?: number;
+  role?: string;
+  'aria-label'?: string;
 }
 
 export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
@@ -22,7 +26,11 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
-  active = false
+  active = false,
+  onKeyDown,
+  tabIndex,
+  role,
+  'aria-label': ariaLabel
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -110,6 +118,10 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
     <div
       ref={cardRef}
       onClick={onClick}
+      onKeyDown={onKeyDown}
+      tabIndex={tabIndex}
+      role={role}
+      aria-label={ariaLabel}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
