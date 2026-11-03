@@ -96,7 +96,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             borderRight: '1px solid var(--border-hairline)',
             zIndex: 2
           }}>
-            <span className="pulse-indicator"></span>
             <span style={{
               fontFamily: 'var(--font-mono)',
               color: 'var(--gold-primary)',
@@ -105,10 +104,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               textTransform: 'uppercase',
               fontSize: '0.68rem'
             }}>
-              TRI-VENUE FEED
+              SECONDARY BENCHMARK FEED
             </span>
-            <span style={{ color: 'var(--text-faint)' }}>•</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.66rem', fontFamily: 'var(--font-mono)' }}>CHRONO24 + EBAY + WCI</span>
           </div>
 
           {/* Continuous Horizontally Scrolling Watch Marquee */}
@@ -166,24 +163,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Engine Latency Badge (Pinned Right - Hidden on Mobile) */}
-          <div className="mobile-hide" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            flexShrink: 0,
-            paddingLeft: '14px',
-            borderLeft: '1px solid var(--border-hairline)',
-            zIndex: 2,
-            color: 'var(--text-muted)'
-          }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.66rem', color: 'var(--text-muted)' }}>
-              10% TRIMMED MEAN
-            </span>
-            <span style={{ color: 'var(--text-faint)' }}>•</span>
-            <span style={{ color: 'var(--emerald-gain)', fontSize: '0.66rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>24MS</span>
           </div>
         </div>
       </div>
