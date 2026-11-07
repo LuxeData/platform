@@ -22,7 +22,7 @@ import {
   TrendingDown, 
   ShieldCheck, 
   AlertCircle, 
-  Sparkles, 
+  BarChart3, 
   DollarSign, 
   Clock, 
   CheckCircle2, 
@@ -709,13 +709,13 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={18} style={{ color: 'var(--gold-primary)' }} />
+                <BarChart3 size={18} style={{ color: 'var(--gold-primary)' }} />
                 <span className="serif-heading" style={{ fontWeight: 800, letterSpacing: '0.04em', fontSize: '0.90rem', color: 'var(--text-main)' }}>
-                  AI VALUATION ENGINE
+                  MARKET INTELLIGENCE &amp; COMPS
                 </span>
               </div>
-              <span className="badge badge-gold" style={{ fontFamily: 'var(--font-mono)' }}>
-                {watch.aiAnalysis.confidence}% CONFIDENCE
+              <span className="badge badge-gold">
+                SAMPLE CONVERGENCE: {watch.aiAnalysis.confidence}%
               </span>
             </div>
 
