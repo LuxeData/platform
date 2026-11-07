@@ -158,10 +158,10 @@ const WATCH_CONFIGS: Record<string, {
     confidence: 94,
     liquidityScore: 98,
     stabilityRating: 'Ultra High',
-    summary: 'Consensus Market Value (CMV) stabilized at $15,025 across 60 active Chrono24 listings. 83% dealer clustering confirms institutional floor. Private listings trading below $12,800 provide immediate 15-20% margin recapture against dealer asking.',
+    summary: 'Market Consensus (CMV) stabilized at $15,025 across 60 active Chrono24 listings. 83% dealer clustering confirms institutional floor. Private listings trading below $12,800 provide immediate 15-20% margin recapture against dealer asking.',
     catalysts: [
       '83% dealer clustering creates instantaneous liquidity (average turnover 7.4 days)',
-      'Consensus market value sits firmly +46.6% above retail MSRP ($10,250)',
+      'Market consensus sits firmly +46.6% above retail MSRP ($10,250)',
       'Multiple private seller lots trading below dealer cash buy-in floor ($12,020)'
     ],
     riskFactors: [
@@ -185,7 +185,7 @@ const WATCH_CONFIGS: Record<string, {
     confidence: 92,
     liquidityScore: 93,
     stabilityRating: 'Ultra High',
-    summary: 'Discontinued in 2023 in favor of Ref. 126500LN. Trimmed-mean dealer asking is $31,621 (+109.4% over MSRP). High collector premium with private lots trading at 15-22% discount to dealer consensus.',
+    summary: 'Discontinued in 2023 in favor of Ref. 126500LN. Dealer consensus asking is $31,621 (+109.4% over MSRP). High collector premium with private lots trading at 15-22% discount to dealer consensus.',
     catalysts: [
       'Discontinued reference status permanently cements collector accumulation status',
       'Consistently commands 18-22% premium over black dial variant in secondary auction hammer pricing',
@@ -239,7 +239,7 @@ const WATCH_CONFIGS: Record<string, {
     confidence: 89,
     liquidityScore: 88,
     stabilityRating: 'High',
-    summary: 'Trimmed mean dealer consensus at $57,483 (+106.8% over MSRP $27,800). The Gérald Genta integrated luxury sports baseline with blue dial commands the highest resilience across Geneva and London auctions.',
+    summary: 'Dealer market consensus at $57,483 (+106.8% over MSRP $27,800). The Gérald Genta integrated luxury sports baseline with blue dial commands the highest resilience across Geneva and London auctions.',
     catalysts: [
       'Iconic Gérald Genta octagonal case geometry anchors luxury steel horology index',
       'Calibre 4302 manufacture movement with 70-hour power reserve',
@@ -266,7 +266,7 @@ const WATCH_CONFIGS: Record<string, {
     confidence: 96,
     liquidityScore: 85,
     stabilityRating: 'Ultra High',
-    summary: 'The holy grail of modern secondary horology. Discontinued permanently in 2021. Consensus market value of $148,243 (+324.9% over retail MSRP $34,890). 6 verified arbitrage listings trading up to $29,648 below dealer buy-in.',
+    summary: 'The holy grail of modern secondary horology. Discontinued permanently in 2021. Market consensus of $148,243 (+324.9% over retail MSRP $34,890). 6 verified arbitrage listings trading up to $29,648 below dealer buy-in.',
     catalysts: [
       'Definitive retirement by Thierry Stern ensures zero future retail supply dilution',
       'Institutional collateral asset accepted by Geneva private banks for asset-backed loans',
