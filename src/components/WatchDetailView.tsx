@@ -180,7 +180,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             {/* Consensus Market Value (CMV) */}
             <div>
               <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                Consensus Market Value (CMV)
+                Market Consensus (CMV)
               </div>
               <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 <AnimatedCounter value={valuation.adjustedCMV} prefix="$" />
@@ -288,7 +288,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
             </h3>
 
             <p style={{ maxWidth: '560px', margin: '0 auto 24px auto', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-              Live Chrono24 dealer vs. private order books, 10% trimmed mean consensus metrics, condition multipliers, and 20% margin protection buy slips for <strong>{watch.model}</strong> are reserved for verified partner desks.
+              Live Chrono24 dealer vs. private order books, consensus pricing, condition multipliers, and 20% margin protection buy slips for <strong>{watch.model}</strong> are reserved for verified partner desks.
             </p>
 
             {/* Feature Bullets */}
@@ -306,7 +306,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.80rem', color: 'var(--text-main)' }}>
                 <CheckCircle2 size={16} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
-                <span>Defensible 20% wholesale cash buy-in formula</span>
+                <span>20% wholesale cash buy-in formula</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.80rem', color: 'var(--text-main)' }}>
                 <CheckCircle2 size={16} style={{ color: 'var(--emerald-gain)', flexShrink: 0 }} />
@@ -371,7 +371,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                   Secondary Market Price Trajectory (12-Month Baseline)
                 </h3>
                 <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Calibrated to Chrono24 10% trimmed mean consensus and realized auction hammers
+                  Calibrated to Chrono24 dealer consensus and realized auction hammers
                 </p>
               </div>
 
@@ -745,7 +745,7 @@ export const WatchDetailView: React.FC<WatchDetailViewProps> = ({ watch, user, o
                   {watch.aiAnalysis.recommendation}
                 </span>
                 <div style={{ fontSize: '0.80rem', color: 'var(--text-secondary)' }}>
-                  Liquidity Score: <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{watch.aiAnalysis.liquidityScore}/100</strong>
+                  Volume: <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{(watch.aiAnalysis?.liquidityScore ?? 0) >= 75 ? 'High' : (watch.aiAnalysis?.liquidityScore ?? 0) >= 40 ? 'Med' : 'Low'}</strong>
                 </div>
                 <div style={{ fontSize: '0.80rem', color: 'var(--text-secondary)' }}>
                   Price Stability: <strong style={{ color: 'var(--gold-primary)' }}>{watch.aiAnalysis.stabilityRating}</strong>

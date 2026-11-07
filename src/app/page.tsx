@@ -307,7 +307,7 @@ export default function Home() {
                     Institutional Watch Dealer &amp; Private Portfolio Intelligence
                   </h3>
                   <p style={{ fontSize: '0.80rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                    LuxeData provides luxury watch dealers, pawnbrokers, and alternative asset funds with real-time Chrono24 consensus valuation feeds, instant cash buy-in appraisals, and automated secondary arbitrage scanners.
+                    Real-time Chrono24 consensus feeds, instant cash buy-in appraisals, and live arbitrage scanners for watch dealers, pawnbrokers, and alternative asset funds.
                   </p>
                 </div>
 

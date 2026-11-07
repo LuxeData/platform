@@ -87,7 +87,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                 </span>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.80rem', marginTop: '2px' }}>
-                Active Chrono24 listings trading below institutional dealer buy-in (-20% CMV baseline)
+                Active Chrono24 listings trading below dealer buy-in floor (-20% from consensus)
               </p>
             </div>
           </div>

@@ -82,14 +82,14 @@ describe('ReferenceInspectionModal', () => {
     );
 
     // Mathematical terms
-    expect(html).toContain('10% Trimmed Mean (CMV)');
+    expect(html).toContain('Market Consensus (CMV)');
     expect(html).toContain('Wholesale Cash Floor (-20%)');
     expect(html).toContain('Protected Gross Spread');
     expect(html).toContain('10% Trimmed Mean Statistical Breakdown');
     expect(html).toContain('Raw Asking Range');
     expect(html).toContain('Outliers Cut (-20% Total)');
     expect(html).toContain('Analyzed 80% Core Band');
-    expect(html).toContain('Resulting Consensus CMV');
+    expect(html).toContain('Resulting Market Consensus');
     expect(html).toContain('active lots analyzed');
   });
 
@@ -398,7 +398,7 @@ describe('ReferenceInspectionModal', () => {
     );
 
     expect(html).toContain('REF: UNKNOWN-999');
-    expect(html).toContain('10% Trimmed Mean (CMV)');
+    expect(html).toContain('Market Consensus (CMV)');
     expect(html).toContain('Wholesale Cash Floor (-20%)');
   });
 });

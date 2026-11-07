@@ -310,7 +310,7 @@ export const ReferenceInspectionModal: React.FC<ReferenceInspectionModalProps> =
             padding: '16px 18px'
           }}>
             <div style={{ fontSize: '0.66rem', color: 'var(--gold-primary)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-              10% Trimmed Mean (CMV)
+              Market Consensus (CMV)
             </div>
             <div className="tabular-nums" style={{ fontSize: '1.55rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
               ${formatUSD(mathData.cmv)}
@@ -421,7 +421,7 @@ export const ReferenceInspectionModal: React.FC<ReferenceInspectionModalProps> =
 
             <div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.66rem', textTransform: 'uppercase', fontWeight: 600 }}>
-                Resulting Consensus CMV
+                Resulting Market Consensus
               </div>
               <div className="tabular-nums" style={{ fontWeight: 700, color: 'var(--emerald-gain)', marginTop: '2px' }}>
                 ${formatUSD(mathData.cmv)}

@@ -291,7 +291,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </h3>
           <p style={{ fontSize: '0.80rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             {user 
-              ? 'Cryptographically isolated session on Supabase PostgreSQL' 
+              ? 'Secure session active' 
               : 'Sign in to access your authorized dealer terminal and appraisal desk.'}
           </p>
         </div>

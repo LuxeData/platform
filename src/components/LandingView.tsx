@@ -110,7 +110,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
             margin: '0 auto',
             fontWeight: 400
           }}>
-            Defensible buy-in valuations and 10% trimmed mean pricing across the secondary market&apos;s most liquid references.
+            Verified secondary market consensus and actual dealer buy-in math for high-liquidity references.
           </p>
         </div>
 
@@ -236,7 +236,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               The 5 Benchmark Secondary References
             </h2>
             <p style={{ fontSize: '0.90rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.6' }}>
-              Direct consensus market pricing and defensible cash buy-in floors across the most actively traded stainless steel references.
+              Live dealer consensus and wholesale cash floors across the most actively traded stainless steel references.
             </p>
           </div>
         </ScrollReveal>
@@ -404,13 +404,13 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   boxShadow: '0 4px 14px rgba(161, 116, 36, 0.06), inset 0 1px 0 #FFFFFF'
                 }}>
                   <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-                    CONSENSUS MARKET VALUE
+                    MARKET CONSENSUS
                   </div>
                   <div style={{ fontSize: 'clamp(1.6rem, 2.6vw, 2.0rem)', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
                     <AnimatedCounter value={spotlightWatch.currentAskingAvg} prefix="$" />
                   </div>
                   <div style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
-                    10% trimmed mean of dealer asks
+                    Dealer asking consensus
                   </div>
                 </div>
               </div>
@@ -520,7 +520,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <Scale size={24} />
               </div>
               <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                10% Trimmed Mean Consensus
+                Dealer Consensus Pricing
               </h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
                 Raw asking prices are inflated by speculative retail dreamers. We strip the top and bottom 10% outliers to establish true transaction-weighted market value.
@@ -548,7 +548,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <Calculator size={24} />
               </div>
               <h3 className="serif-heading" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                Defensible 20% Buy-In Margin
+                Wholesale Cash Buy-In Math
               </h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
                 Back your counter-offers with math. Justify wholesale buy-in discounts against live secondary liquidity, condition tiers, and box/papers provenance.
@@ -764,7 +764,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               Trade on Real Comps, Not Speculation
             </h2>
             <p style={{ fontSize: '0.94rem', color: 'var(--text-secondary)', maxWidth: '640px', lineHeight: '1.65' }}>
-              Stop negotiating against unverified retail asking prices. Deploy capital and buy inventory with defensible wholesale data.
+              Stop negotiating against unverified retail asking prices. Buy inventory backed by real wholesale comps.
             </p>
 
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>

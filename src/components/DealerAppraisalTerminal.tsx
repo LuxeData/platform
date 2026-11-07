@@ -549,7 +549,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
                 boxShadow: '0 4px 14px rgba(161, 116, 36, 0.06), inset 0 1px 0 #FFFFFF'
               }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--gold-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  TRI-VENUE RETAIL VALUE (CMV)
+                  MARKET CONSENSUS (CMV)
                 </div>
                 <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0' }}>
                   <AnimatedCounter value={valuation.adjustedCMV} prefix="$" />
