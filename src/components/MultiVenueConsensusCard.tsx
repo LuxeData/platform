@@ -72,7 +72,7 @@ export const MultiVenueConsensusCard: React.FC<MultiVenueConsensusCardProps> = (
         {/* Consolidated Value Metric */}
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
-            Weighted Consolidated CMV
+            Consolidated Market Consensus
           </div>
           <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-main)' }}>
             <AnimatedCounter value={consolidatedPrice} prefix="$" />

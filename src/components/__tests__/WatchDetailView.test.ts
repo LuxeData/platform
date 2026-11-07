@@ -35,6 +35,23 @@ describe('WatchDetailView — Institutional Copy & Volume Tiering', () => {
     expect(html).not.toContain('Consensus Market Value (CMV)');
   });
 
+  it('renders "MARKET INTELLIGENCE & COMPS" and "SAMPLE CONVERGENCE:" in intelligence card', () => {
+    const html = renderToStaticMarkup(
+      React.createElement(WatchDetailView, {
+        watch: sampleWatch,
+        user: proUser,
+        onOpenAuth: vi.fn()
+      })
+    );
+
+    expect(html).toContain('MARKET INTELLIGENCE &amp; COMPS');
+    expect(html).not.toContain('AI VALUATION ENGINE');
+    expect(html).toContain(`SAMPLE CONVERGENCE: ${sampleWatch.aiAnalysis.confidence}%`);
+    expect(html).not.toContain(`${sampleWatch.aiAnalysis.confidence}% CONFIDENCE`);
+    expect(html).toContain('lucide-chart-column');
+    expect(html).not.toContain('lucide-sparkles');
+  });
+
   it('renders "Calibrated to Chrono24 dealer consensus and realized auction hammers" in trajectory subtitle', () => {
     const html = renderToStaticMarkup(
       React.createElement(WatchDetailView, {

@@ -8,18 +8,10 @@ import { InteractiveTiltCard } from './InteractiveTiltCard';
 import { AnimatedCounter } from './AnimatedCounter';
 import { ScrollReveal } from './ScrollReveal';
 import { 
-  Target, 
-  ExternalLink, 
-  TrendingUp, 
-  Sparkles, 
   ArrowUpRight, 
-  Filter, 
   ShieldCheck, 
-  AlertCircle,
-  Building2,
-  DollarSign,
-  Lock,
-  Crown
+  Lock, 
+  Crown 
 } from 'lucide-react';
 
 interface ArbitrageScannerProps {
@@ -202,7 +194,7 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                         </span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        <span>CMV: <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>${formatUSD(deal.cmv)}</strong></span>
+                        <span>Consensus: <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>${formatUSD(deal.cmv)}</strong></span>
                         <span>Floor: <strong className="tabular-nums" style={{ color: 'var(--emerald-gain)' }}>${formatUSD(deal.buyIn)}</strong></span>
                       </div>
                     </div>
@@ -217,11 +209,18 @@ export const ArbitrageScanner: React.FC<ArbitrageScannerProps> = ({ watches, onS
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     borderTop: '1px solid var(--border-hairline)',
-                    paddingTop: '12px'
+                    paddingTop: '12px',
+                    gap: '8px',
+                    flexWrap: 'wrap'
                   }}>
-                    <span className={deal.is_private ? "badge badge-subtle" : "badge badge-gold"} style={{ fontSize: '0.65rem' }}>
-                      {deal.seller_type}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span className={deal.is_private ? "badge badge-subtle" : "badge badge-gold"} style={{ fontSize: '0.65rem' }}>
+                        {deal.seller_type}
+                      </span>
+                      <span className="badge badge-subtle" style={{ fontSize: '0.62rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <ShieldCheck size={11} style={{ color: 'var(--emerald-gain)' }} /> Insured Escrow Available
+                      </span>
+                    </div>
 
                     {deal.url && (
                       <a 

@@ -121,7 +121,7 @@ export const DealerAppraisalTerminal: React.FC<DealerAppraisalTerminalProps> = (
 
   const handleCopyQuote = async () => {
     if (!valuation || !activeWatch) return;
-    const text = `--- LUXEDATA DEALER APPRAISAL ---\nModel: ${activeWatch.brand} ${activeWatch.model} (Ref: ${activeWatch.reference})\nCondition: ${condition} | Provenance: ${hasBox && hasPapers ? 'Full Set' : 'Incomplete'}\nConsensus Retail Value (CMV): $${formatUSD(valuation.adjustedCMV)}\nCash Buy-In Offer: $${formatUSD(valuation.maxBuyOffer)}\nTarget Margin: ${dealerMarginPct}%\nVerified via LuxeData Chrono24 Intelligence Feed.`;
+    const text = `--- LUXEDATA DEALER APPRAISAL ---\nModel: ${activeWatch.brand} ${activeWatch.model} (Ref: ${activeWatch.reference})\nCondition: ${condition} | Provenance: ${hasBox && hasPapers ? 'Full Set' : 'Incomplete'}\nMarket Consensus (CMV): $${formatUSD(valuation.adjustedCMV)}\nCash Buy-In Offer: $${formatUSD(valuation.maxBuyOffer)}\nTarget Margin: ${dealerMarginPct}%\nVerified via LuxeData Chrono24 Intelligence Feed.`;
     const success = await copyToClipboard(text);
     if (success) {
       setCopied(true);

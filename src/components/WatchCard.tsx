@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { WatchModel } from '../types/watch';
-import { TrendingUp, TrendingDown, ArrowUpRight, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowUpRight, Target } from 'lucide-react';
 import { formatUSD } from '../lib/format';
 import { Logo } from './Logo';
 import { InteractiveTiltCard } from './InteractiveTiltCard';
@@ -168,9 +168,9 @@ export const WatchCard: React.FC<WatchCardProps> = ({ watch, isSelected = false,
           borderTop: isHovered ? '1px dashed var(--border-hairline)' : 'none'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Sparkles size={12} style={{ color: 'var(--gold-primary)' }} />
+            <Target size={12} style={{ color: 'var(--gold-primary)' }} />
             <span style={{ fontSize: '0.70rem', color: 'var(--text-secondary)' }}>
-              Score: <strong style={{ color: 'var(--gold-primary)' }}>{watch.aiAnalysis.opportunityScore}</strong>/10
+              Target Margin: <strong style={{ color: 'var(--gold-primary)' }}>20%</strong>
             </span>
           </div>
 

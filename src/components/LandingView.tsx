@@ -19,8 +19,6 @@ import {
   Target, 
   Building2, 
   Scale, 
-  ExternalLink,
-  Sparkles, 
   ArrowUpRight, 
   Sliders, 
   CheckCircle2, 
@@ -98,8 +96,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
             letterSpacing: '0.01em',
             marginBottom: '16px'
           }}>
-            Wholesale Cash Floors &amp; <br />
-            <span className="gold-sheen-text">Consensus Market Comps</span>
+            Real-Time Watch Pricing &amp; <br />
+            <span className="gold-sheen-text">Wholesale Cash Floors</span>
           </h1>
 
           <p style={{
@@ -701,7 +699,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                         </span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                        <span>CMV: ${formatUSD(w.currentAskingAvg)}</span>
+                        <span>Consensus: ${formatUSD(w.currentAskingAvg)}</span>
                         <span style={{ color: 'var(--emerald-gain)', fontWeight: 600 }}>Floor: ${formatUSD(w.recentSoldAvg)}</span>
                       </div>
                     </div>
@@ -712,11 +710,18 @@ export const LandingView: React.FC<LandingViewProps> = ({
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     borderTop: '1px solid var(--border-hairline)',
-                    paddingTop: '12px'
+                    paddingTop: '12px',
+                    gap: '8px',
+                    flexWrap: 'wrap'
                   }}>
-                    <span className={topDeal.is_private ? 'badge badge-subtle' : 'badge badge-gold'} style={{ fontSize: '0.66rem' }}>
-                      {topDeal.seller_type}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span className={topDeal.is_private ? 'badge badge-subtle' : 'badge badge-gold'} style={{ fontSize: '0.66rem' }}>
+                        {topDeal.seller_type}
+                      </span>
+                      <span className="badge badge-subtle" style={{ fontSize: '0.62rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <ShieldCheck size={11} style={{ color: 'var(--emerald-gain)' }} /> Insured Escrow Available
+                      </span>
+                    </div>
 
                     {topDeal.url && (
                       <a
